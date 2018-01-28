@@ -1,0 +1,34 @@
+; Code Composer Project File, Version 2.0 (do not modify or remove this line)
+
+[Project Settings]
+ProjectDir="C:\1901VC1T_Inteltech\Projects\mapi_tms320c64xx\mapi\"
+ProjectType=Library
+CPUFamily=TMS320C64XX
+Tool="Archiver"
+Tool="Compiler"
+Tool="CustomBuilder"
+Tool="DspBiosBuilder"
+Config="Debug"
+Config="Release"
+
+[Source Files]
+Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\drv_amoeba\mapi\mapi.loadafterme.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\drv_amoeba\mapi\mapi.sensortest.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\drv_amoeba\mapi\mapi.sptest.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\drv_amoeba\mapi\mapi.sptestack.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\drv_amoeba\mapi\mapi.sptestok.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\drv_amoeba\mapi\mapi.syntime.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\drv_amoeba\mapi\mapi.terminate.cpp"
+
+["Archiver" Settings: "Debug"]
+Options=-r -o"%AMOEBA_DRV_PATH%\mapi\lib\mapi_tms64xx.lib"
+
+["Archiver" Settings: "Release"]
+Options=-r -o".\Release\mapi.lib"
+
+["Compiler" Settings: "Debug"]
+Options=-g -pdsw225 -fr"$(Proj_dir)\Debug" -i"%AMOEBA_OS_PATH%\tms_c64xx" -i"%AMOEBA_RTS_PATH%\src" -i"%AMOEBA_DRV_PATH%\mapi" -d"_DEBUG" -mi0 -mv6400 --mem_model:data=far
+
+["Compiler" Settings: "Release"]
+Options=-pdsw225 -o3 -fr"$(Proj_dir)\Release" -mv6400
+

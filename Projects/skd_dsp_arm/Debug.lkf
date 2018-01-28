@@ -1,0 +1,5 @@
+-z -q -c -heap0x2000 -m"./Debug/skd_dsp_arm.map" -o"./Debug/skd_dsp_arm.out" -stack0x400 -w -x -i"C:/1901VC1T_Inteltech/3rdPartyLIB/dsp_core/C5400/dsplib" -i"C:/CCStudio_v3.3/C5400/xdais/lib" -i"C:/CCStudio_v3.3/C5400/csl/lib" -i"C:/CCStudio_v3.3/bios_5_31_02/packages/ti/bios/lib" -i"C:/CCStudio_v3.3/bios_5_31_02/packages/ti/rtdx/lib/c5400" -i"C:/CCStudio_v3.3/C5400/cgtools/lib" -l"rts.lib" -l"54xdsp.lib"
+"C:\1901VC1T_Inteltech\Projects\skd_dsp_arm\Debug\boot.obj"
+"C:\1901VC1T_Inteltech\Projects\skd_dsp_arm\Debug\f.obj"
+"C:\1901VC1T_Inteltech\Projects\skd_dsp_arm\Debug\main.obj"
+"C:\1901VC1T_Inteltech\Projects\skd_dsp_arm\54X.CMD"

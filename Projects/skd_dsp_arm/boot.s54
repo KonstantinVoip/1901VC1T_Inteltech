@@ -1,0 +1,199 @@
+;
+;  Copyright 2003 by Texas Instruments Incorporated.
+;  All rights reserved. Property of Texas Instruments Incorporated.
+;  Restricted rights to use, duplicate or disclose this code are
+;  granted through contract.
+;  
+;
+; "@(#) DSP/BIOS 4.90.270 06-11-03 (barracuda-m10)"
+;
+;  ======== boot.s54 ========
+;
+
+****************************************************************************
+*  BOOT   v3.50                                                           *
+*  Copyright (c) 1993-1999 Texas Instruments Incorporated                  *
+****************************************************************************
+        
+        .c_mode
+        .mmregs
+
+CONST_COPY      .set 0
+****************************************************************************
+*                                                                          *
+*   This module contains the following definitions :                       *
+*                                                                          *
+*         __stack    - Stack memory area                                   *
+*         _c_int00   - Boot function                                       *
+*         _var_init  - Function which processes initialization tables      *
+*                                                                          *
+****************************************************************************
+        .ref     cinit, pinit
+		.global  _c_int00, _main, __STACK_SIZE, _ssbx_,_rsbx_, _pll_set,__tint_intr,__codec_intr
+        ; alternate label for c_int00 -- referenced by HWI_RESET
+        ; to pull in BIOS boot code instead of rts.lib
+        ;.global  _c_int00, _main, __STACK_SIZE, _ssbx_,_rsbx_, _pll_set
+;
+
+****************************************************************************
+* Declare the stack.  Size is determined by the linker option -stack.  The *
+* default value is 1K words.                                               *
+****************************************************************************
+__stack:        .usect  ".stack",0
+
+; описание вектора на стр 340 spec_1901VC1.pdf
+	.sect ".vectors"
+	.def _VECSTART 
+_VECSTART:
+reset:
+	NOP ;здесь идем в инит rts.lib
+	NOP
+	b _c_int00
+nmi: 
+	RETE
+	NOP
+	NOP
+	NOP 
+sint17: 
+	RETE
+	NOP
+	NOP
+	NOP
+sint18:
+	RETE
+	NOP
+	NOP
+	NOP
+sint19:
+	RETE
+	NOP
+	NOP ;здесь ошибка в исходном коде не хватет одного NOP В.М.Маслов 19.02.2015
+	NOP
+sint20:
+	RETE
+	NOP
+	NOP
+	NOP
+sint21:
+	RETE
+	NOP
+	NOP
+	NOP
+sint22:
+	RETE
+	NOP
+	NOP
+	NOP
+sint23:
+	RETE
+	NOP
+	NOP
+	NOP
+sint24:
+	RETE
+	NOP
+	NOP
+	NOP
+sint25:
+	RETE
+	NOP
+	NOP
+	NOP
+sint26:
+	RETE
+	NOP
+	NOP
+	NOP
+sint27:
+	RETE
+	NOP
+	NOP
+	NOP
+sint28:
+	RETE
+	NOP
+	NOP
+	NOP
+sint29:
+	RETE
+	NOP
+	NOP
+	NOP
+sint30:
+	RETE  ;fix RETE  19.02.2105
+	NOP
+	NOP
+	NOP   ;fix NOP
+int0:
+	RETE
+	NOP
+	NOP 
+	NOP
+int1: 
+	RETE
+	NOP
+	NOP
+	NOP
+int2: 
+	RETE
+	NOP
+	NOP
+	NOP
+tint: 					;RETE ; прерывание от таймера
+	NOP 
+   	NOP  				; b	__tint_intr		;NOP
+    b	__tint_intr
+rint1: 
+	RETE 
+	NOP 
+	NOP
+	NOP
+xint1: 
+	RETE 
+	NOP
+	NOP
+	NOP
+rint2: 
+	RETE 
+	NOP
+	NOP
+	NOP
+xint2: 
+	RETE 
+	NOP 
+	NOP
+	NOP
+int3: 
+	RETE
+	NOP
+	NOP 
+	NOP
+rint3:
+	RETE
+	NOP
+	NOP 
+	NOP
+xint3:
+	RETE
+	NOP
+	NOP 
+	NOP
+cdint:					;RETE		;Прерывание от АудиоКодека нужно проверить работает __codec_intr 
+	NOP
+	NOP	   
+	b	 __codec_intr
+crint:
+	RETE   ;Прерывание от Крипто модуля
+	NOP
+	NOP 
+	NOP
+dmaint: 
+    RETE
+	NOP    ;Преывание от DMA
+	NOP 
+	NOP    ;b __dma_intr		
+.end
+*–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+
+
+

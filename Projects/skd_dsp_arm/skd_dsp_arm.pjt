@@ -1,0 +1,34 @@
+; Code Composer Project File, Version 2.0 (do not modify or remove this line)
+
+[Project Settings]
+ProjectDir="C:\1901VC1T_Inteltech\Projects\skd_dsp_arm\"
+ProjectType=Executable
+CPUFamily=TMS320C54XX
+Tool="Compiler"
+Tool="CustomBuilder"
+Tool="DspBiosBuilder"
+Tool="Linker"
+Config="Debug"
+Config="Release"
+
+[Source Files]
+Source="boot.s54"
+Source="f.C"
+Source="main.C"
+Source="54X.CMD"
+
+["Compiler" Settings: "Debug"]
+Options=-g -fr"$(Proj_dir)\Debug" -i"C:\1901VC1T_Inteltech\3rdPartyLIB\dsp_core\C5400\dsplib\include" -i"C:\1901VC1T_Inteltech\Projects\skd_dsp_arm\inc\g.722" -d"_DEBUG"
+
+["Compiler" Settings: "Release"]
+Options=-o2 -fr"$(Proj_dir)\Release"
+
+["DspBiosBuilder" Settings: "Debug"]
+Options=-v54
+
+["Linker" Settings: "Debug"]
+Options=-q -c -heap0x2000 -m".\Debug\skd_dsp_arm.map" -o".\Debug\skd_dsp_arm.out" -stack0x400 -w -x -i"C:\1901VC1T_Inteltech\3rdPartyLIB\dsp_core\C5400\dsplib" -l"rts.lib" -l"54xdsp.lib"
+
+["Linker" Settings: "Release"]
+Options=-c -m".\Release\skd_dsp_arm.map" -o".\Release\skd_dsp_arm.out" -w -x
+

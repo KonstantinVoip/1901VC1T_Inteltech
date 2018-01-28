@@ -1,0 +1,36 @@
+; Code Composer Project File, Version 2.0 (do not modify or remove this line)
+
+[Project Settings]
+ProjectDir="C:\1901VC1T_Inteltech\Projects\tpo_amoeba_c6416\tpo5_iface_tms6416\"
+ProjectType=Library
+CPUFamily=TMS320C64XX
+Tool="Archiver"
+Tool="Compiler"
+Tool="CustomBuilder"
+Tool="DspBiosBuilder"
+Config="Debug"
+Config="Release"
+
+[Source Files]
+Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\tpo_amoeba\source\console.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\tpo_amoeba\source\load_sios.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\tpo_amoeba\source\mem_test.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\tpo_amoeba\source\menu.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\tpo_amoeba\source\os_start_tpo_main.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\tpo_amoeba\source\sialp_i.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\tpo_amoeba\source\test_i.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\tpo_amoeba\source\tpo_hash.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\tpo_amoeba\source\tpo_iface.cpp"
+
+["Archiver" Settings: "Debug"]
+Options=-r -o"C:\1901VC1T_Inteltech\3rdPartyLIB\dsp_core\Ñ6000\tpo_amoeba\lib\tpo_15_iface.lib"
+
+["Archiver" Settings: "Release"]
+Options=-r -o".\Release\tpo_iface_tms6416.lib"
+
+["Compiler" Settings: "Debug"]
+Options=-g -pdsw225 -fr"$(Proj_dir)\Debug" -i"%AMOEBA_OS_PATH%\tms_c64xx" -i"%AMOEBA_RTS_PATH%\src" -i"%AMOEBA_TPO_PATH%\source\include" -i"%AMOEBA_DRV_PATH%\gpio\tms_c64xx" -i"%AMOEBA_DRV_PATH%\mcbsp\tms_c64xx" -i"%AMOEBA_DRV_PATH%\csl\tms_c64xx" -i"%AMOEBA_DRV_PATH%\dbgout\tms_c64xx" -i"%AMOEBA_DRV_PATH%\fpga\pv40" -i"%AMOEBA_DRV_PATH%\led\tms_c64xx" -i"%AMOEBA_DRV_PATH%\display\tms_c64xx\powertip" -i"%AMOEBA_DRV_PATH%\rtc\ds1302\tms_c64xx" -i"%AMOEBA_DRV_PATH%\rnd\tms_c64xx" -i"%AMOEBA_DRV_PATH%\kbd\tms_c64xx\4x6_keys" -i"%AMOEBA_DRV_PATH%\fwmem\tms_c64xx" -i"%AMOEBA_DRV_PATH%\rik\tms_c64xx" -i"%AMOEBA_DRV_PATH%\syslog" -i"%AMOEBA_DRV_PATH%\usb\tms_c64xx" -i"%AMOEBA_DRV_PATH%\usb\tms_c64xx\scsi" -i"%AMOEBA_DRV_PATH%\usb\tms_c64xx\usbd" -i"%AMOEBA_DRV_PATH%\usb\tms_c64xx\usbhcd" -i"%AMOEBA_DRV_PATH%\usb\tms_c64xx\usbhcd\isp176x" -i"%AMOEBA_DRV_PATH%\usb\tms_c64xx\usbhcd\necupd720150" -i"%AMOEBA_DRV_PATH%\usb\tms_c64xx\usbmsd" -i"%AMOEBA_DRV_PATH%\crypto" -i"%AMOEBA_DRV_PATH%\fs\fat" -i"%AMOEBA_DRV_PATH%\fs\vfat" -i"%AMOEBA_DRV_PATH%\mapi" -i"%AMOEBA_DRV_PATH%\dnsd\tms_c64xx" -d"_DEBUG" -d"IFACE" -d"TPO5" -d"CHIP_6416" -mv6400
+
+["Compiler" Settings: "Release"]
+Options=-pdsw225 -o3 -fr"$(Proj_dir)\Release" -mv6400
+

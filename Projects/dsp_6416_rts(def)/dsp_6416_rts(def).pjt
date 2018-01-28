@@ -1,0 +1,37 @@
+; Code Composer Project File, Version 2.0 (do not modify or remove this line)
+
+[Project Settings]
+ProjectDir="C:\1901VC1T_Inteltech\Projects\dsp_6416_rts(def)\"
+ProjectType=Executable
+CPUFamily=TMS320C64XX
+Tool="Compiler"
+Tool="CustomBuilder"
+Tool="DspBiosBuilder"
+Tool="Linker"
+Config="Debug"
+Config="Release"
+
+[Source Files]
+Source="..\..\3rdPartyLIB\dsp_core\Ñ6000\rts\lib\rts6400.lib"
+Source="intvecs.asm"
+Source="main.C"
+Source="tms_6416.cmd"
+
+["Compiler" Settings: "Debug"]
+Options=-g -pdsw225 -fr"$(Proj_dir)\Debug" -d"_DEBUG" -mv6400
+
+["Compiler" Settings: "Release"]
+Options=-pdsw225 -o3 -fr"$(Proj_dir)\Release" -mv6400
+
+["Linker" Settings: "Debug"]
+Options=-q -c -heap0x2000 -m".\Debug\dsp_6416_rts(def).map" -o".\Debug\dsp_6416_rts(def).out" -stack0x400 -w -x
+
+["Linker" Settings: "Release"]
+Options=-c -m".\Release\dsp_6416_rts(def).map" -o".\Release\dsp_6416_rts(def).out" -w -x
+
+["tms_6416.cmd" Settings: "Debug"]
+LinkOrder=1
+
+["tms_6416.cmd" Settings: "Release"]
+LinkOrder=1
+

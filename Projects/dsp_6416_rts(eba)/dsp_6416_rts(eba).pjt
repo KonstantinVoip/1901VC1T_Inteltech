@@ -1,0 +1,37 @@
+; Code Composer Project File, Version 2.0 (do not modify or remove this line)
+
+[Project Settings]
+ProjectDir="C:\1901VC1T_Inteltech\Projects\dsp_6416_rts(eba)\"
+ProjectType=Executable
+CPUFamily=TMS320C64XX
+Tool="Compiler"
+Tool="CustomBuilder"
+Tool="DspBiosBuilder"
+Tool="Linker"
+Config="Debug"
+Config="Release"
+
+[Source Files]
+Source="..\..\3rdPartyLIB\dsp_core\Ñ6000\rts_amoeba\lib\rts.tms320c6416.lib"
+Source="intvecs.asm"
+Source="main.C"
+Source="tms_6416.cmd"
+
+["Compiler" Settings: "Debug"]
+Options=-g -pdsw225 -fr"$(Proj_dir)\Debug" -d"_DEBUG" -mv6400
+
+["Compiler" Settings: "Release"]
+Options=-pdsw225 -o3 -fr"$(Proj_dir)\Release" -mv6400
+
+["Linker" Settings: "Debug"]
+Options=-c -m".\Debug\dsp_6416_rts(eba).map" -o".\Debug\dsp_6416_rts(eba).out" -w -x
+
+["Linker" Settings: "Release"]
+Options=-c -m".\Release\dsp_6416_rts(eba).map" -o".\Release\dsp_6416_rts(eba).out" -w -x
+
+["tms_6416.cmd" Settings: "Debug"]
+LinkOrder=1
+
+["tms_6416.cmd" Settings: "Release"]
+LinkOrder=1
+

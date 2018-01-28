@@ -1,0 +1,5 @@
+-z -q -c -heap0x2000 -m"./Debug/dsp_6416_rts(def).map" -o"./Debug/dsp_6416_rts(def).out" -stack0x400 -w -x -i"C:/CCStudio_v3.3/C6000/csl/lib" -i"C:/CCStudio_v3.3/C6000/xdais/lib" -i"C:/CCStudio_v3.3/bios_5_31_02/packages/ti/bios/lib" -i"C:/CCStudio_v3.3/bios_5_31_02/packages/ti/rtdx/lib/c6000" -i"C:/Program Files/Texas Instruments/C6000 Code Generation Tools 6.1.22/lib"
+"C:\1901VC1T_Inteltech\Projects\dsp_6416_rts(def)\tms_6416.cmd"
+"C:\1901VC1T_Inteltech\Projects\dsp_6416_rts(def)\Debug\intvecs.obj"
+"C:\1901VC1T_Inteltech\Projects\dsp_6416_rts(def)\Debug\main.obj"
+"C:\1901VC1T_Inteltech\3rdPartyLIB\dsp_core\Ñ6000\rts\lib\rts6400.lib"

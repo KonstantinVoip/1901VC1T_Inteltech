@@ -1,0 +1,34 @@
+; Code Composer Project File, Version 2.0 (do not modify or remove this line)
+
+[Project Settings]
+ProjectDir="D:\baigudin\git\embedded\legacy\os-amoeba\src\mapi\pjt\tms_c64xx\"
+ProjectType=Library
+CPUFamily=TMS320C64XX
+Tool="Archiver"
+Tool="Compiler"
+Tool="CustomBuilder"
+Tool="DspBiosBuilder"
+Config="Debug"
+Config="Release"
+
+[Source Files]
+Source="..\..\mapi.loadafterme.cpp"
+Source="..\..\mapi.sensortest.cpp"
+Source="..\..\mapi.sptest.cpp"
+Source="..\..\mapi.sptestack.cpp"
+Source="..\..\mapi.sptestok.cpp"
+Source="..\..\mapi.syntime.cpp"
+Source="..\..\mapi.terminate.cpp"
+
+["Archiver" Settings: "Debug"]
+Options=-r -o"%OS_PATH%\bin\mapi.tms_64xx.lib"
+
+["Archiver" Settings: "Release"]
+Options=-r -o".\Release\mapi.lib"
+
+["Compiler" Settings: "Debug"]
+Options=-g -o3 -eoo -fr"$(Proj_dir)\obj" -i"%OS_PATH%\src\mapi" -i"%OS_PATH%\src\core\tms_c64xx" -i"%OS_PATH%\src\rts\source" -mi0 -mv6400 --mem_model:data=far
+
+["Compiler" Settings: "Release"]
+Options=-o3 -fr"$(Proj_dir)\Release" -mv6400
+

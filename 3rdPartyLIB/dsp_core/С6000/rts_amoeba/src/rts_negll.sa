@@ -1,0 +1,30 @@
+;******************************************************************************
+;* negll  v5.1.0                                                              *
+;* Copyright (c) 2002-2005  Texas Instruments Incorporated                    *
+;******************************************************************************
+
+; The basic algorithm:
+; 
+; subtract value from 0
+; 
+
+            .def    __negll
+__negll:    .cproc input_hi:input_lo
+
+   	    .reg   src1_hi:src1_lo
+   	    .reg   tmp1, tmp2_hi:tmp2_lo, dst_hi:dst_lo
+
+    zero     src1_hi
+    zero     src1_lo
+
+    sub       src1_hi, input_hi, tmp1
+    subu      src1_lo, input_lo, tmp2_hi:tmp2_lo
+
+    mv        tmp2_lo, dst_lo
+    ext       tmp2_hi, 24, 24, dst_hi
+    add       dst_hi, tmp1, dst_hi
+
+   .return   dst_hi:dst_lo
+
+   .endproc
+

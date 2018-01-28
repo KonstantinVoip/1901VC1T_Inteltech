@@ -1,0 +1,8 @@
+-r
+"C:\1901VC1T_Inteltech\3rdPartyLIB\dsp_core\Ñ6000\tpo_amoeba\lib\tpo5_comm_tms6412.lib"
+"C:\1901VC1T_Inteltech\Projects\tpo_amoeba_c6412\tpo5_comm_tms6412\Debug\load_sios.obj"
+"C:\1901VC1T_Inteltech\Projects\tpo_amoeba_c6412\tpo5_comm_tms6412\Debug\os_start_tpo_main.obj"
+"C:\1901VC1T_Inteltech\Projects\tpo_amoeba_c6412\tpo5_comm_tms6412\Debug\sialp_c.obj"
+"C:\1901VC1T_Inteltech\Projects\tpo_amoeba_c6412\tpo5_comm_tms6412\Debug\test_c.obj"
+"C:\1901VC1T_Inteltech\Projects\tpo_amoeba_c6412\tpo5_comm_tms6412\Debug\tpo_comm.obj"
+"C:\1901VC1T_Inteltech\Projects\tpo_amoeba_c6412\tpo5_comm_tms6412\Debug\tpo_hash.obj"
