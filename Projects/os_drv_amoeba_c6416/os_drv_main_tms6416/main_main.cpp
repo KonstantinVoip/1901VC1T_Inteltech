@@ -392,7 +392,7 @@ int os_process(void* arg)
     
 
     //IPMP1 через ДОЗУ  с COMM0 Здесь Происходит Загрузка прошивки в ПЛИС sv5.bin
-    
+#if 0    
     fprintf(dbg_out,"main(ЦП)_sv39:07-IPMP1<-->COMM0+LOAD_FPGA_\n");
     error = drv_ipmp_dsp15_plug( "/dev/ipmp/ipmp1", 0 );
     if(error)
@@ -417,7 +417,7 @@ int os_process(void* arg)
 	 	asm( " nop" );
 	 }
 	}
-    
+#endif    
 
 
 
@@ -426,8 +426,8 @@ int os_process(void* arg)
     // обмена. Переменная id указывает на уникальный номер процессора в
     // системе (от 0 до 255)  //Ядро ОС отсюда функция вызываеться
     fprintf(dbg_out,"main(ЦП)_sv39:12-Init Interprocess Communication\n"); 
-    msg_start( 2, 24 );
-    //msg_start( 2, 8 );
+   // msg_start( 2, 24 );
+    msg_start( 2, 8 );
 
 	//
     fprintf(dbg_out,"main(ЦП)_sv39:++OS_System Startup Succesful++\n");

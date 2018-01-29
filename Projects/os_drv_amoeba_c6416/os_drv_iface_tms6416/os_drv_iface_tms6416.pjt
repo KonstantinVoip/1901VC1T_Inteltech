@@ -13,6 +13,7 @@ Config="Release"
 
 [Source Files]
 Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\drv_amoeba\crypto\crypto_hash.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\drv_amoeba\csl\tms_c64xx\sl_queue.cpp"
 Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\drv_amoeba\dbgout\tms_c64xx\drv_dbgout.cpp"
 Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\drv_amoeba\display\tms_c64xx\powertip\drv_lcd.cpp"
 Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\drv_amoeba\emif\emif.m448-15-iface.cpp"

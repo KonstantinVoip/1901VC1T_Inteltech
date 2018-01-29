@@ -232,10 +232,18 @@ int os_process(void* arg)
     if(error) REG_OSTS0 |= OSTS0_MCBSP_FAIL;
     
     
-    fprintf(dbg_out,"iface(ПП)_pv40:05 - Init_дисплея\n");
+    fprintf(dbg_out,"iface(ПП)_pv40:05 - Init_LCD\n");
     error = drv_lcd_plug(9);
-    if(error) REG_OSTS0 |= OSTS0_DISPLAY_FAIL;
-    
+    if(error)
+    {
+       REG_OSTS0 |= OSTS0_DISPLAY_FAIL;
+       fprintf(dbg_out,"?05-Init_LCD:error=%d_stop?\n\r",error);
+       while(1);
+	   {
+	 	asm( " nop" );
+	   }
+     
+    }
     
     fprintf(dbg_out,"iface(ПП)_pv40:06 - Init_RTC\n");
     error = drv_rtc_plug("/dev/rtc");
@@ -310,20 +318,20 @@ int os_process(void* arg)
 	dev_assignLetter(usbhc_plug); //назначение букв usb партициям
     drv_vfat_trigger_plug();
 
-#if 0
+//#if 0
     //Оставлю это не завтра  меж платный обмен IPMP!!! 17.01.2018
     //МежПроцессорный обмен по шине MCBSP c ЦП 
     fprintf(dbg_out,"iface(ПП)_pv40:13-Init_IPMP0_MCBSP<->MAIN\n");
     error = drv_ipmp_mcbsp_plug( "/dev/ipmp/ipmp0" );
     if(error) REG_OSTS0 |= OSTS0_MCBSP_FAIL;
    
-
+//#if 0
     // Функция инициализирует и запускает процесс межпроцессорно-процессного
     // обмена. Переменная id указывает на уникальный номер процессора в
     // системе (от 0 до 255)  //Ядро ОС отсюда функция вызываеться
     fprintf(dbg_out,"iface(ПП)_pv40:14-Init Interprocess Communication\n");
     msg_start( 1, 8 );  //1 порядковый номер ЦП в нашеё системе
-#endif
+//#endif
 
 	fprintf(dbg_out,"iface(ПП)_pv40:++System Startup Succesful++\n");
     fclose(dbg_out); //Зарывем Отладочный вывоод
@@ -331,7 +339,7 @@ int os_process(void* arg)
     //Для тестирования ТПО Запускаем os_main находящийся в ТПО или у нас локально.
     s_prc_attr pattr;
     memset( &pattr, 0, sizeof(pattr) );
-    pattr.stack = 4096;   
+    pattr.stack = 4096*4;   
     prc_create( &os_main, NULL, 0, &pattr );  //должны типа в os_main Где у нас есть ТПО или другаю Приложуха нужно убрать tpo_15_iface.lib  
     
     
