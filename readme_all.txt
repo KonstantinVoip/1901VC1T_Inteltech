@@ -5,6 +5,7 @@
 -Потом  Отладка MAIN_0 
 -Потом  Отладка MAIN_1
 
+Автоматически Сделаю потом когда отладки завершатьс\
 и тогда всё OK
 
 
@@ -14,3 +15,5 @@ AMOEBA_OS_PATH             C:\1901VC1T_Inteltech\3rdPartyLIB\dsp_core\С6000\os_a
 AMOEBA_RTS_PATH            C:\1901VC1T_Inteltech\3rdPartyLIB\dsp_core\С6000\rts_amoeba
 AMOEBA_TPO_PATH            C:\1901VC1T_Inteltech\3rdPartyLIB\dsp_core\С6000\tpo_amoeba
 
+Папка workspace 
+ 

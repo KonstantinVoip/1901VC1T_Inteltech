@@ -1,5 +1,0 @@
--z -c -m"./Debug/dsp_6416_rts(eba).map" -o"./Debug/dsp_6416_rts(eba).out" -w -x -i"C:/CCStudio_v3.3/C6000/csl/lib" -i"C:/CCStudio_v3.3/C6000/xdais/lib" -i"C:/CCStudio_v3.3/bios_5_31_02/packages/ti/bios/lib" -i"C:/CCStudio_v3.3/bios_5_31_02/packages/ti/rtdx/lib/c6000" -i"C:/Program Files/Texas Instruments/C6000 Code Generation Tools 6.1.22/lib"
-"C:\1901VC1T_Inteltech\Projects\dsp_6416_rts(eba)\tms_6416.cmd"
-"C:\1901VC1T_Inteltech\Projects\dsp_6416_rts(eba)\Debug\intvecs.obj"
-"C:\1901VC1T_Inteltech\Projects\dsp_6416_rts(eba)\Debug\main.obj"
-"C:\1901VC1T_Inteltech\3rdPartyLIB\dsp_core\Ñ6000\rts_amoeba\lib\rts.tms320c6416.lib"

@@ -1,9 +1,0 @@
--r
-"C:\1901VC1T_Inteltech\3rdPartyLIB\dsp_core\Ñ6000\drv_amoeba\mapi\lib\mapi_tms64xx.lib"
-"C:\1901VC1T_Inteltech\Projects\mapi_tms320c64xx\mapi\Debug\mapi.loadafterme.obj"
-"C:\1901VC1T_Inteltech\Projects\mapi_tms320c64xx\mapi\Debug\mapi.sensortest.obj"
-"C:\1901VC1T_Inteltech\Projects\mapi_tms320c64xx\mapi\Debug\mapi.sptest.obj"
-"C:\1901VC1T_Inteltech\Projects\mapi_tms320c64xx\mapi\Debug\mapi.sptestack.obj"
-"C:\1901VC1T_Inteltech\Projects\mapi_tms320c64xx\mapi\Debug\mapi.sptestok.obj"
-"C:\1901VC1T_Inteltech\Projects\mapi_tms320c64xx\mapi\Debug\mapi.syntime.obj"
-"C:\1901VC1T_Inteltech\Projects\mapi_tms320c64xx\mapi\Debug\mapi.terminate.obj"
