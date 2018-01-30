@@ -1264,10 +1264,17 @@ int32 os_message_start( uint32 id, int32 limit )
   s_prc_attr pattr;
   uint32 t;
 
-  if( msg_processor_id != 0xffffffff ) return OSE_MSG_ALLREADY_STARTED;
+  if( msg_processor_id != 0xffffffff ) 
+  {
+  	return OSE_MSG_ALLREADY_STARTED;
+  }
   t = ( id << 16 ) & MFD_HID;
-  if( ( t != ( id << 16 ) ) || ( id == 0 ) ) return OSE_BAD_PARAM;
-
+  
+  if( ( t != ( id << 16 ) ) || ( id == 0 ) ) 
+  {
+  	return OSE_BAD_PARAM;
+  }
+  
   if( limit < 1 ) limit = 1;
   sem_reset( msg_limit_sem, limit );
   

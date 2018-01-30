@@ -233,7 +233,16 @@ int os_process(void* arg)
 
   // -- Initialize extensions ------------------------------------------------
     uint32 dscr = drv_mkd( "/" );  
-    if( dscr == RES_VOID ) goto fail;
+    if( dscr == RES_VOID )
+    {
+        fprintf(dbg_out,"?dscr_error_stop =%d\n?",dscr);
+        while(1);
+	 	{
+	 		 asm( " nop" );
+	 	}
+
+	}
+    
     drv_create( dscr, "dev", INOT_FOLDER );
     drv_create( dscr, "mnt", INOT_FOLDER );
     drv_select( dscr, "dev" );
@@ -304,11 +313,11 @@ int os_process(void* arg)
     
 
 	//Для Боевого(Release) Проекта только Старт SYSLOG!!! 
-    /*
+    
     fprintf(dbg_out,"main(ЦП)_sv39:05-Init_журнала syslog\n");
     syslog_init();
     syslog_level(LOG_DEBUG);
-    */
+    
    
     fprintf(dbg_out,"main(ЦП)_sv39:06-Init_ЭОЗУ(NVRAM)\n");
     if( ( error = drv_nvram_plug("/dev/nvram") ) != OSE_OK )
@@ -384,15 +393,15 @@ int os_process(void* arg)
     error=syn_init( 20, 60*60000, NULL );  
      
     
-    
+//#if 0    
     //IPMP0 через MCBSP0 ->iface  , MCBSP1 <--iface
     fprintf(dbg_out,"main(ЦП)_sv39:11-Init_IPMP0_MCBSP <-> IFACE\n");
     error = drv_ipmp_mcbsp_plug( "/dev/ipmp/ipmp0" );
     if(error) REG_OSTS1 |= OSTS1_EXCH_IFACE_FAIL;
-    
+//#endif    
 
     //IPMP1 через ДОЗУ  с COMM0 Здесь Происходит Загрузка прошивки в ПЛИС sv5.bin
-#if 0    
+//#if 0    
     fprintf(dbg_out,"main(ЦП)_sv39:07-IPMP1<-->COMM0+LOAD_FPGA_\n");
     error = drv_ipmp_dsp15_plug( "/dev/ipmp/ipmp1", 0 );
     if(error)
@@ -417,7 +426,7 @@ int os_process(void* arg)
 	 	asm( " nop" );
 	 }
 	}
-#endif    
+//#endif    
 
 
 
@@ -441,22 +450,11 @@ int os_process(void* arg)
     prc_create( &os_main, NULL, 0, &pattr );  //должны типа в os_main Где у нас есть ТПО или другаю Приложуха нужно убрать tpo_15_iface.lib  
     
     
-   // prc_system();    //Функция переводит процесс в состояние спящего системного процесса.
+    prc_system();    //Функция переводит процесс в состояние спящего системного процесса.
 
-
-#if 0   
-    //IPMP1 через ДОЗУ  с COMM0
-    fprintf(dbg_out,"07 - Загрузка ПЛИС ДОЗУ и инициализация межпроцессорного обмена сообщениями(IPMP DOZU) с COMM0\n");
-    error = drv_ipmp_dsp15_plug( "/dev/ipmp/ipmp1", 0 );
-    if(error) REG_OSTS1 |= OSTS1_EXCH_COMM0_FAIL;
-    
-    //IPMP2 через ДОЗУ  с COMM1
-    fprintf(dbg_out,"08 - Инициализация межпроцессорного обмена сообщениями(IPMP DOZU) с COMM1\n");
-    error = drv_ipmp_dsp15_plug( "/dev/ipmp/ipmp2", 1 );
-    if(error) REG_OSTS1 |= OSTS1_EXCH_COMM1_FAIL;
 
    // socket_init(10);    //Верхний Уровень Протокола TCP/IP который будет ложиться на VNET виртуальные Адаптеры
-#endif      
+     
       
 
 
@@ -477,9 +475,6 @@ int os_process(void* arg)
     prc_system();
 #endif
 
-fail:
 
-    while( true )
-        asm( " nop" );
 }
 

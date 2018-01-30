@@ -2,6 +2,9 @@
 #include "tpo.h"
 
 
+
+
+/*
 extern const uint32 hash_bp[] =
 {
   0xE8C30F95, 0x2F656500, 0x11D04E8C, 0xB642F4BF,
@@ -9,6 +12,17 @@ extern const uint32 hash_bp[] =
   0x9E78C76D, 0xDD36A2E4, 0x3C271073, 0x59BCB1AB,
   0xC78E79C7, 0x63045626, 0x7B1B9A31, 0x45E9DD52
 };
+*/
+
+static const uint32 hash_bp[16]=
+{
+   0xE8C30F95, 0x2F656500, 0x11D04E8C, 0xB642F4BF,
+   0x845A38F9, 0x00AFE34E, 0xFA9D8C1A, 0xA2F12BD8,
+   0x9E78C76D, 0xDD36A2E4, 0x3C271073, 0x59BCB1AB,
+   0xC78E79C7, 0x63045626, 0x7B1B9A31, 0x45E9DD52
+
+};
+
 
 
 int tpo_main(void* arg);
@@ -35,7 +49,7 @@ int os_main(void* arg)
    }
    */
  
- 
+
      
      //core_common\h\os_syscall.h  #define SYSCALL_CRYPTO_GOST_HASH_INIT                   134   
      cry_hash_init(hash_bp);   //неявный вызов через таблицу SYSCALL ОС

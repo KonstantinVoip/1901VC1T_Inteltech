@@ -721,9 +721,11 @@ uint8*          dspl_attr;
 
 void dspl_refresh(int64 seek, int32 length);
 void dspl_set_cursor(int64 seek);
-/**************************************************************************************************\
-*   Инициализация
-\***sss********************************************************************************************/
+
+/*****************************************************************************
+Syntax:int32 con_init()      	    
+Remarks:Инициализация Консоли			    
+*******************************************************************************/
 int32 con_init()
 {
     int32   error, stage;
@@ -753,7 +755,8 @@ int32 con_init()
     chars.code = 0x80;
     chars.buffer = (uint8*)sios_char;
     chars.size = sizeof(sios_char);
-    error  = drv_ioctl(dspl_file, DSPL_LOAD_KEYGEN_BUFFER , &chars);
+    //syscall ->  os_driver_ioctl
+    //error  = drv_ioctl(dspl_file, DSPL_LOAD_KEYGEN_BUFFER , &chars);
     
     mode   = MODE_DISPLAY_TEXT;
     error |= drv_ioctl(dspl_file, DSPL_SET_MODE, &mode);

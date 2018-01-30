@@ -20,7 +20,7 @@
 
 
 #include <os_syscall.h>
-#include <drv_dbgout.h>
+#include <drv_dbgout.h>  //Отладочный вывод
 #include <rts.h>
 
 #include "tpo.h"
@@ -53,6 +53,12 @@
 #include "tests_name_7.h"
 #endif
 
+         FILE* dout; 
+  
+         
+
+
+
 
         #define	D	1		//работаем с СВ платой типа здесь будет Обмен ставим еденичку.
 //      #define	D	0		//работаем только с Перефирйной платой ПВ-40 (ПП)
@@ -77,64 +83,64 @@
 
 
 
-hash_window hwindow[] =
-{
-  { 0x00000000, 0x001FFFFF },
-  { 0x00220000, 0x0036FFFF },
-  { 0x003F0000, 0x003FFFBF },
-  { 0x00000000, 0x00000000 }
-};
+	hash_window hwindow[] =
+	{
+	  { 0x00000000, 0x001FFFFF },
+	  { 0x00220000, 0x0036FFFF },
+	  { 0x003F0000, 0x003FFFBF },
+	  { 0x00000000, 0x00000000 }
+	};
 
-const char* _str__sys_header = "     Т П О      ";
-const char* _str__usb_device_detect = "Обнаружено USB устройство";
-const char* _str__usb_device_ready = "Устройство готово к работе";
-const char* _str__usb_device_remove = "USB устройство отключено";
-
-
-
-struct s_load_po_prc_arg
-{
-  uint32*               exit;  
-};
-struct s_print_time_prc_arg
-{
-  uint32*               exit;  
-  uint32                sem;
-};
-struct s_usb_attach_func_prc_user_arg
-{
-  uint32                sem;
-};
-
-void Exit_tpo(cs_menu* m, void* arg);
-#ifdef TPO5
-void F_load_lif(cs_menu* m, void* arg);
-#endif
-
-int print_time_prc(s_print_time_prc_arg* arg);
-int usb_device_attach(s_usb_attach_func_arg* arg);
-void inmenu_set_time(cs_menu* node, void* arg);
-extern void  inmenu_usb_fat_test(cs_menu* node, void* arg);
-void put_end_line(const char* str, int32 key);
-void put_str_center(int32 y, const char* str);
-
-void  tpo_run_inside_menu(cs_menu* node, bool present, void*);
-
-void F_ClearPageTablo(uint16 CountStr);
-void run_menu();
-void run_command_from_usb();
+	const char* _str__sys_header = "     Т П О      ";
+	const char* _str__usb_device_detect = "Обнаружено USB устройство";
+	const char* _str__usb_device_ready = "Устройство готово к работе";
+	const char* _str__usb_device_remove = "USB устройство отключено";
 
 
-extern int32 tpo_msg_discover();
-extern void Send_cmd_main(uint32 cmd);
-extern void Send_cmd_comm(uint32 n_comm, uint32 cmd);
-extern void send_main_start_sialp(kdg_sialp* par);
-extern void send_comm_start_sialp(kdg_sialp* par);
-extern uint32 Receve_Res_Cikl(uint32* data, uint32 Otsvetka);
-extern void load_lif(void* mem_lif);
 
-uint32 msg_pid_main;
-comm_status pid_comm[NUMBER_COMM_DSP];
+	struct s_load_po_prc_arg
+	{
+	  uint32*               exit;  
+	};
+	struct s_print_time_prc_arg
+	{
+	  uint32*               exit;  
+	  uint32                sem;
+	};
+	struct s_usb_attach_func_prc_user_arg
+	{
+	  uint32                sem;
+	};
+
+	void Exit_tpo(cs_menu* m, void* arg);
+	#ifdef TPO5
+	void F_load_lif(cs_menu* m, void* arg);
+	#endif
+
+	int print_time_prc(s_print_time_prc_arg* arg);
+	int usb_device_attach(s_usb_attach_func_arg* arg);
+	void inmenu_set_time(cs_menu* node, void* arg);
+	extern void  inmenu_usb_fat_test(cs_menu* node, void* arg);
+	void put_end_line(const char* str, int32 key);
+	void put_str_center(int32 y, const char* str);
+
+	void  tpo_run_inside_menu(cs_menu* node, bool present, void*);
+
+	void F_ClearPageTablo(uint16 CountStr);
+	void run_menu();
+	void run_command_from_usb();
+
+
+	extern int32 tpo_msg_discover();
+	extern void Send_cmd_main(uint32 cmd);
+	extern void Send_cmd_comm(uint32 n_comm, uint32 cmd);
+	extern void send_main_start_sialp(kdg_sialp* par);
+	extern void send_comm_start_sialp(kdg_sialp* par);
+	extern uint32 Receve_Res_Cikl(uint32* data, uint32 Otsvetka);
+	extern void load_lif(void* mem_lif);
+
+	uint32 msg_pid_main;
+	comm_status pid_comm[NUMBER_COMM_DSP];
 
 //uint32 ResAllTest_PP = 0;
 //uint32 ResAllTest6416_0 = 0;
@@ -152,7 +158,18 @@ uint32 T_ErrTest[maxN_AllTest + 1];
 char MemTablo[MaxTable][MaxStr][MaxLen+1];
 
 
-//-------------------------------------------------------------------------------------------------
+static void led_blik(int n);
+static void led_blik_err(int error);
+static void Check_Time();
+static bool wait_usb_flash();
+
+
+
+
+/*****************************************************************************
+Syntax:  header()    	    
+Remarks: Заголовок Выводимый на LCD Экранчик			    
+*******************************************************************************/
 #define header()  {con_gotoxy(SYS_CON,0,0);\
                    con_putch(SYS_CON, CHAR_ICO0);\
                    con_putch(SYS_CON, CHAR_ICO1);\
@@ -179,10 +196,6 @@ char MemTablo[MaxTable][MaxStr][MaxLen+1];
                    con_putch(SYS_CON, CHAR_HEAD);}\
 //-------------------------------------------------------------------------------------------------
 
-static void led_blik(int n);
-static void led_blik_err(int error);
-static void Check_Time();
-static bool wait_usb_flash();
 
 
 
@@ -200,8 +213,56 @@ static bool wait_usb_flash();
 int tpo_iface(void* arg)
 {
 	int32  error=0;
+    dout = fopen( "/dev/dbgout", "wb" );  
+   
+
+    fprintf(dout,"iface(ПП)_pv40:+Start_TPO_IFACE+\n");
 
 
+
+
+    error = con_init();
+
+	if(error!=0)
+	{
+			led_blik(1);
+            fprintf(dout,"?iface(ПП)_pv40:Con_init_Fail?\n");
+            while(1)
+			{
+				asm( " nop" );
+			}
+    }
+  
+  
+    fprintf(dout,"iface(ПП)_pv40:Con_init\n");
+
+    //Установка обмена с СВ-039: 
+	if(D)
+	{   //->>>>  test_i.cpp   [function tpo_msg_discover.]  
+			error = tpo_msg_discover();
+    }
+    fprintf(dout,"iface(ПП)_pv40:tpo_msg_discover\n");
+	if(error == TPO_OK)
+	{
+            	
+            	
+            	header();	
+				Check_Time();
+				run_menu();
+   
+	}
+    else
+	{
+            fprintf(dout,"?iface(ПП)_pv40:?tpo_msg_discover_Fail?\n");
+            while(1)
+			{
+				asm( " nop" );
+			}
+
+
+	}
+
+	
 	//  int32  key;
 	//!!debug
 	/*
@@ -221,9 +282,9 @@ int tpo_iface(void* arg)
      */
 
 
-//#if 0 Попробуем запуститься по боевому как мы умеем 
+#if 0   //Попробуем запуститься по боевому как мы умеем 
 
-        //Видимо Инициализация Консоли 
+        //Видимо Инициализация Консоли ->>console.cpp
 	    error = con_init();
 
 		if(error!=0)
@@ -232,17 +293,18 @@ int tpo_iface(void* arg)
         }
 	   //Установка обмена: 
 		if(D)
-		{
+		{   //->>>>  test_i.cpp   [function tpo_msg_discover.]  
 			error = tpo_msg_discover();
         } 
 
 		if(error == TPO_OK)
 		{
-	      Start_TPO:
-
+	    
 			#ifdef TPO711MD
 				if(wait_usb_flash())
+				{
 					run_command_from_usb();
+			    }
 			#else
 				header();	
 				Check_Time();
@@ -250,15 +312,25 @@ int tpo_iface(void* arg)
 			#endif
 		}
 		else
+		{
 		led_blik(1);
+        }
 
-	goto Start_TPO;
 
+
+	 //goto Start_TPO;
 	//msg_close();
 	//gotoxy(0,3);
 	//cprintf("Завершение ТПО\n");
 
-  //#endif  //Конец Запуска
+#endif  //Конец Запуска
+
+       fclose(dout); //Зарывем Отладочный вывоод 
+       
+
+
+
+
 }
 
 
@@ -307,9 +379,11 @@ bool wait_usb_flash()
   return true;
 }
 
-/**************************************************************************************************\
-*       
-\***sss********************************************************************************************/
+
+/*****************************************************************************
+Syntax: void Check_Time()      	    
+Remarks:Проверка времени			    
+*******************************************************************************/
 void Check_Time()
 {
 	uint32 d;
@@ -662,9 +736,10 @@ void run_command_from_usb()
 	}
 }
 
-/**************************************************************************************************\
-*       
-\***sss********************************************************************************************/
+/*****************************************************************************
+Syntax:   void run_menu()   	    
+Remarks:  Запуск Меню		 	    
+*******************************************************************************/
 void run_menu()
 {
 

@@ -167,7 +167,16 @@ int os_process(void* arg)
   uint32 dint;
  
   uint32 d = drv_mkd( "/" );
-  if( d == RES_VOID ) goto fail;
+  if( d == RES_VOID )
+  {
+        fprintf(dbg_out,"comm(СП)_sv39:?dscr_error_stop =%d\n?",d);
+        while(1);
+	 	{
+	 		 asm( " nop" );
+	 	}
+  }
+
+
   drv_create( d, "dev", INOT_FOLDER );
   drv_select( d, "dev" );
   drv_create( d, "net", INOT_FOLDER );
@@ -261,18 +270,6 @@ int os_process(void* arg)
     net=drv_mkd( "/dev/net/eth0" );
  
 
-
-    
-
-
-
-
-
-
-
-
-
-
     fprintf(dbg_out,"comm(СП)_sv39:++OS_System Startup Succesful++\n");
     fclose(dbg_out); //Зарывем Отладочный вывоод
 
@@ -282,12 +279,9 @@ int os_process(void* arg)
     memset( &pattr, 0, sizeof(pattr) );
     pattr.stack = 4096;  //16384   // 16 Kb //4Кб                
     prc_create( &os_main, NULL, 0, &pattr );
+    prc_system();    //Функция переводит процесс в состояние спящего системного процесса.
 
 
-fail:
-
-  while( true )
-      asm( " nop" );
 }
 
 

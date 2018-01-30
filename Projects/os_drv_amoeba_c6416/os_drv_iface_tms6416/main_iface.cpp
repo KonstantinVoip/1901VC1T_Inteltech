@@ -193,7 +193,18 @@ int os_process(void* arg)
     FILE* dbg_out;
     uint32 dscr,rtc_d,dtm;
     dscr = drv_mkd( "/" );
-    if( dscr == RES_VOID ) goto fail;
+    
+    if( dscr == RES_VOID )
+    {
+        fprintf(dbg_out,"iface(ПП)_pv40:?dscr_error_stop =%d\n?",dscr);
+        while(1);
+	 	{
+	 		 asm( " nop" );
+	 	}
+    
+    } 
+
+
     drv_create( dscr, "dev", INOT_FOLDER );
     drv_create( dscr, "mnt", INOT_FOLDER );
     drv_select( dscr, "dev" );
@@ -323,27 +334,28 @@ int os_process(void* arg)
     //МежПроцессорный обмен по шине MCBSP c ЦП 
     fprintf(dbg_out,"iface(ПП)_pv40:13-Init_IPMP0_MCBSP<->MAIN\n");
     error = drv_ipmp_mcbsp_plug( "/dev/ipmp/ipmp0" );
-    if(error) REG_OSTS0 |= OSTS0_MCBSP_FAIL;
-   
+    if(error) 
+    {
+    	REG_OSTS0 |= OSTS0_MCBSP_FAIL;
+    }
 //#if 0
     // Функция инициализирует и запускает процесс межпроцессорно-процессного
     // обмена. Переменная id указывает на уникальный номер процессора в
     // системе (от 0 до 255)  //Ядро ОС отсюда функция вызываеться
     fprintf(dbg_out,"iface(ПП)_pv40:14-Init Interprocess Communication\n");
+    //msg_start ->>os_message_start
     msg_start( 1, 8 );  //1 порядковый номер ЦП в нашеё системе
 //#endif
 
-	fprintf(dbg_out,"iface(ПП)_pv40:++System Startup Succesful++\n");
-    fclose(dbg_out); //Зарывем Отладочный вывоод
+	 fprintf(dbg_out,"iface(ПП)_pv40:++OS_Startup Succesful++\n");
+     fclose(dbg_out); //Зарывем Отладочный вывоод
     
     //Для тестирования ТПО Запускаем os_main находящийся в ТПО или у нас локально.
     s_prc_attr pattr;
     memset( &pattr, 0, sizeof(pattr) );
     pattr.stack = 4096*4;   
     prc_create( &os_main, NULL, 0, &pattr );  //должны типа в os_main Где у нас есть ТПО или другаю Приложуха нужно убрать tpo_15_iface.lib  
-    
-    
-   // prc_system();    //Функция переводит процесс в состояние спящего системного процесса.
+    prc_system();    //Функция переводит процесс в состояние спящего системного процесса.
 
 
 
@@ -361,10 +373,7 @@ int os_process(void* arg)
     prc_system();
     #endif
 
-	fail:
 
-	    while( true )
-	        asm( " nop" );
 
   
 

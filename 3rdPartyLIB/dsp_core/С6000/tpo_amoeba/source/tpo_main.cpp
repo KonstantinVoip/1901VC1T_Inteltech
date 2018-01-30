@@ -540,8 +540,9 @@ extern int32 tst_nvram_addr();
 
 
 //    syslog( 4, "%s:drv_ioctl:%d: Null driver context (cmd = %08x dev = '%s')", os_module, __LINE__, cmd, d->path );
+
 /*****************************************************************************
-Syntax:      	    
+Syntax:  int tpo_main(void* arg)    	    
 Remarks:			    
 *******************************************************************************/
 int tpo_main(void* arg)
