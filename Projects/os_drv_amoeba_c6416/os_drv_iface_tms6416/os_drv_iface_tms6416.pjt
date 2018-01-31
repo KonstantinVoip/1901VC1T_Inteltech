@@ -68,14 +68,14 @@ Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\os_amoeba\src\tms_c64xx\os_semaphore
 Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\os_amoeba\src\tms_c64xx\os_system.cpp"
 Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\os_amoeba\src\tms_c64xx\os_time.cpp"
 Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\rts_amoeba\lib\rts.tms320c6416.lib"
-Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\tpo_amoeba\lib\tpo_15_iface.lib"
+Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\tpo_amoeba\lib\tpo5_iface_tms6416.lib"
 Source="main_iface.cpp"
 Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\drv_amoeba\fpga\pv40\mem_fpga_pv040.cmd"
 Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\drv_amoeba\usb\tms_c64xx\usbhcd\isp176x\mem_isp176x.pv040.cmd"
 Source="memory.cmd"
 
 ["Compiler" Settings: "Debug"]
-Options=-g -pdsw225 -fr"$(Proj_dir)\Debug" -i"%AMOEBA_DRV_PATH%\emif" -i"%AMOEBA_DRV_PATH%\gpio\tms_c64xx" -i"%AMOEBA_DRV_PATH%\mcbsp\tms_c64xx" -i"%AMOEBA_DRV_PATH%\csl\tms_c64xx" -i"%AMOEBA_DRV_PATH%\dbgout\tms_c64xx" -i"%AMOEBA_DRV_PATH%\led\tms_c64xx" -i"%AMOEBA_DRV_PATH%\fpga\pv40" -i"%AMOEBA_DRV_PATH%\display\tms_c64xx\powertip" -i"%AMOEBA_DRV_PATH%\ipmp\tms_c64xx" -i"%AMOEBA_DRV_PATH%\rtc\ds1302\tms_c64xx" -i"%AMOEBA_DRV_PATH%\rnd\tms_c64xx" -i"%AMOEBA_DRV_PATH%\kbd\tms_c64xx\4x6_keys" -i"%AMOEBA_DRV_PATH%\fwmem\tms_c64xx" -i"%AMOEBA_DRV_PATH%\rik\tms_c64xx" -i"%AMOEBA_DRV_PATH%\usb\tms_c64xx" -i"%AMOEBA_DRV_PATH%\usb\tms_c64xx\scsi" -i"%AMOEBA_DRV_PATH%\usb\tms_c64xx\usbd" -i"%AMOEBA_DRV_PATH%\usb\tms_c64xx\usbhcd" -i"%AMOEBA_DRV_PATH%\usb\tms_c64xx\usbhcd\isp176x" -i"%AMOEBA_DRV_PATH%\usb\tms_c64xx\usbhcd\necupd720150" -i"%AMOEBA_DRV_PATH%\usb\tms_c64xx\usbmsd" -i"%AMOEBA_DRV_PATH%\crypto" -i"%AMOEBA_DRV_PATH%\fs\fat" -i"%AMOEBA_DRV_PATH%\fs\vfat" -i"%AMOEBA_OS_PATH%\tms_c64xx" -i"%AMOEBA_RTS_PATH%\src" -d"NO_OS_MEMTST" -d"_DEBUG" -d"IFACE_ONLY" -d"USBHC_ADDR=0x6c000000" -d"CHIP_6416" -d"USB_DEBUG" -d"ISP176_BUS_32=1" -mv6400 --mem_model:data=far
+Options=-g -pdsw225 -fr"$(Proj_dir)\Debug" -i"%AMOEBA_DRV_PATH%\emif" -i"%AMOEBA_DRV_PATH%\gpio\tms_c64xx" -i"%AMOEBA_DRV_PATH%\mcbsp\tms_c64xx" -i"%AMOEBA_DRV_PATH%\csl\tms_c64xx" -i"%AMOEBA_DRV_PATH%\dbgout\tms_c64xx" -i"%AMOEBA_DRV_PATH%\led\tms_c64xx" -i"%AMOEBA_DRV_PATH%\fpga\pv40" -i"%AMOEBA_DRV_PATH%\display\tms_c64xx\powertip" -i"%AMOEBA_DRV_PATH%\ipmp\tms_c64xx" -i"%AMOEBA_DRV_PATH%\rtc\ds1302\tms_c64xx" -i"%AMOEBA_DRV_PATH%\rnd\tms_c64xx" -i"%AMOEBA_DRV_PATH%\kbd\tms_c64xx\4x6_keys" -i"%AMOEBA_DRV_PATH%\fwmem\tms_c64xx" -i"%AMOEBA_DRV_PATH%\rik\tms_c64xx" -i"%AMOEBA_DRV_PATH%\usb\tms_c64xx" -i"%AMOEBA_DRV_PATH%\usb\tms_c64xx\scsi" -i"%AMOEBA_DRV_PATH%\usb\tms_c64xx\usbd" -i"%AMOEBA_DRV_PATH%\usb\tms_c64xx\usbhcd" -i"%AMOEBA_DRV_PATH%\usb\tms_c64xx\usbhcd\isp176x" -i"%AMOEBA_DRV_PATH%\usb\tms_c64xx\usbhcd\necupd720150" -i"%AMOEBA_DRV_PATH%\usb\tms_c64xx\usbmsd" -i"%AMOEBA_DRV_PATH%\crypto" -i"%AMOEBA_DRV_PATH%\fs\fat" -i"%AMOEBA_DRV_PATH%\fs\vfat" -i"%AMOEBA_OS_PATH%\tms_c64xx" -i"%AMOEBA_RTS_PATH%\src" -d"NO_OS_MEMTST" -d"_DEBUG" -d"USBHC_ADDR=0x6c000000" -d"CHIP_6416" -d"ISP176_BUS_32=1" -mv6400 --mem_model:data=far
 
 ["Compiler" Settings: "Release"]
 Options=-pdsw225 -o3 -fr"$(Proj_dir)\Release" -mv6400

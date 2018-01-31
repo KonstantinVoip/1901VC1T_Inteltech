@@ -56,6 +56,7 @@ cs_menu::cs_menu()
   type = 0;
   check = false;
 }
+
 cs_menu::~cs_menu()
 {
   cs_menu *node, *temp_node;

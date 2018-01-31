@@ -3,7 +3,7 @@
 *        ..                                       All rights reserved.                                               *
 ***********************************************************************************************************************
 * Module      : test_i.cpp
-* Description : Тестовые функции ИП (Интерфейсного Процессора)
+* Description : Тестовые функции ИП (Интерфейсного Процессора) для TPO5,TPO6,TPO7
 * Author      : 
 ******************************************************************************
 ******************************************************************************
@@ -38,19 +38,19 @@
 #include "drv_rtc.h"
 #include "drv_rik.h"
 #include "drv_lcd.h"
-//#include "drv_usb.h"
+	//#include "drv_usb.h"
 
 
 #include "tpo_iface.h"
-/*
-#ifdef TPO5
-#include "tpo_iface_5.h"
-#endif
+	/*
+	#ifdef TPO5
+	#include "tpo_iface_5.h"
+	#endif
 
-#ifdef TPO7
-#include "tpo_iface_7.h"
-#endif
-*/
+	#ifdef TPO7
+	#include "tpo_iface_7.h"
+	#endif
+	*/
 #define REG_RIK_STATUS_tpo						(*(uint16 *)0x6000004C)
 #define REG_RND_NUMBER_tpo						(*(uint16 *)0x6000002A)
 #define REG_DEVICE_STATUS_tpo					(*(uint16 *)0x60000020)
@@ -62,6 +62,20 @@
 #define Y_LAST_LINE         15
 
 
+
+//Вынес Пашкины define из глубин  сознания
+
+#define RANDOM_INTERVALS (16)
+#define RANDOM_VALUES (512)
+#define NL ( (RANDOM_VALUES*2)/RANDOM_INTERVALS)
+
+
+
+extern void UserRikEvent(uint16 rik_status);
+
+
+
+/////
 
 
 char* TPO_ERROR[]=
@@ -257,7 +271,10 @@ int32		error;
 
 
 
-
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 int32 flash_chip_clear()
 {
   volatile uint8& REG_555 = (*(uint8*)(0x64000000 + 0x00000555 ));
@@ -294,7 +311,10 @@ int32 flash_chip_clear()
 }
 
 
-
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 uint32 Load_po_pp()
 {
 
@@ -362,7 +382,10 @@ return 0;
 }
 
 
-
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 
 uint32 Load_po_main()
 {
@@ -410,7 +433,10 @@ fclose(file);
 return 0;
 
 }
-
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 uint32 Load_po_comm()
 {
 
@@ -461,7 +487,10 @@ return 0;
 
 }
 
-
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 
 uint32 Load_plis_sialp()
 {
@@ -512,7 +541,10 @@ return 0;
 
 
 
-//-------------------------------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 uint32 Receve_Res_Cikl(uint32* data, uint32 Otsvetka)
 {
 kdg_rez_test rezult;
@@ -572,7 +604,10 @@ return CIKL_NOT_READY;
 
 
 
-//-------------------------------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 uint16 F_reserved()
 {
 return 0;
@@ -580,7 +615,10 @@ return 0;
 
 
 
-//-------------------------------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 uint16 F_TEST_CMP_PP()
 {
 	F_TestProgress(1);
@@ -589,7 +627,10 @@ uint16 F_TEST_CMP_PP()
 
 
 
-//-------------------------------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 uint16 F_test_ram()
 {
     uint32 res = 0;
@@ -608,7 +649,10 @@ uint16 F_test_ram()
 }
 
 
-//-------------------------------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 uint16 F_hash_comp()
 {
     uint32 res = 0;
@@ -622,7 +666,10 @@ uint16 F_hash_comp()
 }
 
 
-//-------------------------------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 uint16 F_test_rtc()
 {
     int res = 0;
@@ -634,7 +681,10 @@ uint16 F_test_rtc()
 	return res == 0 ? 0 : 1;
 }
 
-//-------------------------------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 uint16 F_test_power_sensor()
 {
     int res = 0;
@@ -646,7 +696,10 @@ uint16 F_test_power_sensor()
 	return res == 0 ? 0 : 1;
 }
 
-//-------------------------------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 uint16 F_test_access_sensor_verh()
 {
     int res = 0;
@@ -660,7 +713,10 @@ uint16 F_test_access_sensor_verh()
 	return res == 0 ? 0 : 1;
 }
 
-//-------------------------------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 uint16 F_test_access_sensor_niz()
 {
     int res = 0;
@@ -674,7 +730,10 @@ uint16 F_test_access_sensor_niz()
 	return res == 0 ? 0 : 1;
 }
 
-//-------------------------------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 uint16 F_test_access_sensor_rik()
 {
     int res = 0;
@@ -686,7 +745,10 @@ uint16 F_test_access_sensor_rik()
 	return res == 0 ? 0 : 1;
 }
 
-//-------------------------------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 uint16 F_test_usbc()
 {
     int res = 0;
@@ -698,7 +760,10 @@ uint16 F_test_usbc()
 	return res == 0 ? 0 : 1;
 }
 
-//-------------------------------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 uint16 F_test_usb_flash1()
 {
     int res = 0;
@@ -710,7 +775,10 @@ uint16 F_test_usb_flash1()
 	return res == 0x300 ? 0 : 1;
 }
 
-//-------------------------------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 uint16 F_test_usb_flash2()
 {
     int res = 0;
@@ -724,7 +792,10 @@ uint16 F_test_usb_flash2()
 
 #define REG_SCRATCH_TPO					(*(uint16 *)0x60000030)
 
-//-------------------------------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 uint16 F_test_PU()
 {
 
@@ -739,7 +810,10 @@ uint16 F_test_PU()
 }
 
 
-//-------------------------------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 uint16 F_test_rik1()
 {
     int res = 0;
@@ -753,7 +827,10 @@ uint16 F_test_rik1()
 	return res == 0 ? 0 : 1;
 }
 
-//-------------------------------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 uint16 F_test_rik2()
 {
     int res = 0;
@@ -767,7 +844,10 @@ uint16 F_test_rik2()
 	return res == 0 ? 0 : 1;
 }
 
-//-------------------------------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 uint16 F_test_random1()
 {
     int res = 0;
@@ -779,7 +859,10 @@ uint16 F_test_random1()
 	return res == 0 ? 0 : 1;
 }
 
-//-------------------------------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 uint16 F_test_random2()
 {
     int res = 0;
@@ -808,7 +891,10 @@ uint16 F_test_mcbsp()
 */
 
 
-//-------------------------------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 int sdram_test_base(void)
 {
 
@@ -866,26 +952,32 @@ sdram_error:
 
 
 
-//-------------------------------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 int test_pu(void)
 {
-uint32 error;
+	uint32 error;
 
-uint64 bits_error;
+	uint64 bits_error;
 
-error = uniMemoryCellTest((uint32)&REG_SCRATCH_TPO , &bits_error, 16);
+	error = uniMemoryCellTest((uint32)&REG_SCRATCH_TPO , &bits_error, 16);
 
 
-if(!error)		//если ошибка
-return bits_error; 
+	if(!error)		//если ошибка
+	return bits_error; 
 
-return 0;
+	return 0;
 }
 
 
 #define RND_REDY		(REG_DEVICE_STATUS_tpo & 0x8)
 
-//-------------------------------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 uint16 random(uint16 channel)
 {
 	uint16	rnd_value;
@@ -900,53 +992,56 @@ uint16 random(uint16 channel)
 }
 
 
-#define RANDOM_INTERVALS (16)
-#define RANDOM_VALUES (512)
-
-#define NL ( (RANDOM_VALUES*2)/RANDOM_INTERVALS)
 
 
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 int random_test_hi(int channel)
 {
 
-uint16 random_buf[RANDOM_VALUES];
-uint16 interv[RANDOM_INTERVALS];
+	uint16 random_buf[RANDOM_VALUES];
+	uint16 interv[RANDOM_INTERVALS];
 
 
-memset(interv,0,sizeof(interv));
+	memset(interv,0,sizeof(interv));
 
 
-    for (int i = 0; i < RANDOM_VALUES; i++)
-    {
-        uint16 r = random(channel);
-		random_buf[i] = r;
-    }
+		for (int i = 0; i < RANDOM_VALUES; i++)
+		{
+			uint16 r = random(channel);
+			random_buf[i] = r;
+		}
 
-//float Max_NL = (NL)*(24.996);
-uint32 Max_NL = (NL)*25;
-uint32 sum = 0;
-uint32 sum1 = 0;
+	//float Max_NL = (NL)*(24.996);
+	uint32 Max_NL = (NL)*25;
+	uint32 sum = 0;
+	uint32 sum1 = 0;
 
 
-	for(int j = 0; j < RANDOM_VALUES; j++)
-	{
-	interv[random_buf[j]&0xf]++;
-	random_buf[j]>>=4;
-	interv[random_buf[j]&0xf]++;
-	}
+		for(int j = 0; j < RANDOM_VALUES; j++)
+		{
+		interv[random_buf[j]&0xf]++;
+		random_buf[j]>>=4;
+		interv[random_buf[j]&0xf]++;
+		}
 
-    for (int i = 0; i < RANDOM_INTERVALS; i++)
-	{
-	  sum1 = interv[i]-NL;	
-      sum += sum1 * sum1;
-	}
-if(sum < Max_NL)
-return 0;	//OK
+		for (int i = 0; i < RANDOM_INTERVALS; i++)
+		{
+		  sum1 = interv[i]-NL;	
+		  sum += sum1 * sum1;
+		}
+	if(sum < Max_NL)
+	return 0;	//OK
 
-return 1;
+	return 1;
 }
 
-//-------------------------------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 int random_test_base(int channel)
 {
     int status = random_test_hi(channel);
@@ -956,78 +1051,84 @@ int random_test_base(int channel)
 
 
 
-//-------------------------------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 int rtc_test_base()
 {
-int error;
-uint32 FileRTC   = drv_mkd("/dev/rtc/");
-uint32 time0 = 0, time1 = 0;
+	int error;
+	uint32 FileRTC   = drv_mkd("/dev/rtc/");
+	uint32 time0 = 0, time1 = 0;
 
-error = drv_ioctl(FileRTC, RTC_GET_TIME, &time0);
+	error = drv_ioctl(FileRTC, RTC_GET_TIME, &time0);
 
-//uint32 t = 0x12800000;
-uint32 t = 0x13000000;//13.07.17
-while(t--);
+	//uint32 t = 0x12800000;
+	uint32 t = 0x13000000;//13.07.17
+	while(t--);
 
-error = drv_ioctl(FileRTC, RTC_GET_TIME, &time1);
+	error = drv_ioctl(FileRTC, RTC_GET_TIME, &time1);
 
-drv_rmd(FileRTC);
+	drv_rmd(FileRTC);
 
- if(error == OSE_OK)
- {
-	if(time0 < time1)
-	return 0;	//OK
- }
-return 1;
+	 if(error == OSE_OK)
+	 {
+		if(time0 < time1)
+		return 0;	//OK
+	 }
+	return 1;
 }
 
 
 
 
-//-------------------------------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 int usb_test_base()
 {
 
-uint32 error;
+	uint32 error;
 
-uint64 bits_error;
-
-
-
-uint32 addr_scretch_reg = 0x80000610;
-uint32 *addr_chip_id    = (uint32*)0x80000608;
-
-uint16 *addr_chip_id_nec   = (uint16*)0x6C000000;
-uint16 *addr_chip_cfg_nec   = (uint16*)0x6C000006;
-uint32 addr_scretch_reg_nec = 0x6C0001B0;
-uint16 iiiddd = 0;
-
-iiiddd = *addr_chip_id_nec;
-if(iiiddd == 0x0120)
-{
-*addr_chip_cfg_nec |= 0x4;
-	error = uniMemoryCellTest(addr_scretch_reg_nec , &bits_error, 16);
-*addr_chip_cfg_nec &= ~0x4;;
-		if(!error)		
-			return 0; 
-}
+	uint64 bits_error;
 
 
 
-if(*addr_chip_id != 0x00011761)
-return 1; 
+	uint32 addr_scretch_reg = 0x80000610;
+	uint32 *addr_chip_id    = (uint32*)0x80000608;
 
-error = uniMemoryCellTest(addr_scretch_reg , &bits_error, 32);
+	uint16 *addr_chip_id_nec   = (uint16*)0x6C000000;
+	uint16 *addr_chip_cfg_nec   = (uint16*)0x6C000006;
+	uint32 addr_scretch_reg_nec = 0x6C0001B0;
+	uint16 iiiddd = 0;
 
-if(!error)		//если ошибка
-return bits_error; 
+	iiiddd = *addr_chip_id_nec;
+	if(iiiddd == 0x0120)
+	{
+		*addr_chip_cfg_nec |= 0x4;
+			error = uniMemoryCellTest(addr_scretch_reg_nec , &bits_error, 16);
+		*addr_chip_cfg_nec &= ~0x4;;
+				if(!error)		
+					return 0; 
+	}
+
+
+
+	if(*addr_chip_id != 0x00011761)
+	return 1; 
+
+	error = uniMemoryCellTest(addr_scretch_reg , &bits_error, 32);
+
+	if(!error)		//если ошибка
+	return bits_error; 
 
 
 return 0;
 }
 
 
-extern void UserRikEvent(uint16 rik_status);
+
 
 //-------------------------------------------------------------------------------------------------
 int rik_test_card(int card)
@@ -1801,7 +1902,10 @@ tst_usb:
 //	drv_rmd(ms);
 	}
 }
-
+/*****************************************************************************
+Syntax:   	    
+Remarks:			    
+*******************************************************************************/
 void GSCh_USB_file(cs_menu* m, void* arg)
 {
 
@@ -2295,7 +2399,10 @@ uint16 F_hash_comp_pp056()
 	return res == 0 ? 0 : 1;
 }
 
-
+/*****************************************************************************
+Syntax:   	    
+Remarks:			    
+*******************************************************************************/
 
 uint16 F_test_usb_flash3()
 {
@@ -3657,7 +3764,10 @@ uint32 CrypterTestRes;
 #define	E_CH_IMV		0x00000400ull//Ошибка имитовставки 
 #define NOT_LOAD_PLIS   0x10000000ull//ПЛИС шифратора незагружена
 
-
+/*****************************************************************************
+Syntax:   	    
+Remarks:			    
+*******************************************************************************/
 void F_CrServiceTest(cs_menu* m, void* arg)
 {
 	uint32 num_test = 0;
@@ -3757,7 +3867,10 @@ tst_sl_rej:
 //  }
 }
 
-
+/*****************************************************************************
+Syntax:   	    
+Remarks:			    
+*******************************************************************************/
 
 void F_CrChannelCfgEth(uint16 eth_send,uint16 eth_recv)
 {
@@ -3847,19 +3960,19 @@ Send_cmd_main(STOP_TEST_CR_CH);
 
 void F_CrChannelCfgEth0_1(cs_menu* m, void* arg)
 {
-F_CrChannelCfgEth(0,1);
+	F_CrChannelCfgEth(0,1);
 
 }
 
 void F_CrChannelCfgEth0_2(cs_menu* m, void* arg)
 {
-F_CrChannelCfgEth(0,2);
+	F_CrChannelCfgEth(0,2);
 
 }
 
 void F_CrChannelCfgEth1_0(cs_menu* m, void* arg)
 {
-F_CrChannelCfgEth(1,0);
+	F_CrChannelCfgEth(1,0);
 
 }
 
@@ -4047,7 +4160,10 @@ about_usb usb_cp[2];
 
 
 
-//-------------------------------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:   	    
+Remarks:			    
+*******************************************************************************/
 void Tst_ipmp_main(cs_menu* m, void* arg)
 {
 uint16 KEY=0;
@@ -4131,7 +4247,10 @@ tst_ipmp_main:
 }
 
 
-//-------------------------------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:   void Tst_ipmp_comm(cs_menu* m, void* arg)   	    
+Remarks:			    
+*******************************************************************************/
 void Tst_ipmp_comm(cs_menu* m, void* arg)
 {
 uint16 KEY=0;
@@ -4232,336 +4351,338 @@ tst_ipmp_comm:
 
 
 
-
+//ТПО для 5
 #ifdef TPO5
 
-//extern void* OS_START_PO_ADDR;
-//extern void* OS_LEN_LOAD_PO;
-//                    _OS_START_PO_ADDR = 0x00054000;        
-//                    _OS_LEN_LOAD_PO   = 0x00055000;        
+				//extern void* OS_START_PO_ADDR;
+				//extern void* OS_LEN_LOAD_PO;
+				//_OS_START_PO_ADDR = 0x00054000;        
+				//_OS_LEN_LOAD_PO   = 0x00055000;        
+				//void* OS_START_PO_ADD = (void*) 0x00054000;
+				//void* OS_LEN_LOAD = (void*) 0x00055000;
+				//void* OS_START_PO_ADD = (void*) 0x00080000;
+				//void* OS_LEN_LOAD = (void*) 0x00029000;
+				//extern int32     os_lif_load_fixed( const char* fname, void* prg_mem, const char* args, uint32 type, uint32 paddr, uint32 psize );
 
-//void* OS_START_PO_ADD = (void*) 0x00054000;
-//void* OS_LEN_LOAD = (void*) 0x00055000;
-//void* OS_START_PO_ADD = (void*) 0x00080000;
-//void* OS_LEN_LOAD = (void*) 0x00029000;
-
-//extern int32     os_lif_load_fixed( const char* fname, void* prg_mem, const char* args, uint32 type, uint32 paddr, uint32 psize );
-
-/**************************************************************************************************\
-*  загрузка lif с USB    
-\***********************************************************************************************/
+/*****************************************************************************
+Syntax:   void F_load_lif(cs_menu* m, void* arg)   	    
+Remarks:			    
+*******************************************************************************/
 void F_load_lif(cs_menu* m, void* arg)
-{
-
- char				file_path[32];
-
- uint16 			KEY;
-
- File_lif 			files[3];
- int32				error = 0;
-
- s_os_mem_block*    mem_block;
- uint8*             buf;
-
- kdg_cmd			to_main;
- kdg_cmd_ask		cdg_error;
-// int32		error;
- 
- uint8				block[128];
- uint32				N_block;
- uint32				len;
-
-arg_exit_tpo* exit_tpo = (arg_exit_tpo*)arg;
-
-con_clrscr(USER_CON);
-con_clrscr(SYS_CON);
-/*
-if(D)
-{
-	for(int i = MIN_NUMBER_COMM; i < NUMBER_COMM_DSP; i++)
-	Send_cmd_comm(i, EXIT_TPO);
-
-	Send_cmd_main(EXIT_TPO);
-}
-*/
-
-
-if(Chek_usb_dev(2) != TPO_OK) 
-return;
-
-
-strcpy(file_path, "/vfat/b/bpo-iface.lif");
-
-	files[0].file = drv_mkd(file_path);
-    if(files[0].file == RES_VOID)
 	{
-	clrscr();
-	gotoxy(3,7);
-	cprintf("Невозможно открыть файл:");
-	gotoxy(6,8);
-	cprintf("tpo-iface.lif");
-	gotoxy(0,15);
-	cprintf("<Нажмите ESC>");
-	 while(1)
-	 {
-	 KEY = kb_hit();
-	 if(KEY == KEY_ESC)
-	 break;
-	 }
-    return;
-	}
-	else
-     if(drv_open(files[0].file, DRV_RD) == OSE_OK)
-       if(drv_ioctl(files[0].file, IOC_SIZE, &files[0].len) != OSE_OK)
-	   {
-        error = 1;
-		goto err_file;
-	   }
-	
 
-strcpy(file_path, "/vfat/b/bpo-main.lif");
+	 char				file_path[32];
+	 uint16 			KEY;
 
-	files[1].file = drv_mkd(file_path);
-    if(files[1].file == RES_VOID)
+	 File_lif 			files[3];
+	 int32				error = 0;
+
+	 s_os_mem_block*    mem_block;
+	 uint8*             buf;
+
+	 kdg_cmd			to_main;
+	 kdg_cmd_ask		cdg_error;
+	// int32		error;
+	 
+	 uint8				block[128];
+	 uint32				N_block;
+	 uint32				len;
+
+	 arg_exit_tpo* exit_tpo = (arg_exit_tpo*)arg;
+
+	 con_clrscr(USER_CON);
+	 con_clrscr(SYS_CON);
+	/*
+	if(D)
 	{
-	clrscr();
-	gotoxy(3,7);
-	cprintf("Невозможно открыть файл:");
-	gotoxy(6,8);
-	cprintf("tpo-main.lif");
-	gotoxy(0,15);
-	cprintf("<Нажмите ESC>");
-	 while(1)
-	 {
-	 KEY = kb_hit();
-	 if(KEY == KEY_ESC)
-	 break;
-	 }
-    return;
+		for(int i = MIN_NUMBER_COMM; i < NUMBER_COMM_DSP; i++)
+		Send_cmd_comm(i, EXIT_TPO);
+
+		Send_cmd_main(EXIT_TPO);
 	}
-	else
-      if(drv_open(files[1].file, DRV_RD) == OSE_OK)
-        if(drv_ioctl(files[1].file, IOC_SIZE, &files[1].len) != OSE_OK)
-	   {
-        error = 1;
+	*/
+
+
+	if(Chek_usb_dev(2) != TPO_OK) 
+	return;
+
+
+	strcpy(file_path, "/vfat/b/bpo-iface.lif");
+
+		files[0].file = drv_mkd(file_path);
+		if(files[0].file == RES_VOID)
+		{
+		clrscr();
+		gotoxy(3,7);
+		cprintf("Невозможно открыть файл:");
+		gotoxy(6,8);
+		cprintf("tpo-iface.lif");
+		gotoxy(0,15);
+		cprintf("<Нажмите ESC>");
+		 while(1)
+		 {
+		 KEY = kb_hit();
+		 if(KEY == KEY_ESC)
+		 break;
+		 }
+		return;
+		}
+		else
+		 if(drv_open(files[0].file, DRV_RD) == OSE_OK)
+		   if(drv_ioctl(files[0].file, IOC_SIZE, &files[0].len) != OSE_OK)
+		   {
+			error = 1;
+			goto err_file;
+		   }
+		
+
+	strcpy(file_path, "/vfat/b/bpo-main.lif");
+
+		files[1].file = drv_mkd(file_path);
+		if(files[1].file == RES_VOID)
+		{
+		clrscr();
+		gotoxy(3,7);
+		cprintf("Невозможно открыть файл:");
+		gotoxy(6,8);
+		cprintf("tpo-main.lif");
+		gotoxy(0,15);
+		cprintf("<Нажмите ESC>");
+		 while(1)
+		 {
+		 KEY = kb_hit();
+		 if(KEY == KEY_ESC)
+		 break;
+		 }
+		return;
+		}
+		else
+		  if(drv_open(files[1].file, DRV_RD) == OSE_OK)
+			if(drv_ioctl(files[1].file, IOC_SIZE, &files[1].len) != OSE_OK)
+		   {
+			error = 1;
+			goto err_file;
+		   }
+
+	strcpy(file_path, "/vfat/b/bpo-comm.lif");
+
+		files[2].file = drv_mkd(file_path);
+		if(files[2].file == RES_VOID)
+		{
+		clrscr();
+		gotoxy(3,7);
+		cprintf("Невозможно открыть файл:");
+		gotoxy(6,8);
+		cprintf("tpo-comm.lif");
+		gotoxy(0,15);
+		cprintf("<Нажмите ESC>");
+		 while(1)
+		 {
+		 KEY = kb_hit();
+		 if(KEY == KEY_ESC)
+		 break;
+		 }
+		return;
+		}
+		else
+		  if(drv_open(files[2].file, DRV_RD) == OSE_OK)
+			if(drv_ioctl(files[2].file, IOC_SIZE, &files[2].len) != OSE_OK)
+		   {
+			error = 1;
+			goto err_file;
+		   }
+
+
+
+		Send_cmd_main(LOAD_LIF);
+		Send_cmd_comm(0, LOAD_LIF);
+		Send_cmd_comm(1, LOAD_LIF);
+
+			sleep_m(500);
+
+
+	//Длинну на центральный
+	  to_main.cmd = files[1].len;
+	  msg_send(msg_pid_main, &to_main, sizeof(kdg_cmd));
+	  error = receive_msg(&cdg_error, sizeof(kdg_cmd_ask), MSG_WAIT_DEBUG);
+
+	  if(error == MSG_ER_TIME_OUT)
+		print_err("IFACE", MAIN_TIME_OUT);
+	  if(error == MSG_ER_SYNC)
+		print_err("IFACE", MAIN_ERR_MSG);
+	  if(cdg_error.ask == TPO_ERR)
+	  {
+		print_err("IFACE", NO_MEM_MAIN);
+		return;
+	  }
+
+			sleep_m(500);
+
+
+	//Длинну на сетевые
+	 to_main.cmd = files[2].len;
+	 for(int n_comm = 0; n_comm < 2; n_comm++)
+	 {
+	  msg_send(pid_comm[n_comm].pid, &to_main, sizeof(kdg_cmd));
+	  error = receive_msg(&cdg_error, sizeof(kdg_cmd_ask), MSG_WAIT_DEBUG);
+
+	  if(error == MSG_ER_TIME_OUT)
+		print_err("IFACE", COMM_TIME_OUT+n_comm);
+	  if(error == MSG_ER_SYNC)
+		print_err("IFACE", COMM_ERR_MSG+n_comm);
+	  if(cdg_error.ask == TPO_ERR)
+	  {
+		print_err("IFACE", NO_MEM_COMM+n_comm);
+		return;
+	  }
+
+	 }
+
+			sleep_m(500);
+
+	//выделяем место на iface
+	  mem_block = mem_alloc(files[0].len, MPAGE_ALL);
+	  if(mem_block != NULL)
+	  {
+	  buf = (uint8*)mem_ptr(mem_block);
+	   if( drv_read(files[0].file, buf, files[0].len) != files[0].len )
 		goto err_file;
-	   }
+	  }
+	  else
+	  {
+		mem_free(mem_block);
+		print_err("IFACE", NO_MEM_IFACE);
+		return;
+	  }
 
-strcpy(file_path, "/vfat/b/bpo-comm.lif");
+			sleep_m(500);
 
-	files[2].file = drv_mkd(file_path);
-    if(files[2].file == RES_VOID)
+
+	//перебрасываем на comm
+	N_block = (files[2].len/sizeof(block))+1;
+	for(int N = 0; N < N_block; N++)
 	{
-	clrscr();
-	gotoxy(3,7);
-	cprintf("Невозможно открыть файл:");
-	gotoxy(6,8);
-	cprintf("tpo-comm.lif");
-	gotoxy(0,15);
-	cprintf("<Нажмите ESC>");
-	 while(1)
+	len = drv_read(files[2].file, block, sizeof(block));
+
+	 for(int n_comm = 0; n_comm < 2; n_comm++)
 	 {
-	 KEY = kb_hit();
-	 if(KEY == KEY_ESC)
-	 break;
+	  msg_send(pid_comm[n_comm].pid, block, len);
+	  error = receive_msg(&cdg_error, sizeof(kdg_cmd_ask), MSG_WAIT_DEBUG);
+
+	  if(error == MSG_ER_TIME_OUT)
+		print_err("IFACE", COMM_TIME_OUT+n_comm);
+	  if(error == MSG_ER_SYNC)
+		print_err("IFACE", COMM_ERR_MSG+n_comm);
+	  if(cdg_error.ask == TPO_ERR)
+	  {
+		print_err("IFACE", COMM_ERR_MSG+n_comm);
+		return;
+	  }
+
 	 }
-    return;
+
 	}
-	else
-      if(drv_open(files[2].file, DRV_RD) == OSE_OK)
-        if(drv_ioctl(files[2].file, IOC_SIZE, &files[2].len) != OSE_OK)
-	   {
-        error = 1;
-		goto err_file;
-	   }
+
+			sleep_m(500);
+
+	//перебрасываем на main
+	N_block = (files[1].len/sizeof(block))+1;
+	for(int N = 0; N < N_block; N++)
+	{
+	len = drv_read(files[1].file, block, sizeof(block));
+
+	  msg_send(msg_pid_main, block, len);
+	  error = receive_msg(&cdg_error, sizeof(kdg_cmd_ask), MSG_WAIT_DEBUG);
+
+	  if(error == MSG_ER_TIME_OUT)
+		print_err("IFACE", MAIN_TIME_OUT);
+	  if(error == MSG_ER_SYNC)
+		print_err("IFACE", MAIN_ERR_MSG);
+	  if(cdg_error.ask == TPO_ERR)
+	  {
+		print_err("IFACE", MAIN_ERR_MSG);
+		return;
+	  }
+
+	}
 
 
+	drv_close(files[0].file);
+	drv_close(files[1].file);
+	drv_close(files[2].file);
 
-	Send_cmd_main(LOAD_LIF);
-	Send_cmd_comm(0, LOAD_LIF);
-	Send_cmd_comm(1, LOAD_LIF);
-
-		sleep_m(500);
-
-
-//Длинну на центральный
-  to_main.cmd = files[1].len;
-  msg_send(msg_pid_main, &to_main, sizeof(kdg_cmd));
-  error = receive_msg(&cdg_error, sizeof(kdg_cmd_ask), MSG_WAIT_DEBUG);
-
-  if(error == MSG_ER_TIME_OUT)
-	print_err("IFACE", MAIN_TIME_OUT);
-  if(error == MSG_ER_SYNC)
-	print_err("IFACE", MAIN_ERR_MSG);
-  if(cdg_error.ask == TPO_ERR)
-  {
-	print_err("IFACE", NO_MEM_MAIN);
-    return;
-  }
-
-		sleep_m(500);
+	drv_rmd(files[0].file);
+	drv_rmd(files[1].file);
+	drv_rmd(files[2].file);
 
 
-//Длинну на сетевые
- to_main.cmd = files[2].len;
- for(int n_comm = 0; n_comm < 2; n_comm++)
- {
-  msg_send(pid_comm[n_comm].pid, &to_main, sizeof(kdg_cmd));
-  error = receive_msg(&cdg_error, sizeof(kdg_cmd_ask), MSG_WAIT_DEBUG);
-
-  if(error == MSG_ER_TIME_OUT)
-	print_err("IFACE", COMM_TIME_OUT+n_comm);
-  if(error == MSG_ER_SYNC)
-	print_err("IFACE", COMM_ERR_MSG+n_comm);
-  if(cdg_error.ask == TPO_ERR)
-  {
-	print_err("IFACE", NO_MEM_COMM+n_comm);
-    return;
-  }
-
- }
-
-		sleep_m(500);
-
-//выделяем место на iface
-  mem_block = mem_alloc(files[0].len, MPAGE_ALL);
-  if(mem_block != NULL)
-  {
-  buf = (uint8*)mem_ptr(mem_block);
-   if( drv_read(files[0].file, buf, files[0].len) != files[0].len )
-	goto err_file;
-  }
-  else
-  {
-    mem_free(mem_block);
-	print_err("IFACE", NO_MEM_IFACE);
-    return;
-  }
-
-		sleep_m(500);
-
-
-//перебрасываем на comm
-N_block = (files[2].len/sizeof(block))+1;
-for(int N = 0; N < N_block; N++)
-{
-len = drv_read(files[2].file, block, sizeof(block));
-
- for(int n_comm = 0; n_comm < 2; n_comm++)
- {
-  msg_send(pid_comm[n_comm].pid, block, len);
-  error = receive_msg(&cdg_error, sizeof(kdg_cmd_ask), MSG_WAIT_DEBUG);
-
-  if(error == MSG_ER_TIME_OUT)
-	print_err("IFACE", COMM_TIME_OUT+n_comm);
-  if(error == MSG_ER_SYNC)
-	print_err("IFACE", COMM_ERR_MSG+n_comm);
-  if(cdg_error.ask == TPO_ERR)
-  {
-	print_err("IFACE", COMM_ERR_MSG+n_comm);
-    return;
-  }
-
- }
-
-}
-
-		sleep_m(500);
-
-//перебрасываем на main
-N_block = (files[1].len/sizeof(block))+1;
-for(int N = 0; N < N_block; N++)
-{
-len = drv_read(files[1].file, block, sizeof(block));
-
-  msg_send(msg_pid_main, block, len);
-  error = receive_msg(&cdg_error, sizeof(kdg_cmd_ask), MSG_WAIT_DEBUG);
-
-  if(error == MSG_ER_TIME_OUT)
-	print_err("IFACE", MAIN_TIME_OUT);
-  if(error == MSG_ER_SYNC)
-	print_err("IFACE", MAIN_ERR_MSG);
-  if(cdg_error.ask == TPO_ERR)
-  {
-	print_err("IFACE", MAIN_ERR_MSG);
-    return;
-  }
-
-}
-
-
-drv_close(files[0].file);
-drv_close(files[1].file);
-drv_close(files[2].file);
-
-drv_rmd(files[0].file);
-drv_rmd(files[1].file);
-drv_rmd(files[2].file);
-
-
-	Send_cmd_comm(0, START_LIF);
-	Send_cmd_comm(1, START_LIF);
-	Send_cmd_main(START_LIF);
+		Send_cmd_comm(0, START_LIF);
+		Send_cmd_comm(1, START_LIF);
+		Send_cmd_main(START_LIF);
 
 
 
 
 
-load_lif(buf);
-mem_free(mem_block);
+	load_lif(buf);
+	mem_free(mem_block);
 
 
-if(exit_tpo->sem != RES_VOID)
-{
-//Удаление callback функции при подключении msd:
-  exit_tpo->ubs_event->func = NULL;
-  drv_ioctl(exit_tpo->file_usb, USB_DEVICE_ATTACH, exit_tpo->ubs_event);
-  if(exit_tpo->pid > 0x0)
-  {
-    *(exit_tpo->exit) = 1;
-    prc_join(exit_tpo->pid);
-  }  
-  drv_rmd(exit_tpo->file_usb);
-  sem_free(exit_tpo->sem);
-}
-
-
-
-
-con_clrscr(USER_CON);
-con_clrscr(SYS_CON);
-con_deinit();
-
-msg_close();
-//delete(menu_tpo);
-exit_tpo->menu->~cs_menu();
-
-uint32 file = drv_mkd("/vfat/");
-drv_ioctl(file, FSI_RESET, NULL);
-
-prc_exit();
-while(1);
-
-err_file:
-
-	clrscr();
-	gotoxy(3,7);
-	cprintf("Ошибка работы с файлом:");
-	gotoxy(0,15);
-	cprintf("<Нажмите ESC>");
-	 while(1)
-	 {
-	 KEY = kb_hit();
-	 if(KEY == KEY_ESC)
-	 break;
-	 }
-    return;
-
-}
-#endif
+	if(exit_tpo->sem != RES_VOID)
+	{
+	//Удаление callback функции при подключении msd:
+	  exit_tpo->ubs_event->func = NULL;
+	  drv_ioctl(exit_tpo->file_usb, USB_DEVICE_ATTACH, exit_tpo->ubs_event);
+	  if(exit_tpo->pid > 0x0)
+	  {
+		*(exit_tpo->exit) = 1;
+		prc_join(exit_tpo->pid);
+	  }  
+	  drv_rmd(exit_tpo->file_usb);
+	  sem_free(exit_tpo->sem);
+	}
 
 
 
+
+	con_clrscr(USER_CON);
+	con_clrscr(SYS_CON);
+	con_deinit();
+
+	msg_close();
+	//delete(menu_tpo);
+	exit_tpo->menu->~cs_menu();
+
+	uint32 file = drv_mkd("/vfat/");
+	drv_ioctl(file, FSI_RESET, NULL);
+
+	prc_exit();
+	while(1);
+
+	err_file:
+
+		clrscr();
+		gotoxy(3,7);
+		cprintf("Ошибка работы с файлом:");
+		gotoxy(0,15);
+		cprintf("<Нажмите ESC>");
+		 while(1)
+		 {
+		 KEY = kb_hit();
+		 if(KEY == KEY_ESC)
+		 break;
+		 }
+		return;
+
+	}
+
+#endif  /////////////////////END  TPO5
+
+
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 void Osveschennost(cs_menu* m, void* arg)
 {
 
@@ -4622,7 +4743,10 @@ tst_dnsd_osvesch:
 
 
 
-
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 void Magic_Number(cs_menu* m, void* arg)
 {
 
@@ -4684,7 +4808,10 @@ tst_dnsd_magic:
 
 
 
-
+/*****************************************************************************
+Syntax:     void Dnsd_crc_po(cs_menu* m, void* arg)  	    
+Remarks:	Видимо Тест Датчика Вскрытия ??		    
+*******************************************************************************/
 void Dnsd_crc_po(cs_menu* m, void* arg)
 {
 
@@ -4744,7 +4871,10 @@ tst_dnsd_crc:
 
 
 
-
+/*****************************************************************************
+Syntax:   void Dnsd_rasshiren_test(cs_menu* m, void* arg)   	    
+Remarks:  Видимо Тест Датчика Вскрытия ??	    
+*******************************************************************************/
 void Dnsd_rasshiren_test(cs_menu* m, void* arg)
 {
 //TEST_DNSD_RASSH,
@@ -4896,7 +5026,11 @@ tst_dnsd:
 		goto tst_dnsd;
 
 }
-//-------------------------------------------------------------------
+
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 void ZavestiDNSD(cs_menu* m, void* arg)
 {
 
@@ -4939,7 +5073,10 @@ void ZavestiDNSD(cs_menu* m, void* arg)
 
 
 }
-
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 void Vkluchit_VD(cs_menu* m, void* arg)
 {
 
@@ -4960,6 +5097,10 @@ void Vkluchit_VD(cs_menu* m, void* arg)
 
 }
 
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 void Vikluchit_VD(cs_menu* m, void* arg)
 {
 //	uint16 KEY=0;
@@ -4975,7 +5116,10 @@ void Vikluchit_VD(cs_menu* m, void* arg)
 
 }
 
-
+/*****************************************************************************
+Syntax:      	    
+Remarks:			    
+*******************************************************************************/
 void Prochitat(cs_menu* m, void* arg)
 {
 

@@ -265,7 +265,10 @@ while(1);
 
 }
 
-
+/*****************************************************************************
+Syntax:     void SI_INT_RAM(cs_menu* m, void* arg) 	    
+Remarks:			    
+*******************************************************************************/
 void SI_INT_RAM(cs_menu* m, void* arg)
 {
 
@@ -307,9 +310,7 @@ void SI_INT_RAM(cs_menu* m, void* arg)
 	par->val_2=0;
 
 	Vvod(par);
-
 	send_main_start_sialp(par);
-
 	while(1);
 
 }

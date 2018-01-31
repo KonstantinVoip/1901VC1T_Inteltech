@@ -1,13 +1,26 @@
 #ifndef IFACE_TPO_H
 #define IFACE_TPO_H
+/**********************************************************************************************************************
+*                                        (c) COPYRIGHT by ZAO RCZI FORT.                                             *
+*        ..                                       All rights reserved.                                               *
+***********************************************************************************************************************
+* Module      : tpo_iface.h
+* Description : 
+* Author      : 
+******************************************************************************
+******************************************************************************
+* Module's Description Record:
+* ============================
+* Module's revision history:
+* ==========================
+* --------- $Log: mpcdrvlbcCyclone.h $
+* --------- Initial revision
+******************************************************************************/
 
-
-	#include "tests.h"
-	#include "console.h"
-	#include "tpo.h"
-	//#include "err.h"
-
-
+#include "tests.h"
+#include "console.h"
+#include "tpo.h"
+//#include "err.h"
 
 
 	#define resNO_INT 0xFF
@@ -42,13 +55,10 @@
 //                con_clrbar(USER_CON,Y,DY)
 
 //-------------------------------------------------------------------------------------------------
-
-
-
 	extern uint32 Reg_N;
 	extern char MemTablo[MaxTable][MaxStr][MaxLen+1];
 
-
+	//Основная Структура _от_которой Потом мы заполняемся
 	typedef struct _TEST_IFACE
 	{
 		uint16 N_test;
@@ -58,8 +68,6 @@
 		int repeat;
 	}TEST_IFACE; 
 
-
-
 	void F_BeginTest(uint32);
 	void F_StartTest(uint32 count, uint32* result);
 	//void F_StartTest(uint32 count);
@@ -67,8 +75,6 @@
 	//int PrintfResCiklTest(uint32 count, uint32 end);
 	void F_PrintMemTablo(uint16);
 	void F_GetPageTablo(uint16 key);
-
-
 	void F_TestProgress(int weight);
 
 #endif //IFACE_TPO_H

@@ -1,0 +1,9 @@
+menuitem "tpo5_comm";
+
+hotmenu start()
+{
+GEL_Reset();
+GEL_Load("C:/1901VC1T_Inteltech/Projects/os_drv_amoeba_c6412/os_drv_comm_tms6412/Debug/os_drv_comm_tms6412.out");
+PC=0;
+}
+

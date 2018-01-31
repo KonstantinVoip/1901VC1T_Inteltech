@@ -22,7 +22,7 @@
 #include "tpo.h"
 
 /**************************************************************************************************\
-*  Завершение ТПО
+*  Завершение ТПО и Загрузка СИОС
 ***********/
 
 void load_lif(void* mem_lif);
@@ -62,30 +62,23 @@ void load_lif(void* mem_lif)
      if(msg_pid_os != RES_VOID)
      {
 		#ifdef TPO5
-        
         //Команда на загрузку:
 	  	if(mem_lif == NULL)
 		{
-	     
 		 //skd_comment  //Нужна библиотека MAPI
 	      error = mapi_loadafterme( msg_pid_os, path, NULL);
 			if(error)
 				error++;
-		 
 		}
 		else
 		{
 	       //skd_comment
-	       
 	       error = mapi_loadafterme( msg_pid_os, NULL, mem_lif);
 			if(error)
 				error++;
-		   
 		}
-		
 		#else
-          //skd_comment
-           
+          //skd_comment  
 	      error = mapi_loadafterme( msg_pid_os, path, NULL);
 			if(error)
 				error++;

@@ -1,0 +1,10 @@
+menuitem "tpo5_iface";
+
+hotmenu start()
+{
+GEL_Reset();
+GEL_Load("C:/1901VC1T_Inteltech/Projects/os_drv_amoeba_c6416/os_drv_iface_tms6416/Debug/os_drv_iface_tms6416.out");
+PC=0;
+}
+
+

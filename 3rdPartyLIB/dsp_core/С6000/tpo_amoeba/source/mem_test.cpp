@@ -14,11 +14,6 @@
 * --------- $Log: mpcdrvlbcCyclone.h $
 * --------- Initial revision
 ******************************************************************************/
-
-
-//******************************************************************************
-
-
 //#include <os_syscall.h>
 //#include <drv_dbgout.h>
 	#include <rts.h>
@@ -59,18 +54,19 @@ uint32 uniTestRAM(uint32 *uniPtrErrorsPositions, uint32 *uniPtrErrorAddress);
 //******************************************************************************
 void WriteMemoryNumber(uint32 uniAbsoluteMemoryAddress, uint32 usiDataWriteMemory, uint32 len)
 { 
-/* Функция записи числа в память */
-/* Запись данных в память по абсолютному адресу */
-memcpy((void*)(uniAbsoluteMemoryAddress), &usiDataWriteMemory, len);
-//  *(uint32*)(uniAbsoluteMemoryAddress) = usiDataWriteMemory;
+	/* Функция записи числа в память */
+	/* Запись данных в память по абсолютному адресу */
+	memcpy((void*)(uniAbsoluteMemoryAddress), &usiDataWriteMemory, len);
+	//  *(uint32*)(uniAbsoluteMemoryAddress) = usiDataWriteMemory;
 } /* Функция записи числа в память */
 
-//******************************************************************************
-//                         Функция чтения числа
-//                              из памяти
-//******************************************************************************
-uint32 usiReadMemoryNumber
-                                       (
+
+
+/*****************************************************************************
+Syntax:      	    
+Remarks: Функция чтения числа из памяти			    
+*******************************************************************************/
+uint32 usiReadMemoryNumber(
                                          /* Абсолютный адрес памяти */
                                          uint32 uniAbsoluteMemoryAddress,
 										 uint32 len
@@ -138,13 +134,14 @@ uint32 uniMemoryCellTest(             /* Адрес памяти */
 	    /* Запись числа в память */
 		memcpy((void*)uniMemoryAddress, &TEST_DATA[i], deltaAdrr);
 	//	WriteMemoryNumber(uniMemoryAddress,usiSetMemoryValue,deltaAdrr);
-/*
-if(uniMemoryAddress == 0x60000308)//для usb контроллера delay потом надо убрать
-{
-uint32 o = 0x100;
-while(o--);
-}
-*/
+
+	/*
+	if(uniMemoryAddress == 0x60000308)//для usb контроллера delay потом надо убрать
+	{
+	uint32 o = 0x100;
+	while(o--);
+	}
+	*/
 	    /* Чтение числа из памяти */
 		memcpy( &GetMemVal, (void*)uniMemoryAddress, deltaAdrr);
 	//  usiGetMemoryValue = usiReadMemoryNumber(uniMemoryAddress, deltaAdrr);
@@ -201,10 +198,10 @@ uint32 uniMemoryBusAddressTest(mem_test *param)
   // Тестирование шины адреса 
   //Сохраняем ячейки памяти x0, (x1, x2, x4, x8,) x10, x20;
   for (i = 0; ((deltaAdrr<<i) < param->length); i++)
-	memcpy( &ram_cell[i+1], (void*)(param->addr + (deltaAdrr << i)), deltaAdrr);
-  memcpy( &ram_cell[0], (void*)param->addr, deltaAdrr);
-//	ram_cell[i+1] = usiReadMemoryNumber(param->addr+(deltaAdrr<<i), deltaAdrr);//Сохраняем ячейку;
-//	ram_cell[0] = usiReadMemoryNumber(param->addr, deltaAdrr);
+		memcpy( &ram_cell[i+1], (void*)(param->addr + (deltaAdrr << i)), deltaAdrr);
+ 	    memcpy( &ram_cell[0], (void*)param->addr, deltaAdrr);
+	   //	ram_cell[i+1] = usiReadMemoryNumber(param->addr+(deltaAdrr<<i), deltaAdrr);//Сохраняем ячейку;
+      //	ram_cell[0] = usiReadMemoryNumber(param->addr, deltaAdrr);
 
   memset((void*)param->addr, 0, deltaAdrr);
 //	WriteMemoryNumber(param->addr, 0, deltaAdrr);

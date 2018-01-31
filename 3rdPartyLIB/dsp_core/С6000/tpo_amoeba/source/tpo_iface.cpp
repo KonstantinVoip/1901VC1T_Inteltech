@@ -3,7 +3,7 @@
 *        ..                                       All rights reserved.                                               *
 ***********************************************************************************************************************
 * Module      : tpo_iface.cpp
-* Description : основные функции ИП(Интерфейсного Процессора iface)
+* Description : основные функции ТПО ИП(Интерфейсного Процессора iface)
 * Author      : 
 ******************************************************************************
 ******************************************************************************
@@ -26,7 +26,6 @@
 #include "tpo.h"
 #include "drv_usbms.h"
 #include "drv_rtc.h"
-//#include "tpo_iface.h"
 #include "tpo_hash.h"
 #include "sialp.h"
 
@@ -53,13 +52,7 @@
 #include "tests_name_7.h"
 #endif
 
-         FILE* dout; 
-  
-         
-
-
-
-
+        FILE* dout; 
         #define	D	1		//работаем с СВ платой типа здесь будет Обмен ставим еденичку.
 //      #define	D	0		//работаем только с Перефирйной платой ПВ-40 (ПП)
 
@@ -1062,8 +1055,7 @@ tmp_menu_tpo[0] = menu_tpo.create(NULL, NULL, "Тесты СИ АЛП");
 \***sss********************************************************************************************/
 void tpo_run_inside_menu(cs_menu* node, bool present, void* arg)
 {
-//  uint32 usb_n[3] = {1,2,3};
-
+	//  uint32 usb_n[3] = {1,2,3};
   if(present == false)
   {
     cs_menu* temp_node[2];
@@ -1071,9 +1063,9 @@ void tpo_run_inside_menu(cs_menu* node, bool present, void* arg)
     {
       temp_node[0] = node->temp->create(NULL, NULL, "Загрузка ПО");
       {
-//         = ->create(NULL, NULL, "Загрузка ЗОС РВ");
+		//= ->create(NULL, NULL, "Загрузка ЗОС РВ");
 	  	temp_node[1] = temp_node[0]->create(F_load_lif, arg, "USB2");
-//  		temp_node[1] = temp_node[0]->create(F_load_lif, &usb_n[1], "USB2");
+		// temp_node[1] = temp_node[0]->create(F_load_lif, &usb_n[1], "USB2");
       }
 
     }
@@ -1108,11 +1100,10 @@ void Exit_tpo(cs_menu* m, void* arg)
 	    else continue;
 	}
 
-	if(D)
+	if(D) //Если есть системный обмен.
 	{
 		for(int i = MIN_NUMBER_COMM; i < NUMBER_COMM_DSP; i++)
 		Send_cmd_comm(i, EXIT_TPO);
-
 		Send_cmd_main(EXIT_TPO);
 	}
 
@@ -1134,10 +1125,10 @@ void Exit_tpo(cs_menu* m, void* arg)
 	load_lif(NULL);
 
 	#ifdef TPO5
-	uint32 file = drv_mkd("/vfat/");
-	drv_ioctl(file, FSI_RESET, NULL);
-	////
-	drv_rmd(file);
+		uint32 file = drv_mkd("/vfat/");
+		drv_ioctl(file, FSI_RESET, NULL);
+		////
+		drv_rmd(file);
 	////
 	#endif
 
@@ -1539,11 +1530,11 @@ void F_StartTest(uint32 count, uint32* result)
 			else 
 			{
 #ifdef TPO5
-//debug
-//			    if((i<12)&(i>12))// тесты Пока уберем из циклов.
-//				res = 0;
-//debug
-//						// исключил в tests_name.h
+				//debug
+				//if((i<12)&(i>12))// тесты Пока уберем из циклов.
+				//				res = 0;
+				//debug
+				//						// исключил в tests_name.h
 			    if((i==4) | (i==13))// тесты датчиков вскрытия пока уберем из циклов.
 					res = 0;
 				else

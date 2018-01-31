@@ -1,14 +1,32 @@
 #ifndef _TPO_H
 #define _TPO_H
-
+/**********************************************************************************************************************
+*                                        (c) COPYRIGHT by ZAO RCZI FORT.                                             *
+*        ..                                       All rights reserved.                                               *
+***********************************************************************************************************************
+* Module      : tpo.h
+* Description : 
+* Author      : 
+******************************************************************************
+******************************************************************************
+* Module's Description Record:
+* ============================
+* Module's revision history:
+* ==========================
+* --------- $Log: mpcdrvlbcCyclone.h $
+* --------- Initial revision
+******************************************************************************/
 #include    <os_types.h>
+
+#define MIN_NUMBER_COMM		0
+
+
 
 #ifdef IFACE
 	#include    "menu.h"
 	#include    "drv_usbms.h"
 #endif
 
-	#define MIN_NUMBER_COMM		0
 
 #ifdef TPO5
 	#define NUMBER_COMM_DSP		2
@@ -398,5 +416,5 @@ void Start_Test_N(kdg_rez_test* result);
 #endif//COMM
 
 
-#endif
+#endif //_TPO_H
 

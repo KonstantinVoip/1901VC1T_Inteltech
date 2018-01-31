@@ -1,8 +1,15 @@
+
+Пути для сборки библиотек ТПО5
+%AMOEBA_TPO_PATH%\lib\tpo5_comm_tms6412.lib
+%AMOEBA_TPO_PATH%\lib\tpo5_main_tms6416.lib
+%AMOEBA_TPO_PATH%\lib\tpo5_iface_tms6416.lib
+
+Пути для сборки библиотек ТПО6
+
+Пути для сборки библиотек ТПО7
+
+
 Виды ТПО
-
-#define IFACE   - интерфейсная Плата.
-
-
 TPO9 -> нужно будет написать далее.
 
 

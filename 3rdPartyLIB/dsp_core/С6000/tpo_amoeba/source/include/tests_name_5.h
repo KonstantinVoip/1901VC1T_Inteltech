@@ -1,5 +1,22 @@
 #ifndef TESTS_NAME_5_H
 #define TESTS_NAME_5_H
+/**********************************************************************************************************************
+*                                        (c) COPYRIGHT by ZAO RCZI FORT.                                             *
+*        ..                                       All rights reserved.                                               *
+***********************************************************************************************************************
+* Module      : test_name_5.h
+* Description : 
+* Author      : 
+******************************************************************************
+******************************************************************************
+* Module's Description Record:
+* ============================
+* Module's revision history:
+* ==========================
+* --------- $Log:  $
+* --------- Initial revision
+******************************************************************************/
+
 
 #include "tests.h"
 #include "tpo_iface.h"
@@ -84,141 +101,74 @@ char* NameTests[]=
 };
 
 // "1.Тест ОЗУ ПП"
-TEST_IFACE test1 = {1, F_test_ram, 
-	NameTests[0], true, 1};
-
+TEST_IFACE test1 = {1, F_test_ram, NameTests[0], true, 1};
 // "2.Тест ГСЧ1"
-TEST_IFACE test2 = {2, F_test_random1, 
-	NameTests[1], true, 1};
-
+TEST_IFACE test2 = {2, F_test_random1, NameTests[1], true, 1};
 // "3.Тест ГСЧ2"
-TEST_IFACE test3 = {3, F_test_random2, 
-	NameTests[2], true, 1};
-
+TEST_IFACE test3 = {3, F_test_random2, NameTests[2], true, 1};
 // "4.Тест датчика вскр. РИК"
-TEST_IFACE test4 = {4, F_test_access_sensor_rik, 
-	NameTests[3], true, 1};
-
+TEST_IFACE test4 = {4, F_test_access_sensor_rik, NameTests[3], true, 1};
 // "5.Тест датчика вскрытия"
-TEST_IFACE test5 = {5, F_test_access_sensor_verh, 
-	NameTests[4], true, 1};
-
+TEST_IFACE test5 = {5, F_test_access_sensor_verh, NameTests[4], true, 1};
 // "6.Тест датчика панели"
-TEST_IFACE test6 = {6, F_test_power_sensor, 
-	NameTests[5], true, 1};
-
+TEST_IFACE test6 = {6, F_test_power_sensor, NameTests[5], true, 1};
 // "7.Тест часов реал. времени"
-TEST_IFACE test7 = {7, F_test_rtc, 
-	NameTests[6], true, 1};
-
+TEST_IFACE test7 = {7, F_test_rtc, NameTests[6], true, 1};
 // "8.Тест контроллера USB"
-TEST_IFACE test8 = {8, F_test_usbc, 
-	NameTests[7], true, 1};
-
+TEST_IFACE test8 = {8, F_test_usbc, NameTests[7], true, 1};
 // "9.Тест чтения USB флэш #1"
-TEST_IFACE test9 = {9, F_test_usb_flash1, 
-	NameTests[8], true, 1};
-
+TEST_IFACE test9 = {9, F_test_usb_flash1, NameTests[8], true, 1};
 // "10.Тест чтения USB флэш #2"
-TEST_IFACE test10 = {10, F_test_usb_flash2, 
-	NameTests[9], true, 1};
-
+TEST_IFACE test10 = {10, F_test_usb_flash2, NameTests[9], true, 1};
 // "11.Тест РИК1"
-TEST_IFACE test11 = {11, F_test_rik1, 
-	NameTests[10], true, 1};
-
+TEST_IFACE test11 = {11, F_test_rik1, NameTests[10], true, 1};
 // "12.Тест РИК2"
-TEST_IFACE test12 = {12, F_test_rik2, 
-	NameTests[11], true, 1};
-
+TEST_IFACE test12 = {12, F_test_rik2, NameTests[11], true, 1};
 // "13.Целостность ПО ПП"
-TEST_IFACE test13 = {13, F_hash_comp, 
-	NameTests[12], true, 1};
-
+TEST_IFACE test13 = {13, F_hash_comp, NameTests[12], true, 1};
 // "14.Тест записи чтения Периферийного устройства"
-TEST_IFACE test14 = {14, F_test_PU, 
-	NameTests[13], true, 1};
-
+TEST_IFACE test14 = {14, F_test_PU, NameTests[13], true, 1};
 // "15.Тест фун-ии сравн-ия ПП"
-TEST_IFACE test15 = {15, F_TEST_CMP_PP, 
-	NameTests[14],false, 1};
-
+TEST_IFACE test15 = {15, F_TEST_CMP_PP, NameTests[14],false, 1};
 // "16.Ответ ЦП периф-ому"
-TEST_IFACE test16 = {16, F_reserved, 
-	NameTests[15],false, 1};
-
-
-
+TEST_IFACE test16 = {16, F_reserved, NameTests[15],false, 1};
 // "17.резерв для ПП"
-TEST_IFACE test17 = {17, F_reserved, 
-	NameTests[16],false, 1};
+TEST_IFACE test17 = {17, F_reserved, NameTests[16],false, 1};
 // "18.резерв для ПП"
-TEST_IFACE test18 = {18, F_reserved, 
-	NameTests[17],false, 1};
+TEST_IFACE test18 = {18, F_reserved, NameTests[17],false, 1};
 // "19.резерв для ПП"
-TEST_IFACE test19 = {19, F_reserved, 
-	NameTests[18],false, 1};
+TEST_IFACE test19 = {19, F_reserved, NameTests[18],false, 1};
 // "20.резерв для ПП"
-TEST_IFACE test20 = {20, F_reserved, 
-	NameTests[19],false, 1};
-
+TEST_IFACE test20 = {20, F_reserved, NameTests[19],false, 1};
 
 //Для СВ
-TEST_IFACE test21 = {21, F_hash_comp_main, 
-	NameTests[20],true, 1};
-TEST_IFACE test22 = {22, F_hash_comp_comm0, 
-	NameTests[21],true, 1};
-TEST_IFACE test23 = {23, F_hash_comp_comm1, 
-	NameTests[22],true, 1};
-TEST_IFACE test24 = {24, F_reserved, 
-	NameTests[23],false, 1};
-TEST_IFACE test25 = {25, F_reserved, 
-	NameTests[24],false, 1};
-TEST_IFACE test26 = {26, F_test_sdram_main, 
-	NameTests[25],true, 1};
-TEST_IFACE test27 = {27, F_test_nvram_main, 
-	NameTests[26],true, 1};
-TEST_IFACE test28 = {28, F_reserved, 
-	NameTests[27],false, 1};
-TEST_IFACE test29 = {29, F_test_usbc_main, 
-	NameTests[28],true, 1};
-TEST_IFACE test30 = {30, F_test_usb_main, 
-	NameTests[29],true, 1};
-
-TEST_IFACE test31 = {31, F_reserved, 
-	NameTests[30],false, 1};
-TEST_IFACE test32 = {32, F_test_dozu0, 
-	NameTests[31],true, 1};
-TEST_IFACE test33 = {33, F_test_dozu1, 
-	NameTests[32],true, 1};
-TEST_IFACE test34 = {34, F_reserved, 
-	NameTests[33],false, 1};
-TEST_IFACE test35 = {35, F_reserved, 
-	NameTests[34],false, 1};
-TEST_IFACE test36 = {36, F_test_move0, 
-	NameTests[35],true, 1};
-TEST_IFACE test37 = {37, F_test_move1, 
-	NameTests[36],true, 1};
-TEST_IFACE test38 = {38, F_reserved, 
-	NameTests[37],false, 1};
-TEST_IFACE test39 = {39, F_reserved, 
-	NameTests[38],false, 1};
-TEST_IFACE test40 = {40, F_test_sk0, 
-	NameTests[39],true, 1};
-TEST_IFACE test41 = {41, F_test_sk1, 
-	NameTests[40],true, 1};
-TEST_IFACE test42 = {42, F_reserved, 
-	NameTests[41],true, 1};
-TEST_IFACE test43 = {43, F_reserved, 
-	NameTests[42],true, 1};
-TEST_IFACE test44 = {44, F_reserved, 
-	NameTests[43],true, 1};
-TEST_IFACE test45 = {45, F_reserved, 
-	NameTests[44],true, 1};
-TEST_IFACE test46 = {46, F_reserved, 
-	NameTests[45],true, 1};
-TEST_IFACE test47 = {47, F_reserved, 
-	NameTests[46],true, 1};
+TEST_IFACE test21 = {21, F_hash_comp_main, NameTests[20],true, 1};
+TEST_IFACE test22 = {22, F_hash_comp_comm0, NameTests[21],true, 1};
+TEST_IFACE test23 = {23, F_hash_comp_comm1, NameTests[22],true, 1};
+TEST_IFACE test24 = {24, F_reserved, NameTests[23],false, 1};
+TEST_IFACE test25 = {25, F_reserved, NameTests[24],false, 1};
+TEST_IFACE test26 = {26, F_test_sdram_main, NameTests[25],true, 1};
+TEST_IFACE test27 = {27, F_test_nvram_main, NameTests[26],true, 1};
+TEST_IFACE test28 = {28, F_reserved, NameTests[27],false, 1};
+TEST_IFACE test29 = {29, F_test_usbc_main, NameTests[28],true, 1};
+TEST_IFACE test30 = {30, F_test_usb_main, NameTests[29],true, 1};
+TEST_IFACE test31 = {31, F_reserved, NameTests[30],false, 1};
+TEST_IFACE test32 = {32, F_test_dozu0, NameTests[31],true, 1};
+TEST_IFACE test33 = {33, F_test_dozu1, NameTests[32],true, 1};
+TEST_IFACE test34 = {34, F_reserved, NameTests[33],false, 1};
+TEST_IFACE test35 = {35, F_reserved, NameTests[34],false, 1};
+TEST_IFACE test36 = {36, F_test_move0, NameTests[35],true, 1};
+TEST_IFACE test37 = {37, F_test_move1, NameTests[36],true, 1};
+TEST_IFACE test38 = {38, F_reserved, NameTests[37],false, 1};
+TEST_IFACE test39 = {39, F_reserved, NameTests[38],false, 1};
+TEST_IFACE test40 = {40, F_test_sk0, NameTests[39],true, 1};
+TEST_IFACE test41 = {41, F_test_sk1, NameTests[40],true, 1};
+TEST_IFACE test42 = {42, F_reserved, NameTests[41],true, 1};
+TEST_IFACE test43 = {43, F_reserved, NameTests[42],true, 1};
+TEST_IFACE test44 = {44, F_reserved, NameTests[43],true, 1};
+TEST_IFACE test45 = {45, F_reserved, NameTests[44],true, 1};
+TEST_IFACE test46 = {46, F_reserved, NameTests[45],true, 1};
+TEST_IFACE test47 = {47, F_reserved, NameTests[46],true, 1};
 
 
 //для циклич тестов

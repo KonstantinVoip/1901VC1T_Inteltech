@@ -65,7 +65,7 @@ int os_main(void* arg)
 	    error = tpo_main(arg);
 	#endif    
     //
-	#ifdef COMM  //Коммуникационный процессоры
+	#ifdef COMM  //Коммуникационный процессоры  переменные определены в tpo.h
 		if((MIN_NUMBER_COMM < 1)&(NUMBER_COMM_DSP > 0))
 		{
 		  if( OSE_OK == sys_chkname("comm0") )

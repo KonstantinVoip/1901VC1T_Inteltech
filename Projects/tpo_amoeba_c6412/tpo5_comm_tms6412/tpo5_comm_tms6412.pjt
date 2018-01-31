@@ -20,7 +20,7 @@ Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\tpo_amoeba\source\tpo_comm.cpp"
 Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\tpo_amoeba\source\tpo_hash.cpp"
 
 ["Archiver" Settings: "Debug"]
-Options=-r -o"C:\1901VC1T_Inteltech\3rdPartyLIB\dsp_core\Ñ6000\tpo_amoeba\lib\tpo5_comm_tms6412.lib"
+Options=-r -o"%AMOEBA_TPO_PATH%\lib\tpo5_comm_tms6412.lib"
 
 ["Archiver" Settings: "Release"]
 Options=-r -o".\Release\tpo5_comm_tms6412.lib"
