@@ -1,0 +1,70 @@
+; Code Composer Project File, Version 2.0 (do not modify or remove this line)
+
+[Project Settings]
+ProjectDir="C:\1901VC1T_Inteltech\Projects\os_drv_amoeba_c6457\os_drv_comm_tms6457\"
+ProjectType=Executable
+CPUFamily=TMS320C64XX
+Tool="Compiler"
+Tool="CustomBuilder"
+Tool="DspBiosBuilder"
+Tool="Linker"
+Config="Debug"
+Config="Release"
+
+[Source Files]
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\drv_amoeba\crypto\crypto_crc16tab.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\drv_amoeba\crypto\crypto_hash.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\drv_amoeba\dbgout\tms_c64xx\drv_dbgout.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\drv_amoeba\emif\emif.m632-comm.c64plus.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\drv_amoeba\fwmem\tms_c64xx\drv_fwmem.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\drv_amoeba\fwmem\tms_c64xx\drv_fwmem.s29al032dxxxxx04_gpio.m632-comm.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\drv_amoeba\ipmp\tms_c64xx\drv_ipmp.dsp-16.comm.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\drv_amoeba\net\net_packet_parser.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\drv_amoeba\net\tms_c64xx\tms6457\drv_eth6457.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\drv_amoeba\net\tms_c64xx\tms6457\drv_eth6457_emac.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\drv_amoeba\net\tms_c64xx\tms6457\drv_eth6457_sgmii.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\os_amoeba\src\tms_c64xx\core_init_cfg\m448_16\os_core_init_comm_16.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\os_amoeba\src\tms_c64xx\os_cache.c64plus.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\os_amoeba\src\tms_c64xx\os_core.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\os_amoeba\src\tms_c64xx\os_core_ll.c64plus.asm"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\os_amoeba\src\tms_c64xx\os_driver.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\os_amoeba\src\tms_c64xx\os_extension.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\os_amoeba\src\tms_c64xx\os_interrupt.c64plus.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\os_amoeba\src\tms_c64xx\os_interrupt_ll.asm"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\os_amoeba\src\tms_c64xx\os_interrupt_table.c64plus.asm"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\os_amoeba\src\tms_c64xx\os_lif.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\os_amoeba\src\tms_c64xx\os_message.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\os_amoeba\src\tms_c64xx\os_pll.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\os_amoeba\src\tms_c64xx\os_resource.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\os_amoeba\src\tms_c64xx\os_semaphore.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\os_amoeba\src\tms_c64xx\os_system.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\os_amoeba\src\tms_c64xx\os_time.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\rts_amoeba\lib\rts.tms320c6457.lib"
+Source="main_comm.cpp"
+Source="memory.cmd"
+Source="sections.cmd"
+
+["Compiler" Settings: "Debug"]
+Options=-g -pdsw225 -fr"$(Proj_dir)\Debug" -i"%AMOEBA_OS_PATH%\tms_c64xx" -i"%AMOEBA_RTS_PATH%\src" -i"%AMOEBA_DRV_PATH%\emif" -i"%AMOEBA_DRV_PATH%\dbgout\tms_c64xx" -i"%AMOEBA_DRV_PATH%\fwmem\tms_c64xx" -i"%AMOEBA_DRV_PATH%\net" -i"%AMOEBA_DRV_PATH%\net\tms_c64xx\tms6457" -i"%AMOEBA_DRV_PATH%\ipmp\tms_c64xx" -i"%AMOEBA_DRV_PATH%\crypto" -d"_DEBUG" -d"CHIP_6457" -mv6400+ --mem_model:data=far
+
+["Compiler" Settings: "Release"]
+Options=-pdsw225 -o3 -fr"$(Proj_dir)\Release" -mv6400
+
+["Linker" Settings: "Debug"]
+Options=-c -m".\Debug\os_drv_comm_tms6457.map" -o".\Debug\os_drv_comm_tms6457.out" -w -x
+
+["Linker" Settings: "Release"]
+Options=-c -m".\Release\os_drv_comm_tms6457.map" -o".\Release\os_drv_comm_tms6457.out" -w -x
+
+["memory.cmd" Settings: "Debug"]
+LinkOrder=1
+
+["memory.cmd" Settings: "Release"]
+LinkOrder=1
+
+["sections.cmd" Settings: "Debug"]
+LinkOrder=1
+
+["sections.cmd" Settings: "Release"]
+LinkOrder=1
+
