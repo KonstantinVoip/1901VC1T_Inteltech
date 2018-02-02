@@ -9,7 +9,21 @@
 #include "sialp.h"
 
 #include <net_struct.h>
-#include <drv_eth6412_emachal.h>
+
+
+
+#ifdef TPO5
+	  #include <drv_eth6412.h>
+	  #include <drv_eth6412_emachal.h>
+#endif
+
+
+
+#ifdef TPO6
+       #include <drv_eth6457.h> 
+       #include <drv_eth6457_emac.h>
+	   #include <drv_eth6457_sgmii.h>
+#endif
 
 
 

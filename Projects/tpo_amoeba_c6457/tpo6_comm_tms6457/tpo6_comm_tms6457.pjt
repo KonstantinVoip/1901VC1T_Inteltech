@@ -1,0 +1,34 @@
+; Code Composer Project File, Version 2.0 (do not modify or remove this line)
+
+[Project Settings]
+ProjectDir="C:\1901VC1T_Inteltech\Projects\tpo_amoeba_c6457\tpo6_comm_tms6457\"
+ProjectType=Library
+CPUFamily=TMS320C64XX
+Tool="Archiver"
+Tool="Compiler"
+Tool="CustomBuilder"
+Tool="DspBiosBuilder"
+Config="Debug"
+Config="Release"
+
+[Source Files]
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\tpo_amoeba\source\load_sios.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\tpo_amoeba\source\os_start_tpo_main.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\tpo_amoeba\source\qdma_rwrd.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\tpo_amoeba\source\sialp_c.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\tpo_amoeba\source\test_c.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\tpo_amoeba\source\tpo_comm.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\tpo_amoeba\source\tpo_hash.cpp"
+
+["Archiver" Settings: "Debug"]
+Options=-r -o"%AMOEBA_TPO_PATH%\lib\tpo6_comm_tms6457.lib"
+
+["Archiver" Settings: "Release"]
+Options=-r -o".\Release\tpo6_comm_tms6457.lib"
+
+["Compiler" Settings: "Debug"]
+Options=-g -pdsw225 -fr"$(Proj_dir)\Debug" -i"%AMOEBA_OS_PATH%\tms_c64xx" -i"%AMOEBA_RTS_PATH%\src" -i"%AMOEBA_TPO_PATH%\source\include" -i"%AMOEBA_DRV_PATH%\gpio\tms_c64xx" -i"%AMOEBA_DRV_PATH%\dbgout\tms_c64xx" -i"%AMOEBA_DRV_PATH%\fwmem\tms_c64xx" -i"%AMOEBA_DRV_PATH%\net" -i"%AMOEBA_DRV_PATH%\net\tms_c64xx\tms6457" -i"%AMOEBA_DRV_PATH%\crypto" -i"%AMOEBA_DRV_PATH%\mapi" -d"_DEBUG" -d"CHIP_6457" -d"TPO6" -d"COMM" -mv6400+
+
+["Compiler" Settings: "Release"]
+Options=-pdsw225 -o3 -fr"$(Proj_dir)\Release" -mv6400
+

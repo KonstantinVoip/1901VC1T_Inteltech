@@ -8,22 +8,33 @@
 
 
 #ifdef TPO5
-#include "net_struct.h"
-#include "drv_eth6412.h"
+	#include "net_struct.h"
+	#include "drv_eth6412.h"
 #endif
 
 #ifdef TPO7
-#include <drv_dp83820.h>
+     		#include "net_struct.h"
+	     	#include "drv_eth6457.h" 
+            //#include <drv_dp83820.h>  //такого уже нет видимо старые платы
 #endif
 
 
 #ifdef TPO6
-#include <drv_dp83820.h>
+	    	#include "net_struct.h"
+	    	#include "drv_eth6457.h" 
+	       //#include <drv_dp83820.h>  //такого уже нет видимо старые платы
 #endif
 
+
+//Из Глубин Сознания Пашки
+extern uint32 Send_Recive_Packet(uint32 FileNet, void* Pack_wr, void* Pack_rd, uint32 len);
+
+
+#define EMIFA_GLBCONT        (*(volatile uint32*)0x01800000) 
+#define EMIFA_CESEC0        (*(volatile uint32*)0x01800048) 
+#define EMIFA_CECTL0        (*(volatile uint32*)0x01800008) 
+
 char* tip[] = {"СИ ", "АЛП"};
-
-
 struct kdg_sialp kdg = {0,0,10,0,0,0,};
 
 
@@ -174,57 +185,54 @@ void si_eth(int delay, uint8 num0)
 
 
 	//error = drv_eth6412_plug ( "/dev/net/eth0", cfg, 4, 4 );
+  	  file_eth = drv_mkd("/dev/net/eth0");
 
+	#ifdef TPO5   //Start TPO 5	
+		if(num0)
+		 while(1);
 
-	file_eth = drv_mkd("/dev/net/eth0");
-
-	#ifdef TPO5   //Start TPO 5
-	
-	if(num0)
-	 while(1);
-
-	error =	drv_ioctl(file_eth, NET_READ_REG, &phy);
-	if(error)
-	    asm( " nop" );
-
-	reg = phy.value;
-	//while (!kb_hit())
-
-	while (1)
-	{
-		phy.value=reg;//вкл
-		error =	drv_ioctl(file_eth, NET_WRITE_REG, &phy);
+		error =	drv_ioctl(file_eth, NET_READ_REG, &phy);
 		if(error)
 		    asm( " nop" );
-		CurTime = time_m() + delay*1000;
+
+		reg = phy.value;
+		//while (!kb_hit())
+
+		while (1)
+		{
+			phy.value=reg;//вкл
+			error =	drv_ioctl(file_eth, NET_WRITE_REG, &phy);
+			if(error)
+			    asm( " nop" );
+			CurTime = time_m() + delay*1000;
+				while (time_m() < CurTime);
+			phy.value=reg|0x2000;//выкл
+			error =	drv_ioctl(file_eth, NET_WRITE_REG, &phy);
+			if(error)
+			    asm( " nop" );
+			CurTime = time_m() + delay*1000;
 			while (time_m() < CurTime);
-		phy.value=reg|0x2000;//выкл
-		error =	drv_ioctl(file_eth, NET_WRITE_REG, &phy);
-		if(error)
-		    asm( " nop" );
-		CurTime = time_m() + delay*1000;
-		while (time_m() < CurTime);
-	}
-	#else
+		}
+	#else    //else TPO 5
 
-	uint8 buf[1400];
-	memset(buf, num0, sizeof(buf));
-	net_descriptor* p_txd = NULL;
-	//net_descriptor* p_rxd = NULL;
+		uint8 buf[1400];
+		memset(buf, num0, sizeof(buf));
+		net_descriptor* p_txd = NULL;
+		//net_descriptor* p_rxd = NULL;
 
-	while(1)
-	{
+		while(1)
+		{
 
-		do
-		  drv_ioctl( file_eth, NET_SEND_GET, &p_txd ); 	//готовим к отправке
-		while(p_txd == NULL);
+			do
+			  drv_ioctl( file_eth, NET_SEND_GET, &p_txd ); 	//готовим к отправке
+			while(p_txd == NULL);
 
-		  memcpy( p_txd->data, buf, sizeof(buf) );
-		  p_txd->length = sizeof(buf);
+			  memcpy( p_txd->data, buf, sizeof(buf) );
+			  p_txd->length = sizeof(buf);
 
-		  drv_ioctl( file_eth, NET_SEND_PUT, &p_txd ); 	//отправляем
-		  sleep_m(20);
-	}
+			  drv_ioctl( file_eth, NET_SEND_PUT, &p_txd ); 	//отправляем
+			  sleep_m(20);
+		}
 	#endif
 
 }
@@ -260,7 +268,7 @@ void si_stop_tx(int delay)
 }
 
 
-extern uint32 Send_Recive_Packet(uint32 FileNet, void* Pack_wr, void* Pack_rd, uint32 len);
+
 
 
 #ifdef CHIP_6457
@@ -272,98 +280,367 @@ extern uint32 Send_Recive_Packet(uint32 FileNet, void* Pack_wr, void* Pack_rd, u
 	#define GPIO_IN_DATA        (*(volatile uint32*)0x02b00020) // GPIO Input Data Register
 
 
-/**************************************************************************************************
-Syntax	    :    void alp_sinhrosig()	
-Return Value:
-***************************************************************************************************/
-void alp_sinhrosig()
-{
-	uint32 res = GPIO_DIR;
-	GPIO_DIR = res & 0xFFDF;
+	/**************************************************************************************************
+	Syntax	    :    void alp_sinhrosig()	
+	Return Value:
+	***************************************************************************************************/
+	void alp_sinhrosig()
+	{
+		uint32 res = GPIO_DIR;
+		GPIO_DIR = res & 0xFFDF;
 
-	GPIO_SET_DATA = 0x20;
+		GPIO_SET_DATA = 0x20;
 
-	asm ( " nop " );
-	asm ( " nop " );
-	asm ( " nop " );
-	asm ( " nop " );
-	asm ( " nop " );
-	asm ( " nop " );
-	asm ( " nop " );
-	asm ( " nop " );
-	asm ( " nop " );
-	asm ( " nop " );
-	GPIO_CLR_DATA = 0x20;
-}
-#endif
+		asm ( " nop " );
+		asm ( " nop " );
+		asm ( " nop " );
+		asm ( " nop " );
+		asm ( " nop " );
+		asm ( " nop " );
+		asm ( " nop " );
+		asm ( " nop " );
+		asm ( " nop " );
+		asm ( " nop " );
+		GPIO_CLR_DATA = 0x20;
+	}
+#endif //end CHIP_6457
 
-#ifdef CHIP_6412
+#ifdef CHIP_6412  ///////////////////////////////////////////////////////////////////////////////////////
+
 	#define		EN				(*(uint32 *)0x01B00000)
 	#define		DIR				(*(uint32 *)0x01B00004)
 	#define		VAL				(*(uint32 *)0x01B00008)
 
-//-------------------------------------------------------------
-//------------------------АЛП
-//-------------------------------------------------------------
-/**************************************************************************************************
-Syntax	    :    void alp_sinhrosig()	
-Return Value:
-***************************************************************************************************/
-void alp_sinhrosig()
-{
-	uint32 res = EN;
-
-	EN = res | 0x8;
-	res = DIR;
-	DIR = res | 0x8;
-	res = VAL;
-	VAL = res | 0x8;
-
-	asm ( " nop " );
-	asm ( " nop " );
-	asm ( " nop " );
-	asm ( " nop " );
-	asm ( " nop " );
-	asm ( " nop " );
-	asm ( " nop " );
-	asm ( " nop " );
-	asm ( " nop " );
-	asm ( " nop " );
-	VAL = res & (~0x8);
-}
+	//-------------------------------------------------------------
+	//------------------------АЛП
+	//-------------------------------------------------------------
 
 
-/**************************************************************************************************
-Syntax	    :    void alp_eth_6412(int delay, uint8 num0)	
-Return Value:
-***************************************************************************************************/
-void alp_eth_6412(int delay, uint8 num0)
-{
-	int32 error;
-	uint32 file_eth;
-
-	uint32 reg;
-	uint64 CurTime;
-
-	dev_reg phy;
-
-	phy.device = PHY_RW_REG;
-	phy.reg = 0x10;
-	uint8 buf[1400];
-	uint8 buf_rd[100];
-
-	memset(buf, 0xFF,sizeof(buf));
-	memset(buf, 0x00, 200);
-
-	//error = drv_eth6412_plug ( "/dev/net/eth0", cfg, 4, 4 );
-
-	file_eth = drv_mkd("/dev/net/eth0");
-	uint32 r = prc_disable();
-	uint32 u = 333;
-
-	while(1)
+	/**************************************************************************************************
+	Syntax	    :    void alp_sinhrosig()	
+	Return Value:
+	***************************************************************************************************/
+	void alp_sinhrosig()
 	{
+		uint32 res = EN;
+
+		EN = res | 0x8;
+		res = DIR;
+		DIR = res | 0x8;
+		res = VAL;
+		VAL = res | 0x8;
+
+		asm ( " nop " );
+		asm ( " nop " );
+		asm ( " nop " );
+		asm ( " nop " );
+		asm ( " nop " );
+		asm ( " nop " );
+		asm ( " nop " );
+		asm ( " nop " );
+		asm ( " nop " );
+		asm ( " nop " );
+		VAL = res & (~0x8);
+	}
+
+
+	/**************************************************************************************************
+	Syntax	    :    void alp_eth_6412(int delay, uint8 num0)	
+	Return Value:
+	***************************************************************************************************/
+	void alp_eth_6412(int delay, uint8 num0)
+	{
+		int32 error;
+		uint32 file_eth;
+
+		uint32 reg;
+		uint64 CurTime;
+
+		dev_reg phy;
+
+		phy.device = PHY_RW_REG;
+		phy.reg = 0x10;
+		uint8 buf[1400];
+		uint8 buf_rd[100];
+
+		memset(buf, 0xFF,sizeof(buf));
+		memset(buf, 0x00, 200);
+
+		//error = drv_eth6412_plug ( "/dev/net/eth0", cfg, 4, 4 );
+
+		file_eth = drv_mkd("/dev/net/eth0");
+		uint32 r = prc_disable();
+		uint32 u = 333;
+
+		while(1)
+		{
+			/*
+			u = 800;
+			while(u--)
+			{
+			asm ( " nop " );
+			asm ( " nop " );
+			asm ( " nop " );
+			asm ( " nop " );
+			asm ( " nop " );
+			asm ( " nop " );
+			asm ( " nop " );
+			asm ( " nop " );
+			}
+
+			alp_sinhrosig();
+
+			u = 400;
+			while(u--)
+			{
+			asm ( " nop " );
+			asm ( " nop " );
+			asm ( " nop " );
+			asm ( " nop " );
+			asm ( " nop " );
+			asm ( " nop " );
+			asm ( " nop " );
+			asm ( " nop " );
+			}
+			*/
+			error = Send_Recive_Packet(file_eth, buf, buf_rd, sizeof(buf));
+		} //end while
+	}
+
+
+	/**************************************************************************************************
+	Syntax	    :    void alp_to_plis_6412(uint8 num0)	
+	Return Value:    синхра на RN46, крайняя, ближе к ЦП - 
+					 данные на RN60, любая 
+	***************************************************************************************************/
+	void alp_to_plis_6412(uint8 num0)
+	{
+
+		uint32* addr= (uint32*)0x8000FFFC;
+		uint32* addr1= (uint32*)0x8001FFFF;
+		uint32 det = 0;
+		uint32		b = 1;
+
+
+		det = EMIFA_CECTL0;
+		EMIFA_CECTL0 = (det & 0xFFFFFF0F) | (0xFFC00020);
+		det = EMIFA_CESEC0;
+		EMIFA_CESEC0 = det | (b << 6);
+
+		uint32 buf[100];
+		memset(&det, num0, 4);
+		memset(buf, 0xff, sizeof(buf));
+		buf[99]=det; 
+		//det = num0 | (det<<32);
+
+		uint32 u = 333;
+		uint32 r = prc_disable();
+
+		while(true)
+		{
+		u = 700;
+			while(u--)
+			{
+			asm ( " nop " );
+			asm ( " nop " );
+			asm ( " nop " );
+			asm ( " nop " );
+			asm ( " nop " );
+			asm ( " nop " );
+			asm ( " nop " );
+			asm ( " nop " );
+			} //end while u
+		//u = 400;
+		*addr = 0xFFFFFFFF;
+		*addr1 = 0xFFFFFFFF;
+		*addr1 = 0xFFFFFFFF;
+		*addr1 = 0xFFFFFFFF;
+		*addr1 = 0xFFFFFFFF;
+		*addr1 = 0xFFFFFFFF;
+		*addr1 = 0xFFFFFFFF;
+		*addr1 = 0xFFFFFFFF;
+		*addr1 = 0xFFFFFFFF;
+		*addr1 = 0xFFFFFFFF;
+		*addr1 = 0xFFFFFFFF;
+		*addr1 = 0xFFFFFFFF;
+		*addr1 = 0xFFFFFFFF;
+		*addr1 = 0xFFFFFFFF;
+		*addr1 = 0xFFFFFFFF;
+		*addr1 = 0xFFFFFFFF;
+		*addr1 = 0xFFFFFFFF;
+		*addr1 = det;
+		//while(u--);
+		//*addr1 = det;
+		//memcpy(addr, buf, 400);
+		} //end while
+
+	}
+
+
+#else  //NON_CHIP_6412  _and 6457  vidimo chip 6416
+
+	//uint32* REGe = (uint32*)0x01800000;
+	/**************************************************************************************************
+	Syntax	    :    void alp_to_plis_6457(uint8 num0)
+	Return Value:    
+	***************************************************************************************************/
+	void alp_to_plis_6457(uint8 num0)
+	{
+
+		uint32 res = GPIO_DIR;
+		GPIO_DIR = res & 0xFF1F;
+
+		uint64* addr= (uint64*)0xC000FFF0;
+		uint64* addr1= (uint64*)0xC000FFFF;
+		uint64 det = 0;
+		memset(&det, num0, 8);
+		//det = num0 | (det<<32);
+
+		uint32 u = 333;
+		uint32 r = prc_disable();
+
+		while(true)
+		{
+		u = 800;
+			while(u--)
+			{
+				asm ( " nop " );
+				asm ( " nop " );
+				asm ( " nop " );
+				asm ( " nop " );
+				asm ( " nop " );
+				asm ( " nop " );
+				asm ( " nop " );
+				asm ( " nop " );
+			}
+		u = 20;
+		*addr = 0xFFFFFFFFFFFFFFFF;
+
+
+			while(u--)
+			{
+			*addr1 = 0xFFFFFFFFFFFFFFFF;
+			*addr1 = 0xFFFFFFFFFFFFFFFF;
+			*addr1 = 0xFFFFFFFFFFFFFFFF;
+			*addr1 = 0xFFFFFFFFFFFFFFFF;
+			*addr1 = 0xFFFFFFFFFFFFFFFF;
+			*addr1 = 0xFFFFFFFFFFFFFFFF;
+			*addr1 = 0xFFFFFFFFFFFFFFFF;
+			*addr1 = 0xFFFFFFFFFFFFFFFF;
+			*addr1 = 0xFFFFFFFFFFFFFFFF;
+			*addr1 = 0xFFFFFFFFFFFFFFFF;
+			*addr1 = 0xFFFFFFFFFFFFFFFF;
+			*addr1 = 0xFFFFFFFFFFFFFFFF;
+			*addr1 = 0xFFFFFFFFFFFFFFFF;
+			*addr1 = 0xFFFFFFFFFFFFFFFF;
+			*addr1 = 0xFFFFFFFFFFFFFFFF;
+			*addr1 = 0xFFFFFFFFFFFFFFFF;
+			*addr1 = 0xFFFFFFFFFFFFFFFF;
+			*addr1 = 0xFFFFFFFFFFFFFFFF;
+			*addr1 = 0xFFFFFFFFFFFFFFFF;
+			*addr1 = 0xFFFFFFFFFFFFFFFF;
+			*addr1 = 0xFFFFFFFFFFFFFFFF;
+			}
+	*addr1 = det;
+		}//end while true
+
+	}//end function
+
+
+
+	/**************************************************************************************************
+	Syntax	    :    void alp_eth_6457(int delay, uint8 num0)
+	Return Value:    
+	***************************************************************************************************/
+	void alp_eth_6457(int delay, uint8 num0)
+	{
+
+		uint32 res = 0;
+		int error = 0;
+		uint32 u = 333;
+
+
+		uint32* regtx = (uint32*)0x02C40030;
+		uint32  regdat=0;
+
+		regdat = *regtx;
+		regdat = regdat & 0xFFFFFFFE;
+
+
+		while(1)
+		{
+
+			*regtx = regdat;
+
+
+			u = 800;
+			while(u--)
+			{
+				asm ( " nop " );
+				asm ( " nop " );
+				asm ( " nop " );
+				asm ( " nop " );
+				asm ( " nop " );
+				asm ( " nop " );
+				asm ( " nop " );
+				asm ( " nop " );
+			}
+
+			alp_sinhrosig();
+
+			u = 500;
+			while(u--)
+			{
+				asm ( " nop " );
+				asm ( " nop " );
+				asm ( " nop " );
+				asm ( " nop " );
+				asm ( " nop " );
+				asm ( " nop " );
+			}
+
+			if(num0)
+			*regtx = regdat | 1;
+
+			u = 50;
+
+			while(u--)
+			{
+				asm ( " nop " );
+			}
+
+	    } //end while(1)
+
+
 		/*
+		//uint32* reg_gpio = (uint32*)0x01B00008;
+		//uint32 l = 0;
+		uint32 id1 = 0;
+		uint32 id2 = 0;
+		bool link = false;
+
+		uint32 u = 333;
+
+
+		//uint8 buf_big_wr[LEN_BUF1_FOR_TEST_SK];	//1514
+		uint8 buf_small_wr[LEN_BUF2_FOR_TEST_SK];	//64
+		//uint8 buf_big_rd[LEN_BUF1_FOR_TEST_SK];	//1514
+		uint8 buf_small_rd[LEN_BUF2_FOR_TEST_SK];	//64
+
+		//memset(buf_big_wr, num0, LEN_BUF1_FOR_TEST_SK);
+		memset(buf_small_wr, num0, LEN_BUF2_FOR_TEST_SK);
+		//memset(buf_big_rd, 0, LEN_BUF1_FOR_TEST_SK);
+		memset(buf_small_rd, 0, LEN_BUF2_FOR_TEST_SK);
+
+		uint32 FileNet = drv_mkd("/dev/net/eth0");
+		uint32 FileNet1 = 0;
+
+		sleep_m(160);
+
+		error = drv_ioctl(FileNet, NET_LINK, &link);
+
+		while(1)
+		{
 		u = 800;
 		while(u--)
 		{
@@ -379,7 +656,7 @@ void alp_eth_6412(int delay, uint8 num0)
 
 		alp_sinhrosig();
 
-		u = 400;
+		u = 500;
 		while(u--)
 		{
 		asm ( " nop " );
@@ -388,155 +665,28 @@ void alp_eth_6412(int delay, uint8 num0)
 		asm ( " nop " );
 		asm ( " nop " );
 		asm ( " nop " );
-		asm ( " nop " );
-		asm ( " nop " );
 		}
+
+
+		if(link)
+		{
+		FileNet1=FileNet;
+		error = Send_Recive_Packet(FileNet1, buf_small_wr, buf_small_rd, LEN_BUF2_FOR_TEST_SK);
+		//	if((error == TPO_ERR) | (memcmp(buf_big_wr, buf_big_rd, LEN_BUF1_FOR_TEST_SK)))
+		//		res|=ERR_LOOP_PHY;
+
+		}
+
+		}
+
+		drv_rmd(FileNet);
 		*/
-		error = Send_Recive_Packet(file_eth, buf, buf_rd, sizeof(buf));
-	} //end while
-}
+
+	} //////////End function
+
+#endif
 
 
-#define EMIFA_GLBCONT        (*(volatile uint32*)0x01800000) 
-#define EMIFA_CESEC0        (*(volatile uint32*)0x01800048) 
-#define EMIFA_CECTL0        (*(volatile uint32*)0x01800008) 
-
-/**************************************************************************************************
-Syntax	    :    void alp_to_plis_6412(uint8 num0)	
-Return Value:    синхра на RN46, крайняя, ближе к ЦП - 
-				 данные на RN60, любая 
-***************************************************************************************************/
-void alp_to_plis_6412(uint8 num0)
-{
-
-	uint32* addr= (uint32*)0x8000FFFC;
-	uint32* addr1= (uint32*)0x8001FFFF;
-	uint32 det = 0;
-	uint32		b = 1;
-
-
-	det = EMIFA_CECTL0;
-	EMIFA_CECTL0 = (det & 0xFFFFFF0F) | (0xFFC00020);
-	det = EMIFA_CESEC0;
-	EMIFA_CESEC0 = det | (b << 6);
-
-	uint32 buf[100];
-	memset(&det, num0, 4);
-	memset(buf, 0xff, sizeof(buf));
-	buf[99]=det; 
-	//det = num0 | (det<<32);
-
-	uint32 u = 333;
-	uint32 r = prc_disable();
-
-	while(true)
-	{
-	u = 700;
-		while(u--)
-		{
-		asm ( " nop " );
-		asm ( " nop " );
-		asm ( " nop " );
-		asm ( " nop " );
-		asm ( " nop " );
-		asm ( " nop " );
-		asm ( " nop " );
-		asm ( " nop " );
-		} //end while u
-	//u = 400;
-	*addr = 0xFFFFFFFF;
-	*addr1 = 0xFFFFFFFF;
-	*addr1 = 0xFFFFFFFF;
-	*addr1 = 0xFFFFFFFF;
-	*addr1 = 0xFFFFFFFF;
-	*addr1 = 0xFFFFFFFF;
-	*addr1 = 0xFFFFFFFF;
-	*addr1 = 0xFFFFFFFF;
-	*addr1 = 0xFFFFFFFF;
-	*addr1 = 0xFFFFFFFF;
-	*addr1 = 0xFFFFFFFF;
-	*addr1 = 0xFFFFFFFF;
-	*addr1 = 0xFFFFFFFF;
-	*addr1 = 0xFFFFFFFF;
-	*addr1 = 0xFFFFFFFF;
-	*addr1 = 0xFFFFFFFF;
-	*addr1 = 0xFFFFFFFF;
-	*addr1 = det;
-	//while(u--);
-	//*addr1 = det;
-	//memcpy(addr, buf, 400);
-	} //end while
-
-}
-
-
-#else  //NON_CHIP_6412  _and 6457
-
-//uint32* REGe = (uint32*)0x01800000;
-/**************************************************************************************************
-Syntax	    :    void alp_to_plis_6457(uint8 num0)
-Return Value:    
-***************************************************************************************************/
-void alp_to_plis_6457(uint8 num0)
-{
-
-	uint32 res = GPIO_DIR;
-	GPIO_DIR = res & 0xFF1F;
-
-	uint64* addr= (uint64*)0xC000FFF0;
-	uint64* addr1= (uint64*)0xC000FFFF;
-	uint64 det = 0;
-	memset(&det, num0, 8);
-	//det = num0 | (det<<32);
-
-	uint32 u = 333;
-	uint32 r = prc_disable();
-
-	while(true)
-	{
-	u = 800;
-		while(u--)
-		{
-			asm ( " nop " );
-			asm ( " nop " );
-			asm ( " nop " );
-			asm ( " nop " );
-			asm ( " nop " );
-			asm ( " nop " );
-			asm ( " nop " );
-			asm ( " nop " );
-		}
-	u = 20;
-	*addr = 0xFFFFFFFFFFFFFFFF;
-
-
-		while(u--)
-		{
-		*addr1 = 0xFFFFFFFFFFFFFFFF;
-		*addr1 = 0xFFFFFFFFFFFFFFFF;
-		*addr1 = 0xFFFFFFFFFFFFFFFF;
-		*addr1 = 0xFFFFFFFFFFFFFFFF;
-		*addr1 = 0xFFFFFFFFFFFFFFFF;
-		*addr1 = 0xFFFFFFFFFFFFFFFF;
-		*addr1 = 0xFFFFFFFFFFFFFFFF;
-		*addr1 = 0xFFFFFFFFFFFFFFFF;
-		*addr1 = 0xFFFFFFFFFFFFFFFF;
-		*addr1 = 0xFFFFFFFFFFFFFFFF;
-		*addr1 = 0xFFFFFFFFFFFFFFFF;
-		*addr1 = 0xFFFFFFFFFFFFFFFF;
-		*addr1 = 0xFFFFFFFFFFFFFFFF;
-		*addr1 = 0xFFFFFFFFFFFFFFFF;
-		*addr1 = 0xFFFFFFFFFFFFFFFF;
-		*addr1 = 0xFFFFFFFFFFFFFFFF;
-		*addr1 = 0xFFFFFFFFFFFFFFFF;
-		*addr1 = 0xFFFFFFFFFFFFFFFF;
-		*addr1 = 0xFFFFFFFFFFFFFFFF;
-		*addr1 = 0xFFFFFFFFFFFFFFFF;
-		*addr1 = 0xFFFFFFFFFFFFFFFF;
-		}
-*addr1 = det;
-	}//end while true
-}
 
 /*
 void alp_to_plis_6457(uint8 num0)
@@ -654,147 +804,14 @@ while(u--)
 
 }
 
-
-
-
 }
 */
 
-/**************************************************************************************************
-Syntax	    :    void alp_eth_6457(int delay, uint8 num0)
-Return Value:    
-***************************************************************************************************/
-void alp_eth_6457(int delay, uint8 num0)
-{
-
-uint32 res = 0;
-int error = 0;
-uint32 u = 333;
-
-
-uint32* regtx = (uint32*)0x02C40030;
-uint32  regdat=0;
-
-regdat = *regtx;
-regdat = regdat & 0xFFFFFFFE;
-
-
-while(1)
-{
-
-*regtx = regdat;
-
-
-u = 800;
-while(u--)
-{
-asm ( " nop " );
-asm ( " nop " );
-asm ( " nop " );
-asm ( " nop " );
-asm ( " nop " );
-asm ( " nop " );
-asm ( " nop " );
-asm ( " nop " );
-}
-
-alp_sinhrosig();
-
-u = 500;
-while(u--)
-{
-asm ( " nop " );
-asm ( " nop " );
-asm ( " nop " );
-asm ( " nop " );
-asm ( " nop " );
-asm ( " nop " );
-}
-
-if(num0)
-*regtx = regdat | 1;
-
-u = 50;
-while(u--)
-{
-asm ( " nop " );
-}
 
 
 
 
-/*
-//uint32* reg_gpio = (uint32*)0x01B00008;
-//uint32 l = 0;
-uint32 id1 = 0;
-uint32 id2 = 0;
-bool link = false;
-
-uint32 u = 333;
-
-
-//uint8 buf_big_wr[LEN_BUF1_FOR_TEST_SK];	//1514
-uint8 buf_small_wr[LEN_BUF2_FOR_TEST_SK];	//64
-//uint8 buf_big_rd[LEN_BUF1_FOR_TEST_SK];	//1514
-uint8 buf_small_rd[LEN_BUF2_FOR_TEST_SK];	//64
-
-//memset(buf_big_wr, num0, LEN_BUF1_FOR_TEST_SK);
-memset(buf_small_wr, num0, LEN_BUF2_FOR_TEST_SK);
-//memset(buf_big_rd, 0, LEN_BUF1_FOR_TEST_SK);
-memset(buf_small_rd, 0, LEN_BUF2_FOR_TEST_SK);
-
-uint32 FileNet = drv_mkd("/dev/net/eth0");
-uint32 FileNet1 = 0;
-
-sleep_m(160);
-
-error = drv_ioctl(FileNet, NET_LINK, &link);
-
-while(1)
-{
-u = 800;
-while(u--)
-{
-asm ( " nop " );
-asm ( " nop " );
-asm ( " nop " );
-asm ( " nop " );
-asm ( " nop " );
-asm ( " nop " );
-asm ( " nop " );
-asm ( " nop " );
-}
-
-alp_sinhrosig();
-
-u = 500;
-while(u--)
-{
-asm ( " nop " );
-asm ( " nop " );
-asm ( " nop " );
-asm ( " nop " );
-asm ( " nop " );
-asm ( " nop " );
-}
-
-
-if(link)
-{
-FileNet1=FileNet;
-error = Send_Recive_Packet(FileNet1, buf_small_wr, buf_small_rd, LEN_BUF2_FOR_TEST_SK);
-//	if((error == TPO_ERR) | (memcmp(buf_big_wr, buf_big_rd, LEN_BUF1_FOR_TEST_SK)))
-//		res|=ERR_LOOP_PHY;
-
-}
-
-}
-
-drv_rmd(FileNet);
-*/
-
-}
 
 
 
-#endif
+
