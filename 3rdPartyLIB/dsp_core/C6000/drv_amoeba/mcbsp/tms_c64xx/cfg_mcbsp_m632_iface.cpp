@@ -1,23 +1,10 @@
-/**********************************************************************************************************************
-*                                        (c) COPYRIGHT by ZAO RCZI FORT.                                             *
-*        ..                                       All rights reserved.                                               *
-***********************************************************************************************************************
-* Module      : cfg_mcbsp_M448_15_main.cpp
-* Description : Настройки MCBSP для приемного канала
-* Author      : 
-******************************************************************************
-******************************************************************************
-* Module's Description Record:
-* ============================
-* Module's revision history:
-* ==========================
-* --------- $Log: mpcdrvlbcCyclone.h $
-* --------- Initial revision
-******************************************************************************/
 #include <rts.h>
 #include "os_csl_mcbsp.h"
 
-MCBSP_Config main_in_mcbspCfg = {
+//-------------------------------------------------------------------
+//----------------Настройки MCBSP для приемного канала---------------
+//-------------------------------------------------------------------
+MCBSP_Config iface_in_mcbspCfg = {
     MCBSP_SPCR_RMK(
         MCBSP_SPCR_FREE_YES,
         MCBSP_SPCR_SOFT_YES,
@@ -61,8 +48,8 @@ MCBSP_Config main_in_mcbspCfg = {
 
   MCBSP_SRGR_RMK(
     MCBSP_SRGR_GSYNC_SYNC,
-    MCBSP_SRGR_CLKSP_RISING,
-    MCBSP_SRGR_CLKSM_CLKS,
+    MCBSP_SRGR_CLKSP_FALLING,//RISING
+    MCBSP_SRGR_CLKSM_INTERNAL,
     MCBSP_SRGR_FSGM_DXR2XSR,
     MCBSP_SRGR_FPER_OF(15),
     MCBSP_SRGR_FWID_OF(0),
@@ -97,7 +84,7 @@ MCBSP_Config main_in_mcbspCfg = {
 //-------------------------------------------------------------------
 //--------------Настройки MCBSP для передающего канала---------------
 //-------------------------------------------------------------------
-MCBSP_Config main_out_mcbspCfg = {
+MCBSP_Config iface_out_mcbspCfg = {
   MCBSP_SPCR_RMK(
     MCBSP_SPCR_FREE_YES,
     MCBSP_SPCR_SOFT_YES,
@@ -142,91 +129,11 @@ MCBSP_Config main_out_mcbspCfg = {
   MCBSP_SRGR_RMK(
     MCBSP_SRGR_GSYNC_FREE,
     MCBSP_SRGR_CLKSP_RISING,
-    MCBSP_SRGR_CLKSM_CLKS,
+    MCBSP_SRGR_CLKSM_INTERNAL,
     MCBSP_SRGR_FSGM_DXR2XSR,
     MCBSP_SRGR_FPER_OF(15),
     MCBSP_SRGR_FWID_OF(0),
-    MCBSP_SRGR_CLKGDV_OF(11)//17//11
-  ),
-
-  MCBSP_MCR_DEFAULT,
-  MCBSP_RCERE0_DEFAULT,
-  MCBSP_RCERE1_DEFAULT,
-  MCBSP_RCERE2_DEFAULT,
-  MCBSP_RCERE3_DEFAULT,
-  MCBSP_XCERE0_DEFAULT,
-  MCBSP_XCERE1_DEFAULT,
-  MCBSP_XCERE2_DEFAULT,
-  MCBSP_XCERE3_DEFAULT,
-
-  MCBSP_PCR_RMK(
-    MCBSP_PCR_XIOEN_SP,
-    MCBSP_PCR_RIOEN_SP,
-    MCBSP_PCR_FSXM_INTERNAL,
-    MCBSP_PCR_FSRM_INTERNAL,
-    MCBSP_PCR_CLKXM_INPUT,
-    MCBSP_PCR_CLKRM_INPUT,
-    MCBSP_PCR_CLKSSTAT_0,
-    MCBSP_PCR_DXSTAT_0,
-    MCBSP_PCR_FSXP_ACTIVEHIGH,
-    MCBSP_PCR_FSRP_ACTIVEHIGH,
-    MCBSP_PCR_CLKXP_RISING,
-    MCBSP_PCR_CLKRP_FALLING
-  )
-};
-//-------------------------------------------------------------------
-//--------------Настройки MCBSP для SPI---------------
-//-------------------------------------------------------------------
-MCBSP_Config main_spi_mcbspCfg = {
-  MCBSP_SPCR_RMK(
-    MCBSP_SPCR_FREE_YES,
-    MCBSP_SPCR_SOFT_YES,
-    MCBSP_SPCR_FRST_0,
-    MCBSP_SPCR_GRST_0,
-    MCBSP_SPCR_XINTM_XRDY,
-    MCBSP_SPCR_XSYNCERR_0,
-    MCBSP_SPCR_XRST_DEFAULT,
-    MCBSP_SPCR_DLB_OFF,
-    MCBSP_SPCR_RJUST_RZF,
-    MCBSP_SPCR_CLKSTP_DELAY,
-    MCBSP_SPCR_DXENA_OFF,
-    MCBSP_SPCR_RINTM_RRDY,
-    MCBSP_SPCR_RSYNCERR_0,
-    MCBSP_SPCR_RRST_0
-  ),
-
-  MCBSP_RCR_RMK(
-    MCBSP_RCR_RPHASE_SINGLE,
-    MCBSP_RCR_RFRLEN2_OF(0),
-    MCBSP_RCR_RWDLEN2_8BIT,
-    MCBSP_RCR_RCOMPAND_DEFAULT,
-    MCBSP_RCR_RFIG_DEFAULT,
-    MCBSP_RCR_RDATDLY_1BIT,
-    MCBSP_RCR_RFRLEN1_OF(0),
-    MCBSP_RCR_RWDLEN1_8BIT,
-    MCBSP_RCR_RWDREVRS_DEFAULT
-  ),
-
-  MCBSP_XCR_RMK(
-    MCBSP_XCR_XPHASE_SINGLE,
-    MCBSP_XCR_XFRLEN2_OF(0),
-    MCBSP_XCR_XWDLEN2_8BIT,
-    MCBSP_XCR_XCOMPAND_DEFAULT,
-    MCBSP_XCR_XFIG_DEFAULT,
-    MCBSP_XCR_XDATDLY_1BIT,
-    MCBSP_XCR_XFRLEN1_OF(0),
-    MCBSP_XCR_XWDLEN1_8BIT,
-    MCBSP_XCR_XWDREVRS_DEFAULT
-  ),
-
-  MCBSP_SRGR_RMK(
-    MCBSP_SRGR_GSYNC_FREE,
-    MCBSP_SRGR_CLKSP_RISING,
-    MCBSP_SRGR_CLKSM_CLKS,
-    MCBSP_SRGR_FSGM_DXR2XSR,
-    MCBSP_SRGR_FPER_DEFAULT,
-    MCBSP_SRGR_FWID_DEFAULT,
-    MCBSP_SRGR_CLKGDV_OF(30)
+    MCBSP_SRGR_CLKGDV_OF(11)// 17 - 10Mhz, 11 - 15Mhz, 9 - 18Mhz
   ),
 
   MCBSP_MCR_DEFAULT,
@@ -245,25 +152,25 @@ MCBSP_Config main_spi_mcbspCfg = {
     MCBSP_PCR_FSXM_INTERNAL,
     MCBSP_PCR_FSRM_EXTERNAL,
     MCBSP_PCR_CLKXM_OUTPUT,
-    MCBSP_PCR_CLKRM_INPUT,
+    MCBSP_PCR_CLKRM_OUTPUT,//OUTPUT
     MCBSP_PCR_CLKSSTAT_0,
     MCBSP_PCR_DXSTAT_0,
     MCBSP_PCR_FSXP_ACTIVEHIGH,
     MCBSP_PCR_FSRP_ACTIVEHIGH,
-    MCBSP_PCR_CLKXP_FALLING,
-    MCBSP_PCR_CLKRP_RISING
-  ),
+    MCBSP_PCR_CLKXP_RISING,
+    MCBSP_PCR_CLKRP_FALLING
+  )
 };
 
 //-------------------------------------------------------------------
 //---------------Настройки EDMA для передающего канала---------------
 //-------------------------------------------------------------------
-EDMA_Config main_out_edmaCfg =
+EDMA_Config iface_out_edmaCfg =
 {
     //Making Options parameter register - EDMA_OPT
     EDMA_OPT_RMK
     (
-        EDMA_OPT_PRI_URGENT,//URGENT
+        EDMA_OPT_PRI_URGENT,
         EDMA_OPT_ESIZE_32BIT,
         EDMA_OPT_2DS_NO,
         EDMA_OPT_SUM_INC,
@@ -288,12 +195,12 @@ EDMA_Config main_out_edmaCfg =
 //-------------------------------------------------------------------
 //-----------------Настройки EDMA для приемного канала---------------
 //-------------------------------------------------------------------
-EDMA_Config main_in_edmaCfg =
+EDMA_Config iface_in_edmaCfg =
 {
     //Making Options parameter register - EDMA_OPT
     EDMA_OPT_RMK
     (
-        EDMA_OPT_PRI_URGENT,//URGENT
+        EDMA_OPT_PRI_URGENT,
         EDMA_OPT_ESIZE_32BIT,
         EDMA_OPT_2DS_NO,
         EDMA_OPT_SUM_NONE,
@@ -315,3 +222,5 @@ EDMA_Config main_in_edmaCfg =
     EDMA_IDX_OF(0x00000000),//Index parameter
     EDMA_RLD_OF(0x00000000) //Count reload/link parameter
 };
+
+

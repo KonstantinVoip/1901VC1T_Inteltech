@@ -28,7 +28,5 @@ AMOEBA_TPO_PATH            C:\1901VC1T_Inteltech\3rdPartyLIB\dsp_core\С6000\tpo_
 Описание некотрых DEFINE используемых при сборке проектов
 ISP176_BUS_32==1 - шина 32 бита 
 ISP176_BUS_32==0 - шина 16 бит
-
-
 NO_OS_MEMTST     - тестирование памяти  drv_nvram.cpp,os_core.cpp
-
+OS_SUPPORT_SYNCHRONIZATION  - поддкржка синхронизация Спарки. можно включить или выключить.

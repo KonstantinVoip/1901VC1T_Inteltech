@@ -1,14 +1,13 @@
 /**********************************************************\
-*          ISP 176x (32-bit bus) memory configuration
-*          EMIFA CE0 Файл Конфигурации для ПП(IFace) Процессоров.
-*          Платы ПВ-040 ,ПВ-044. 
+*          ISP 176x (16-bit bus) memory configuration
+*                        EMIFB CE0
 \**********************************************************/
 MEMORY 
 {
-        /* 1 KByte */
-        ISP176X_REGISTER :  origin = 0x80000000, length = 0x800
-        /* 63 KByte */
-        ISP176X_PAYLOAD  :  origin = 0x80000800, length = 0x1F800
+    /* 1 KByte */
+    ISP176X_REGISTER :  origin = 0x60000000, length = 0x400
+    /* 63 KByte */
+    ISP176X_PAYLOAD  :  origin = 0x60000400, length = 0xFC00
 }
 
 SECTIONS 

@@ -1,7 +1,7 @@
 ; Code Composer Project File, Version 2.0 (do not modify or remove this line)
 
 [Project Settings]
-ProjectDir="C:\1901VC1T_Inteltech\Projects\os_drv_amoeba_c6412\os_drv_comm_tms6412\"
+ProjectDir="C:\1901VC1T_Inteltech\Projects\os_drv_amoeba_c6412\os_drv_comm_tms6412_mb5\"
 ProjectType=Executable
 CPUFamily=TMS320C64XX
 Tool="Compiler"
@@ -54,7 +54,7 @@ Options=-g -pdsw225 -fr"$(Proj_dir)\Debug" -i"%AMOEBA_OS_PATH%\tms_c64xx" -i"%AM
 Options=-pdsw225 -o3 -fr"$(Proj_dir)\Release" -mv6400
 
 ["Linker" Settings: "Debug"]
-Options=-c -m".\Debug\os_drv_comm_tms6412.map" -o".\Debug\os_drv_comm_tms6412.out" -w -x
+Options=-c -m".\Debug\os_drv_comm_tms6412_mb5.map" -o".\Debug\os_drv_comm_tms6412_mb5.out" -w -x
 
 ["Linker" Settings: "Release"]
 Options=-c -m".\Release\os_drv_comm_tms6412.map" -o".\Release\os_drv_comm_tms6412.out" -w -x

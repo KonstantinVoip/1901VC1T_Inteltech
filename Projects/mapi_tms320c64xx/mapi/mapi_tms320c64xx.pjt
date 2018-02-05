@@ -12,13 +12,13 @@ Config="Debug"
 Config="Release"
 
 [Source Files]
-Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\drv_amoeba\mapi\mapi.loadafterme.cpp"
-Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\drv_amoeba\mapi\mapi.sensortest.cpp"
-Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\drv_amoeba\mapi\mapi.sptest.cpp"
-Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\drv_amoeba\mapi\mapi.sptestack.cpp"
-Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\drv_amoeba\mapi\mapi.sptestok.cpp"
-Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\drv_amoeba\mapi\mapi.syntime.cpp"
-Source="..\..\..\3rdPartyLIB\dsp_core\Ñ6000\drv_amoeba\mapi\mapi.terminate.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\drv_amoeba\mapi\mapi.loadafterme.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\drv_amoeba\mapi\mapi.sensortest.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\drv_amoeba\mapi\mapi.sptest.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\drv_amoeba\mapi\mapi.sptestack.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\drv_amoeba\mapi\mapi.sptestok.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\drv_amoeba\mapi\mapi.syntime.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\drv_amoeba\mapi\mapi.terminate.cpp"
 
 ["Archiver" Settings: "Debug"]
 Options=-r -o"%AMOEBA_DRV_PATH%\mapi\lib\mapi_tms64xx.lib"

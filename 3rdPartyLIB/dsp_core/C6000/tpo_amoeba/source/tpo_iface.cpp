@@ -234,7 +234,9 @@ int tpo_iface(void* arg)
 	{   //->>>>  test_i.cpp   [function tpo_msg_discover.]  
 			error = tpo_msg_discover();
     }
+   
     fprintf(dout,"iface(оо)_pv40:tpo_msg_discover\n");
+
 	if(error == TPO_OK)
 	{
             	

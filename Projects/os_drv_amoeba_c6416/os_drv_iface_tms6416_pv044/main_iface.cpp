@@ -4,7 +4,7 @@
 ***********************************************************************************************************************
 #
 # NAME
-# > main_iface.cpp  (файл интерфейсной платы ПВ-040)
+# > main_iface.cpp  (файл интерфейсной платы ПВ-044)
 #
 # DESCRIPTION
 # Инструкция по Отладке Проекта:
@@ -59,6 +59,8 @@ extern int os_main(void* arg);   //Внешний Старт от os_Main_Нужно_видимо_ТПО
 
 
 
+//Тоже Самое что ПВ-040
+
 DEFINE_USBDEV(USB1,0,0);
 DEFINE_USBDEV(USB2,1,0);
 DEFINE_USBDEV(USB3,2,0);
@@ -86,7 +88,11 @@ void dev_assignLetter(uint32 usbhc_plug)
 
 
 
-// ---------------------------------------------------------------------------
+
+/*****************************************************************************
+Syntax:  void os_config()	    
+Remarks: Конфигурация ОС			    
+*******************************************************************************/
 void os_config()
 {
   syscall_init( __syscall_tab, sizeof(void*) * SYSCALL__COUNT__ );
@@ -100,83 +106,16 @@ void os_config()
 
   emif_init();
 }
-// ---------------------------------------------------------------------------
-int test_process_1( void* arg )
-{
-  uint32 d;
-  #define L 1024
-  char buf[L];
-  msg_open( "speed_test_1" );
-  d = msg_discover( "comm0", "speed_test_1", SEM_INFINITY );
-  for( int32 i = 0; i < L; i++ ) buf[i] = i;
-  while( true )
-  {
-    msg_send( d, buf, L );
-  }
-  msg_close();
-}
-// ---------------------------------------------------------------------------
-int test_process_2( void* arg )
-{
-  #define L 1024
-  char buf[L];
-  s_message* m;
-  uint32 st, et;
-  int32 traf;
-  FILE* dout; 
-  dout = fopen( "/dev/dbgout", "wb" );
-  msg_open( "speed_test_2" );
-  st = time_s();
-  traf = 0;
-  while( true )
-  {
-    msg_recv( &m, SEM_INFINITY );
-    msg_free( m );
-    et = time_s();
-    traf += m->length;
-    if( ( et - st ) >= 10 )
-    {
-      st = et;
-      traf <<= 3;
-      fprintf( dout, "speed: %d.%02d Mbit/sec\n", traf / 10000000, (traf % 10000000)/10000  );
-      traf = 0;
-    }
-  }
-  msg_close();
-  fclose( dout );
-}
-// ---------------------------------------------------------------------------
 
-// ---------------------------------------------------------------------------
 
-#if 0
-int os_process(void* arg)
-{
- 
-    //Тестирование Старта Процесса os_main. Когда есть ТПО
-    /*
-    s_prc_attr pattr;
-    memset( &pattr, 0, sizeof(pattr) );
-    pattr.stack = 4096;   
-    prc_create( &os_main, NULL, 0, &pattr );  //должны типа в os_main Где у нас есть ТПО или другаю Приложуха нужно убрать tpo_15_iface.lib
-    */
-    //Тестирование Процесса заглушки
-     
-    while(true)
-    {
-    asm(" nop");
-    }
-    
 
-}
-#endif
 
 
 // ---------------------------------------------------------------------------
 // Заглушка для тестирования ОС и драйверов без ТПО нужно тогда удалить библиотеку ТПО tpo_15_iface.lib
 // Если нужно Тестировать с ТПО то тогда нужно закоментировать этот вызов os_main чтобы os_main
 // вызывался из ТПО и стартовал
-#if 0
+//#if 0
 int os_main(void* arg)
 {
 
@@ -185,11 +124,15 @@ int os_main(void* arg)
     asm(" nop");
   }
 }
-#endif
+//#endif
 
 
 
 //#if 0
+/*****************************************************************************
+Syntax:  int os_process(void* arg)	    
+Remarks: Инициализация ОС и драйверов			    
+*******************************************************************************/
 int os_process(void* arg)
 {
     int32   error;  
@@ -200,7 +143,7 @@ int os_process(void* arg)
     
     if( dscr == RES_VOID )
     {
-        fprintf(dbg_out,"iface(ПП)_pv40:?dscr_error_stop =%d\n?",dscr);
+        fprintf(dbg_out,"iface(ПП)_pv44:?dscr_error_stop =%d\n?",dscr);
         while(1);
 	 	{
 	 		 asm( " nop" );
@@ -233,16 +176,19 @@ int os_process(void* arg)
     gpio.reg_gpen  = 0x00F0;
     gpio.reg_gpdir = 0x0000;
     gpio.reg_gpval = 0x0000;    
-    fprintf(dbg_out,"iface(ПП)_pv40:01 - Init_GPIO\n");
+    fprintf(dbg_out,"iface(ПП)_pv44:01 - Init_GPIO\n");
     error = drv_gpio_plug(&gpio);
     if(error) REG_OSTS0 |= OSTS0_GPIO_FAIL;
    
-    fprintf(dbg_out,"iface(ПП)_pv40:02 - Init_светодиодов\n");
+
+
+
+    fprintf(dbg_out,"iface(ПП)_pv40:02 - Init_LED\n");
     error = drv_led_plug();
     if(error) REG_OSTS0 |= OSTS0_LED_FAIL;
     
 
-    fprintf(dbg_out,"iface(ПП)_pv40:03 - Init_ MCBSP\n");
+    fprintf(dbg_out,"iface(ПП)_pv44:03 - Init_ MCBSP\n");
     error = drv_mcbsp_plug(&mcbsp_ctx);
     if(error) REG_OSTS0 |= OSTS0_MCBSP_FAIL;
     
@@ -260,35 +206,34 @@ int os_process(void* arg)
      
     }
     
-    fprintf(dbg_out,"iface(ПП)_pv40:06 - Init_RTC\n");
+    fprintf(dbg_out,"iface(ПП)_pv44:06 - Init_RTC\n");
     error = drv_rtc_plug("/dev/rtc");
     if(error) REG_OSTS0 |= OSTS0_RTC_FAIL;
+    
     if((rtc_d = drv_mkd( "/dev/rtc" ) ) == RES_VOID )
-    fprintf(dbg_out,"iface_pv40:Ошибка открытия rtc\n");
+    fprintf(dbg_out,"iface_pv44:Ошибка открытия rtc\n");
     drv_ioctl( rtc_d, RTC_GET_TIME, &dtm );
     time_set( dtm );
     
     
   
-    fprintf(dbg_out,"iface(ПП)_pv40:07 - Init_ГСЧ\n");
+    fprintf(dbg_out,"iface(ПП)_pv44:07 - Init_ГСЧ\n");
     error = drv_rnd_plug();
     if(error) REG_OSTS0 |= OSTS0_RND_FAIL;
 
 
-
-    
-    fprintf(dbg_out,"iface(ПП)_pv40:08 - Init_клавиатуры\n");
+    fprintf(dbg_out,"iface(ПП)_pv44:08 - Init_клавиатуры\n");
     error = drv_kbd_4x6_plug(2);
     if(error) REG_OSTS0 |= OSTS0_KBD_FAIL;
     
 	
-    fprintf(dbg_out,"iface(ПП)_pv40:09 - Init_внутренней флэш\n");
+    fprintf(dbg_out,"iface(ПП)_pv44:09 - Init_FWMEM\n");
     error = drv_fwmem_plug("/fwmem", 0x64000000, &fwmem_at49bv322d_gpio );
     if(error) REG_OSTS0 |= OSTS0_FWMEM_FAIL;
     
 
 	
-    fprintf(dbg_out,"iface(ПП)_pv40:10 - Init_драйвера РИК\n");
+    fprintf(dbg_out,"iface(ПП)_pv44:10 - Init_драйвера РИК\n");
     error = drv_rik_plug(10, 1);
     if(error) REG_OSTS0 |= OSTS0_RIK_FAIL;    
     
