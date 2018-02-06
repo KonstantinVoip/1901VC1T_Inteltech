@@ -1,7 +1,7 @@
 ; Code Composer Project File, Version 2.0 (do not modify or remove this line)
 
 [Project Settings]
-ProjectDir="C:\1901VC1T_Inteltech\Projects\os_drv_amoeba_c6457\os_drv_comm_tms6457\"
+ProjectDir="C:\1901VC1T_Inteltech\Projects\os_drv_amoeba_c6457\os_drv_comm_tms6457_mb6\"
 ProjectType=Executable
 CPUFamily=TMS320C64XX
 Tool="Compiler"
@@ -18,7 +18,8 @@ Source="..\..\..\3rdPartyLIB\dsp_core\C6000\drv_amoeba\dbgout\tms_c64xx\drv_dbgo
 Source="..\..\..\3rdPartyLIB\dsp_core\C6000\drv_amoeba\emif\emif.m632-comm.c64plus.cpp"
 Source="..\..\..\3rdPartyLIB\dsp_core\C6000\drv_amoeba\fwmem\tms_c64xx\drv_fwmem.cpp"
 Source="..\..\..\3rdPartyLIB\dsp_core\C6000\drv_amoeba\fwmem\tms_c64xx\drv_fwmem.s29al032dxxxxx04_gpio.m632-comm.cpp"
-Source="..\..\..\3rdPartyLIB\dsp_core\C6000\drv_amoeba\ipmp\tms_c64xx\drv_ipmp.dsp-16.comm.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\drv_amoeba\ipmp\tms_c64xx\drv_ipmp.dsp-m632.comm-c64plus.cpp"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\drv_amoeba\mapi\lib\mapi_tms64xx.lib"
 Source="..\..\..\3rdPartyLIB\dsp_core\C6000\drv_amoeba\net\net_packet_parser.cpp"
 Source="..\..\..\3rdPartyLIB\dsp_core\C6000\drv_amoeba\net\tms_c64xx\tms6457\drv_eth6457.cpp"
 Source="..\..\..\3rdPartyLIB\dsp_core\C6000\drv_amoeba\net\tms_c64xx\tms6457\drv_eth6457_emac.cpp"
@@ -45,7 +46,7 @@ Source="memory.cmd"
 Source="sections.cmd"
 
 ["Compiler" Settings: "Debug"]
-Options=-g -pdsw225 -fr"$(Proj_dir)\Debug" -i"%AMOEBA_OS_PATH%\tms_c64xx" -i"%AMOEBA_RTS_PATH%\src" -i"%AMOEBA_DRV_PATH%\emif" -i"%AMOEBA_DRV_PATH%\dbgout\tms_c64xx" -i"%AMOEBA_DRV_PATH%\fwmem\tms_c64xx" -i"%AMOEBA_DRV_PATH%\net" -i"%AMOEBA_DRV_PATH%\net\tms_c64xx\tms6457" -i"%AMOEBA_DRV_PATH%\ipmp\tms_c64xx" -i"%AMOEBA_DRV_PATH%\crypto" -d"_DEBUG" -d"CHIP_6457" -mv6400+ --mem_model:data=far
+Options=-g -pdsw225 -fr"$(Proj_dir)\Debug" -i"%AMOEBA_OS_PATH%\tms_c64xx" -i"%AMOEBA_RTS_PATH%\src" -i"%AMOEBA_DRV_PATH%\emif" -i"%AMOEBA_DRV_PATH%\dbgout\tms_c64xx" -i"%AMOEBA_DRV_PATH%\fwmem\tms_c64xx" -i"%AMOEBA_DRV_PATH%\net" -i"%AMOEBA_DRV_PATH%\net\tms_c64xx\tms6457" -i"%AMOEBA_DRV_PATH%\ipmp\tms_c64xx" -i"%AMOEBA_DRV_PATH%\crypto" -i"%AMOEBA_DRV_PATH%\gpio\tms_c64xx" -d"_DEBUG" -d"CHIP_6457" -mv6400+ --mem_model:data=far
 
 ["Compiler" Settings: "Release"]
 Options=-pdsw225 -o3 -fr"$(Proj_dir)\Release" -mv6400

@@ -7,6 +7,7 @@
 // !: -: 
 // ---------------------------------------------------------------------------
 #include <drv_fwmem.h>
+#include <drv_gpio.h>
 #include <os.h>
 // ---------------------------------------------------------------------------
 uint32 fwmem_s29al032dxxxxx04_gpio_translate_address( s_fwmem_context* ctx, uint32 address )

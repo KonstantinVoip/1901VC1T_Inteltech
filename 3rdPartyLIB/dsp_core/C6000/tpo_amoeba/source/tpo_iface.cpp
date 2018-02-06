@@ -3,8 +3,8 @@
 *        ..                                       All rights reserved.                                               *
 ***********************************************************************************************************************
 * Module      : tpo_iface.cpp
-* Description : основные функции ТПО ИП(Интерфейсного Процессора iface)
-* Author      : 
+* Description : основные функции ТПО ИП(Интерфейсного Процессора iface) для Плат ПВ-044 или ПВ-040
+* Author      : cpu tms320C6416
 ******************************************************************************
 ******************************************************************************
 * Module's Description Record:
@@ -15,13 +15,10 @@
 * --------- Initial revision
 ******************************************************************************/
 
-
-
-
-
-#include <os_syscall.h>
+#include <os_syscall.h>  //Cистемные вызовы
 #include <drv_dbgout.h>  //Отладочный вывод
 #include <rts.h>
+
 
 #include "tpo.h"
 #include "drv_usbms.h"
@@ -34,11 +31,25 @@
 #include "tpo_iface.h"
 
 
+
+
+//Настройки для Сборки ТПО
+
+//        #define	D	1		//работаем с СВ платой типа здесь будет Обмен ставим еденичку.
+//        #define	D	0		//работаем только с Перефирйной платой ПВ-40 (ПП)
+
+//   #define INTERFACE_PV_PLATA_ONLY   1    //Работа с Системной Платой
+     #define INTERFACE_PV_PLATA_ONLY   0    //Работа только с Интерфейсной Платой без Системного Обмена.
+  //#define TPO711MD //Для возможности считывать файлы (команды) с usb флэш.
+
+
+
+//ТПО для 5-ки МБ-5 (М448-1.5)
 #ifdef TPO5
-//#include "tpo_iface_5.h"
-#include "tests_name_5.h"
+	#include "tests_name_5.h"
 #endif
 
+//ТПО для 6-ки МБ-6 (М448-1.6)
 #ifdef TPO6
 	#ifdef TPO_M711B
 	#include "tests_name_711.h"
@@ -47,18 +58,18 @@
 	#endif
 #endif
 
+//ТПО для 7-ки МБ-7 (М632)
 #ifdef TPO7
-//#include "tpo_iface_7.h"
-#include "tests_name_7.h"
+	#include "tests_name_7.h"
 #endif
 
-        FILE* dout; 
-        #define	D	1		//работаем с СВ платой типа здесь будет Обмен ставим еденичку.
-//      #define	D	0		//работаем только с Перефирйной платой ПВ-40 (ПП)
 
 
-  //#define TPO711MD //Для работы без экрана надо раскоментировать.
 
+
+
+
+    FILE* dout;
 
 	#define	LOAD_PO		    	9
 	#define	LOAD_PO_PP			0
@@ -84,7 +95,7 @@
 	  { 0x00000000, 0x00000000 }
 	};
 
-	const char* _str__sys_header = "     Т П О      ";
+	const char* _str__sys_header = "     Т П О F U C K      ";
 	const char* _str__usb_device_detect = "Обнаружено USB устройство";
 	const char* _str__usb_device_ready = "Устройство готово к работе";
 	const char* _str__usb_device_remove = "USB устройство отключено";
@@ -106,9 +117,10 @@
 	};
 
 	void Exit_tpo(cs_menu* m, void* arg);
-	#ifdef TPO5
+
+#ifdef TPO5
 	void F_load_lif(cs_menu* m, void* arg);
-	#endif
+#endif
 
 	int print_time_prc(s_print_time_prc_arg* arg);
 	int usb_device_attach(s_usb_attach_func_arg* arg);
@@ -230,12 +242,14 @@ int tpo_iface(void* arg)
     fprintf(dout,"iface(ПП)_pv40:Con_init\n");
 
     //Установка обмена с СВ-039: 
-	if(D)
+	if(INTERFACE_PV_PLATA_ONLY)
 	{   //->>>>  test_i.cpp   [function tpo_msg_discover.]  
-			error = tpo_msg_discover();
+	  error = tpo_msg_discover();
+      fprintf(dout,"iface(ПП)_pv40:tpo_msg_discover\n");
+    
     }
    
-    fprintf(dout,"iface(ПП)_pv40:tpo_msg_discover\n");
+  
 
 	if(error == TPO_OK)
 	{
@@ -650,7 +664,7 @@ void run_command_from_usb()
 	      case ETHERNET:
 		  {
 			#ifdef TPO5
-			Send_cmd_comm(1,STOP_TX);
+				Send_cmd_comm(1,STOP_TX);
 			#endif
 
 			//				val_1=0 - постояннй меандр
@@ -787,14 +801,13 @@ void run_menu()
     drv_ioctl(file_usb, USB_DEVICE_ATTACH, &ubs_event);
   }
 
-	arg_exit_tpo exit_tpo;
-
-	exit_tpo.exit = &exit;
-	exit_tpo.ubs_event = &ubs_event;
-	exit_tpo.sem = sem_disp;
-	exit_tpo.pid = pid;
-	exit_tpo.file_usb = file_usb;
-	exit_tpo.menu = &menu_tpo;
+  arg_exit_tpo exit_tpo;
+  exit_tpo.exit = &exit;
+  exit_tpo.ubs_event = &ubs_event;
+  exit_tpo.sem = sem_disp;
+  exit_tpo.pid = pid;
+  exit_tpo.file_usb = file_usb;
+  exit_tpo.menu = &menu_tpo;
 
 tmp_menu_tpo[0] = menu_tpo.create(NULL, NULL, "Тесты");
 {
@@ -806,11 +819,11 @@ tmp_menu_tpo[0] = menu_tpo.create(NULL, NULL, "Тесты");
 	}
 	tmp_menu_tpo[1] = tmp_menu_tpo[0]->create(Kb_and_Displ, NULL, "Клавиатура и дисплей");
 
-#ifdef TPO5
-	tmp_menu_tpo[1] = tmp_menu_tpo[0]->create(NULL, NULL, "Тесты платы ПВ-040");
-#else
-	tmp_menu_tpo[1] = tmp_menu_tpo[0]->create(NULL, NULL, "Тесты платы ПВ-044");
-#endif
+    #ifdef TPO5
+		tmp_menu_tpo[1] = tmp_menu_tpo[0]->create(NULL, NULL, "Тесты платы ПВ-040");
+    #else
+		tmp_menu_tpo[1] = tmp_menu_tpo[0]->create(NULL, NULL, "Тесты платы ПВ-044");
+    #endif	
 	{
 	  	tmp_menu_tpo[2] = tmp_menu_tpo[1]->create(Tst_SDRAM_full, NULL,"Тест ОЗУ");
 	  	tmp_menu_tpo[2] = tmp_menu_tpo[1]->create(NULL, NULL, "Тест USB");
@@ -831,19 +844,19 @@ tmp_menu_tpo[0] = menu_tpo.create(NULL, NULL, "Тесты");
 		  		tmp_menu_tpo[4] = tmp_menu_tpo[3]->create(F_AboutUSB, &usb_n[1], "USB2");
 			}
 
-// Сохранение ГСЧ
+			// Сохранение ГСЧ
 		  	tmp_menu_tpo[3] = tmp_menu_tpo[2]->create(GSCh_USB_file, NULL, "ГСЧ -> usb flash");
-//
-		}
-	  	tmp_menu_tpo[2] = tmp_menu_tpo[1]->create(inmenu_set_time, NULL, "Тест часов по питанию");
+			//
+		}//
+	    tmp_menu_tpo[2] = tmp_menu_tpo[1]->create(inmenu_set_time, NULL, "Тест часов по питанию");
 	  	tmp_menu_tpo[2] = tmp_menu_tpo[1]->create(NULL, NULL, "Тест светодиодов");
 		{
-#ifdef TPO5
+		  #ifdef TPO5
 		  	tmp_menu_tpo[3] = tmp_menu_tpo[2]->create(Tst_led, &num_led[0], "Абонент");
 		  	tmp_menu_tpo[3] = tmp_menu_tpo[2]->create(Tst_led, &num_led[1], "Канал");
-#else
+		  #else
 		  	tmp_menu_tpo[3] = tmp_menu_tpo[2]->create(Tst_led, &num_led[0], "Статус");
-#endif
+          #endif
 		}
 	}
 
@@ -1102,7 +1115,7 @@ void Exit_tpo(cs_menu* m, void* arg)
 	    else continue;
 	}
 
-	if(D) //Если есть системный обмен.
+	if(INTERFACE_PV_PLATA_ONLY) //Если есть системный обмен.
 	{
 		for(int i = MIN_NUMBER_COMM; i < NUMBER_COMM_DSP; i++)
 		Send_cmd_comm(i, EXIT_TPO);
@@ -1774,7 +1787,7 @@ void Cikl_tests(cs_menu* m, void* arg)
 		else
 		return;
 
-	if(D)
+	if(INTERFACE_PV_PLATA_ONLY)  //если есть системный обмен
 	{
 		Send_cmd_main(START_CIKL);
 
@@ -1820,7 +1833,7 @@ void Cikl_tests(cs_menu* m, void* arg)
 //				syslog(120," ResAllTest_PP = %d ", ResAllTest_PP);
 
 
-				if(D)
+				if(INTERFACE_PV_PLATA_ONLY) //если есть системный обмен.
 				{
 				esche_razok:
 				sleep_m(1000);

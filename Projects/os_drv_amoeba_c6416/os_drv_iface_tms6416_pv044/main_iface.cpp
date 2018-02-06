@@ -115,7 +115,7 @@ void os_config()
 // Заглушка для тестирования ОС и драйверов без ТПО нужно тогда удалить библиотеку ТПО tpo_15_iface.lib
 // Если нужно Тестировать с ТПО то тогда нужно закоментировать этот вызов os_main чтобы os_main
 // вызывался из ТПО и стартовал
-//#if 0
+#if 0
 int os_main(void* arg)
 {
 
@@ -124,7 +124,7 @@ int os_main(void* arg)
     asm(" nop");
   }
 }
-//#endif
+#endif
 
 
 
@@ -278,10 +278,10 @@ int os_process(void* arg)
 	dev_assignLetter(usbhc_plug); //назначение букв usb партициям
     drv_vfat_trigger_plug();
 
-//#if 0
+#if 0
     //Оставлю это не завтра  меж платный обмен IPMP!!! 17.01.2018
     //МежПроцессорный обмен по шине MCBSP c ЦП 
-    fprintf(dbg_out,"iface(ПП)_pv40:13-Init_IPMP0_MCBSP<->MAIN\n");
+    fprintf(dbg_out,"iface(ПП)_pv44:13-Init_IPMP0_MCBSP<->MAIN\n");
     error = drv_ipmp_mcbsp_plug( "/dev/ipmp/ipmp0" );
     if(error) 
     {
@@ -291,12 +291,12 @@ int os_process(void* arg)
     // Функция инициализирует и запускает процесс межпроцессорно-процессного
     // обмена. Переменная id указывает на уникальный номер процессора в
     // системе (от 0 до 255)  //Ядро ОС отсюда функция вызываеться
-    fprintf(dbg_out,"iface(ПП)_pv40:14-Init Interprocess Communication\n");
+    fprintf(dbg_out,"iface(ПП)_pv44:14-Init Interprocess Communication\n");
     //msg_start ->>os_message_start
     msg_start( 1, 8 );  //1 порядковый номер ЦП в нашеё системе
-//#endif
+#endif
 
-	 fprintf(dbg_out,"iface(ПП)_pv40:++OS_Startup Succesful++\n");
+	 fprintf(dbg_out,"iface(ПП)_pv44:++OS_Startup Succesful++\n");
      fclose(dbg_out); //Зарывем Отладочный вывоод
     
     //Для тестирования ТПО Запускаем os_main находящийся в ТПО или у нас локально.

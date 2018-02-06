@@ -117,9 +117,9 @@ int os_process(void* arg)
 {
     int32 error = OSE_OK;  
     uint32 d = RES_VOID;
+    uint32 number_of_comm_cpu=0;
  
- 
-#if 0 
+    
     
     // Initialize the OS root file system
     d = drv_mkd( "/" );
@@ -140,7 +140,10 @@ int os_process(void* arg)
     print("Initializing FWMEM driver: ");
     error = drv_fwmem_plug("/fwmem", 0xb0000000, &fwmem_s29al032dxxxxx04_gpio_m632_comm );    
     if(error == OSE_OK) print("OK\n"); else print("ERROR\n");
-    if(error != OSE_OK) REG_OSTS0 |= OSTS0_FWMEM_FAIL;
+   if(error != OSE_OK) REG_OSTS0 |= OSTS0_FWMEM_FAIL;
+ 
+ 
+#if 0 //Межпроцессорное Взаимодействие комментарим 
   
     // ----------------------------------------------------------  
     print("Initializing IPMP DOZU driver: ");    
@@ -155,29 +158,34 @@ int os_process(void* arg)
         char    name[8];
     } processor;
     d = drv_mkd("/dev/ipmp/ipmp0");
-    error = drv_ioctl(d, IPMP_NUMBER, &processor.number);
+    error = drv_ioctl(d, IPMP_NUMBER, &number_of_comm_cpu);
     if(error != OSE_OK) os_panic();
     drv_rmd(d);
     strcpy(processor.name, "comm");
-    processor.name[4] = '0' + processor.number;
+    processor.name[4] = '0' + number_of_comm_cpu;
     processor.name[5] = 0;
+ 
+#endif  // 
     
     // ----------------------------------------------------------  
     print("Initializing Network Adapter driver: ");
     net_config netcfg;
     memset( &netcfg, 0, sizeof(net_config) );
     netcfg.mask4 = NET_IP4( 255, 255, 255, 0 );
-    netcfg.ip4 = NET_IP4( 192, 168, processor.number, 1 );
+    netcfg.ip4 = NET_IP4( 192, 168, number_of_comm_cpu, 1 );
     netcfg.mac[0] = 0x00;
     netcfg.mac[1] = 0x80;
     netcfg.mac[2] = 0xc0;
     netcfg.mac[3] = 0xa8;
-    netcfg.mac[4] = processor.number;
+    netcfg.mac[4] = number_of_comm_cpu;
     netcfg.mac[5] = 0x01;    
     error = drv_eth6457_plug( "/dev/net/eth0", netcfg, 64, 64);
     if(error == OSE_OK) print("OK\n"); else print("ERROR\n");
     if(error != OSE_OK) REG_OSTS0 |= OSTS0_NETCARD_FAIL;    
     
+
+#if 0 //Межпроцессорное Взаимодействие комментарим 
+
     // ----------------------------------------------------------  
     print("Running Inter-Process Exchange: ");
     error  = sys_setname(processor.name);
@@ -219,6 +227,8 @@ int os_process(void* arg)
     d = msg_discover("comm2", "os", SEM_INFINITY);
     if(d != RES_VOID) print("OK\n"); else print("ERROR\n");    
     if(d == RES_VOID) REG_OSTS1 |= OSTS1_EXCH_COMM2_FAIL;      
+ 
+#endif //Межпроцессорное Взаимодействие комментарим  
     
     // ----------------------------------------------------------  
     print("Setting system time: ");
@@ -242,7 +252,7 @@ int os_process(void* arg)
     prc_create( &os_main, NULL, 0, &pattr );
     prc_system();    //Функция переводит процесс в состояние спящего системного процесса.
 
-#endif 
+ 
  
   
 

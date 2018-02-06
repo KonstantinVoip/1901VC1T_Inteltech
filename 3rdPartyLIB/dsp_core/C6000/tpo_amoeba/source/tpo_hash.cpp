@@ -3,7 +3,7 @@
 *        ..                                       All rights reserved.                                               *
 ***********************************************************************************************************************
 * Module      : tpo_hash.cpp
-* Description : Реализации функций хэширования
+* Description : Реализации функций хэширования и Подсчёт Контрольных Суммы.
 * Author      : 
 ******************************************************************************
 ******************************************************************************
@@ -11,7 +11,7 @@
 * ============================
 * Module's revision history:
 * ==========================
-* --------- $Log: mpcdrvlbcCyclone.h $
+* --------- $Log:  $
 * --------- Initial revision
 ******************************************************************************/
 
@@ -34,7 +34,10 @@ extern const uint8 hash_start_vect0[] =
 };
 
 
-
+/*****************************************************************************
+Syntax:  uint32 cry_hash_fwmem(s_hash* ctx, void* start_vector, hash_window* hwin	    
+Remarks:			    
+*******************************************************************************/
 uint32 cry_hash_fwmem(s_hash* ctx, void* start_vector, hash_window* hwin)
 {
   uint32   hash_text[128/4];
@@ -151,7 +154,35 @@ err_get_hash:
 
 
 
+/**************************************************************************************************\
+*  Подсчет HASH за всю флеш на нулевом стартово векторе
+\***sss********************************************************************************************/
+uint32 analysis_hash_fwmem(hash_window* hwin)
+{
+  register int32       error;
+  msg_hash_fwm       msg_hash;
+//повтор 3 раза... тк. появл. редкие ошибки
+  int32	ret = 3;
 
+//m_retry3:
+while(ret--)
+{
+  memset(&msg_hash, 0x0, sizeof(msg_hash_fwm));
+  error = cry_hash_fwmem(&msg_hash.hash, const_cast<uint8*>(hash_start_vect0), hwin);
+  if(error != TPO_OK)
+  {
+   msg_hash.akn = error;
+//    goto m_return;
+  }
+  msg_hash.akn = hash_get(&msg_hash.hash_fwm);
+
+ if(0x0 == memcmp(&msg_hash.hash.h, &msg_hash.hash_fwm.h, sizeof(msg_hash.hash.h)))
+    return TPO_OK;
+}
+
+//m_return:
+    return TPO_ER_HASH;
+}
 
 
 
@@ -317,36 +348,7 @@ err_get_hash:
 	return TPO_ERR_FWM;
 }
 */
-/**************************************************************************************************\
-*  Подсчет HASH за всю флеш на нулевом стартово векторе
-\***sss********************************************************************************************/
 
-uint32 analysis_hash_fwmem(hash_window* hwin)
-{
-  register int32       error;
-  msg_hash_fwm       msg_hash;
-//повтор 3 раза... тк. появл. редкие ошибки
-  int32	ret = 3;
-
-//m_retry3:
-while(ret--)
-{
-  memset(&msg_hash, 0x0, sizeof(msg_hash_fwm));
-  error = cry_hash_fwmem(&msg_hash.hash, const_cast<uint8*>(hash_start_vect0), hwin);
-  if(error != TPO_OK)
-  {
-   msg_hash.akn = error;
-//    goto m_return;
-  }
-  msg_hash.akn = hash_get(&msg_hash.hash_fwm);
-
- if(0x0 == memcmp(&msg_hash.hash.h, &msg_hash.hash_fwm.h, sizeof(msg_hash.hash.h)))
-    return TPO_OK;
-}
-
-//m_return:
-    return TPO_ER_HASH;
-}
 
 
 /*

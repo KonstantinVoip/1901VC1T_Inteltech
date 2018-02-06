@@ -68,6 +68,7 @@ Source="..\..\..\3rdPartyLIB\dsp_core\C6000\os_amoeba\src\tms_c64xx\os_semaphore
 Source="..\..\..\3rdPartyLIB\dsp_core\C6000\os_amoeba\src\tms_c64xx\os_system.cpp"
 Source="..\..\..\3rdPartyLIB\dsp_core\C6000\os_amoeba\src\tms_c64xx\os_time.cpp"
 Source="..\..\..\3rdPartyLIB\dsp_core\C6000\rts_amoeba\lib\rts.tms320c6416.lib"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\tpo_amoeba\lib\tpo6_iface_tms6416.lib"
 Source="main_iface.cpp"
 Source="mem_fpga_pv040.cmd"
 Source="mem_isp176x.pv044.cmd"
