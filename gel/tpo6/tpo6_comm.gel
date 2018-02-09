@@ -1,0 +1,9 @@
+menuitem "tpo6_comm";
+
+hotmenu start()
+{
+GEL_Reset();
+GEL_Load("C:/1901VC1T_Inteltech/Projects/os_drv_amoeba_c6457/os_drv_comm_tms6457_mb6/Debug/os_drv_comm_tms6457.out");
+PC=0x00900000;
+}
+

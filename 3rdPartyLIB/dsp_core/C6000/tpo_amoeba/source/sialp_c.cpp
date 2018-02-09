@@ -1,3 +1,19 @@
+/**********************************************************************************************************************
+*                                        (c) COPYRIGHT by ZAO RCZI FORT.                                             *
+*        ..                                       All rights reserved.                                               *
+***********************************************************************************************************************
+* Module      : sialp_c.cpp
+* Description : Тесты СИ и АЛП для Коммуникационнго Процессора
+* Author      : 
+******************************************************************************
+******************************************************************************
+* Module's Description Record:
+* ============================
+* Module's revision history:
+* ==========================
+* --------- $Log:  $
+* --------- Initial revision
+******************************************************************************/
 #include <os_syscall.h>
 //#include <drv_dbgout.h>
 #include <rts.h>
@@ -109,9 +125,9 @@ void Test_sialp()
 			sleep_s(1);
 			//alp_to_plis(par.val_1);
 			#ifdef CHIP_6457
-			alp_eth_6457(10, par.val_1);	//start stop trancemiter
+				alp_eth_6457(10, par.val_1);	//start stop trancemiter
 			#else
-			alp_eth_6412(10, par.val_1);
+				alp_eth_6412(10, par.val_1);
 			#endif
 		  }
 	      break;
@@ -123,9 +139,9 @@ void Test_sialp()
 			msg_send(msg_from, &cdg_error, sizeof(kdg_cmd_ask));
 			sleep_s(1);
 			#ifdef CHIP_6457
-			alp_to_plis_6457(par.val_1);
+				alp_to_plis_6457(par.val_1);
 			#else
-			alp_to_plis_6412(par.val_1);
+				alp_to_plis_6412(par.val_1);
 			#endif
 		  }
 	      break;

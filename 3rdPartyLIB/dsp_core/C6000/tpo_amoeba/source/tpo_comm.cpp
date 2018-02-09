@@ -191,24 +191,23 @@ void Load_po_flash()
 	fwm_file = drv_mkd("/fwmem");
 
 
-  while(true)
-  {
-	if(msg_recv( &msg_desc, MSG_WAIT_10) != OSE_OK)
+ 	 while(true)
+   	 {
+		if(msg_recv( &msg_desc, MSG_WAIT_10) != OSE_OK)
 
-    if(msg_desc == NULL) continue;
-	if(msg_desc->length < 1024) break;
-			
-    msg_from = msg_desc->from;
-	memcpy(buf, msg_desc->data, msg_desc->length);
-    msg_free(msg_desc);      
+	    if(msg_desc == NULL) continue;
+		if(msg_desc->length < 1024) break;
+				
+	    msg_from = msg_desc->from;
+		memcpy(buf, msg_desc->data, msg_desc->length);
+	    msg_free(msg_desc);      
 
-	drv_ioctl(fwm_file, FWMEM_WRITE, &fwrw);
+		drv_ioctl(fwm_file, FWMEM_WRITE, &fwrw);
 
-	cdg_error.cmd = START_LOAD_PO;
-	cdg_error.ask = TPO_OK;
-	msg_send(msg_from, &cdg_error, sizeof(kdg_cmd_ask));
-	
-  }
+		cdg_error.cmd = START_LOAD_PO;
+		cdg_error.ask = TPO_OK;
+		msg_send(msg_from, &cdg_error, sizeof(kdg_cmd_ask));	
+  	}
 
 
  drv_rmd(fwm_file);
@@ -217,8 +216,8 @@ void Load_po_flash()
 
 
 /**************************************************************************************************
-Syntax:    int tpo_comm(void* arg, char* sys_name)  		
-Return Value:	
+Syntax:       int tpo_comm(void* arg, char* sys_name)  		
+Return Value: Старт ТПО Коммуникационного Процессора 	
 ***************************************************************************************************/
 int tpo_comm(void* arg, char* sys_name)
 {
@@ -285,10 +284,11 @@ int tpo_comm(void* arg, char* sys_name)
   while(true)
   {
     error = msg_recv(&msg_desc, MSG_WAIT_5);
+    
     if(msg_desc == NULL)
     {
-	prc_yield();
-    continue;
+		prc_yield();
+	    continue;
 	}
     if(msg_desc->length != sizeof(kdg_cmd))
     {
@@ -301,6 +301,7 @@ int tpo_comm(void* arg, char* sys_name)
     msg_from = msg_desc->from;
     cdg_error.cmd = ((kdg_cmd*)msg_desc->data)->cmd;
     msg_free(msg_desc);      
+   
     switch (cdg_error.cmd)
     {
 	  //Тесты СИ АЛП:
@@ -338,7 +339,7 @@ int tpo_comm(void* arg, char* sys_name)
 		result.cmd = RES_N_TEST;
         msg_send(msg_from, &result, sizeof(kdg_rez_test));	
 	  }
-      break;
+      break; //
      //
 	  case START_TEST_DOZU_NAGR:
 	  {
@@ -449,54 +450,53 @@ int tpo_comm(void* arg, char* sys_name)
       //
 	  case GOTOV_PP:
 	  {
-		uint8 recb[400];
-		memset(recb, 0, sizeof(recb));
-		uint32 result[2][2];
-		cdg_error.ask = GOTOV_PP;
-		kdg_rez_test gotov;
-		memset(&gotov, 0, sizeof(kdg_rez_test));
-        msg_send(msg_from, &cdg_error, sizeof(kdg_cmd_ask));
-		gotov.cmd = RES_N_TEST;
+			uint8 recb[400];
+			memset(recb, 0, sizeof(recb));
+			uint32 result[2][2];
+			cdg_error.ask = GOTOV_PP;
+			kdg_rez_test gotov;
+			memset(&gotov, 0, sizeof(kdg_rez_test));
+	        msg_send(msg_from, &cdg_error, sizeof(kdg_cmd_ask));
+			gotov.cmd = RES_N_TEST;
 
-		#ifndef TPO7
-		ReadDARAM0(0xF00,&result[0],8);
-		ReadDARAM1(0xF00,&result[1],8);
-		if((result[0][1] == 0x12345678) | (result[1][1] == 0x12345678))
-		{
-		#else
-		uint16	res12 = FIFO_outIsReady();
-		if(res12 != 0)
-		{
-		FIFO_StartReadPacket(&recb,0, 8 + 20); //20 ???? 8-0
-		sleep_m(100);
-		memcpy(&result[0],&recb[20],8);
-		memcpy(&result[1],&check_buf[20],8);
-		FIFO_EndReadPacket();
-		#endif
-		gotov.n_test = CIKL;
-		gotov.data  = result[0][0];
-		gotov.data1 = result[1][0];
+			#ifndef TPO7
+				ReadDARAM0(0xF00,&result[0],8);
+				ReadDARAM1(0xF00,&result[1],8);
+				if((result[0][1] == 0x12345678) | (result[1][1] == 0x12345678))
+				{
+			#else
+				uint16	res12 = FIFO_outIsReady();
+				if(res12 != 0)
+				{
+					FIFO_StartReadPacket(&recb,0, 8 + 20); //20 ???? 8-0
+					sleep_m(100);
+					memcpy(&result[0],&recb[20],8);
+					memcpy(&result[1],&check_buf[20],8);
+					FIFO_EndReadPacket();
+			#endif
+					gotov.n_test = CIKL;
+					gotov.data  = result[0][0];
+					gotov.data1 = result[1][0];
+				} //завершение двойной if не работает.
+			
+				//еще не закончен цикл 
+				else
+				{
+				gotov.n_test = CIKL_NOT_READY;
+				gotov.data  = 0;
+				gotov.data1 = 0;
+				}
 
-		}
-		
-		//еще не закончен цикл 
-		else
-		{
-		gotov.n_test = CIKL_NOT_READY;
-		gotov.data  = 0;
-		gotov.data1 = 0;
-		}
+				/* 		
+				if(gl_result.err != TPO_OK)
+				{
+				gotov.err = gl_result.err;
+				gl_result.err = 0;
+				}
+				*/				
+	        msg_send(msg_from, &gotov, sizeof(kdg_rez_test));
 
-		/* 		
-		if(gl_result.err != TPO_OK)
-		{
-		gotov.err = gl_result.err;
-		gl_result.err = 0;
-		}
-		*/				
-        msg_send(msg_from, &gotov, sizeof(kdg_rez_test));
-
- 	  }
+ 	  } //end GOTOV_PP
       break;
 
 	  case START_TEST_MOVE:
@@ -570,58 +570,49 @@ int tpo_comm(void* arg, char* sys_name)
 
 		sleep_m(100);
 
-#ifndef TPO7
-		ReadDARAM0(0,&result, sizeof(kdg_rez_test));
-        msg_send(msg_from, &result, sizeof(result));
-
-		ReadDARAM1(0,&result1, sizeof(kdg_rez_test));
-        msg_send(msg_from, &result, sizeof(result));
-#else
-
-		res12 = FIFO_outIsReady();
-
-		FIFO_StartReadPacket(&recb,0, sizeof(kdg_rez_test)+20); //20 ???? 8-0
-		sleep_m(100);
-		memcpy(&result,&recb[20],sizeof(kdg_rez_test));
-		memcpy(&result1,&check_buf[20],sizeof(kdg_rez_test));
-		FIFO_EndReadPacket();
-
-		msg_send(msg_from, &result, sizeof(result));
-		msg_send(msg_from, &result1, sizeof(result));
-
-#endif
+		#ifndef TPO7
+			ReadDARAM0(0,&result, sizeof(kdg_rez_test));
+	        msg_send(msg_from, &result, sizeof(result));
+			ReadDARAM1(0,&result1, sizeof(kdg_rez_test));
+	        msg_send(msg_from, &result, sizeof(result));
+		#else
+			res12 = FIFO_outIsReady();
+			FIFO_StartReadPacket(&recb,0, sizeof(kdg_rez_test)+20); //20 ???? 8-0
+			sleep_m(100);
+			memcpy(&result,&recb[20],sizeof(kdg_rez_test));
+			memcpy(&result1,&check_buf[20],sizeof(kdg_rez_test));
+			FIFO_EndReadPacket();
+			msg_send(msg_from, &result, sizeof(result));
+			msg_send(msg_from, &result1, sizeof(result));
+		#endif
 
 
 	  }
-      break;
+      break; //
 
 	  case INF_ABOUT_USB:
-	  {
-				
-				uint16 res12=0;
-				cdg_error.ask = INF_ABOUT_USB;
-		        msg_send(msg_from, &cdg_error, sizeof(kdg_cmd_ask));
+	  {		
+			uint16 res12=0;
+			cdg_error.ask = INF_ABOUT_USB;
+		    msg_send(msg_from, &cdg_error, sizeof(kdg_cmd_ask));
+			about_usb usb_cp[2];
+			memset(usb_cp, 0, sizeof(about_usb)*2);
+			uint8 recb[400];
+			memset(recb, 0, sizeof(recb));
+			sleep_m(100);
 
-				about_usb usb_cp[2];
-				memset(usb_cp, 0, sizeof(about_usb)*2);
-
-				uint8 recb[400];
-				memset(recb, 0, sizeof(recb));
-
-				sleep_m(100);
-
-				#ifndef TPO7
+			#ifndef TPO7
 				ReadDARAM0(0,&usb_cp[0], sizeof(about_usb));
 				ReadDARAM1(0,&usb_cp[1], sizeof(about_usb));
-				#else
+			#else
 				res12 = FIFO_outIsReady();
 				FIFO_StartReadPacket(&recb,0, sizeof(about_usb)+20); //20 ???? 8-0
 				sleep_m(100);
 				memcpy(&usb_cp[0],&recb[20],sizeof(about_usb));
 				memcpy(&usb_cp[1],&check_buf[20],sizeof(about_usb));
 				FIFO_EndReadPacket();
-				#endif
-		        msg_send(msg_from, usb_cp, sizeof(about_usb)*2);
+			#endif
+		    msg_send(msg_from, usb_cp, sizeof(about_usb)*2);
 
 	  }
       break;
@@ -655,7 +646,7 @@ int tpo_comm(void* arg, char* sys_name)
 
 	  }
       break;
-
+      //
 
 	  case STOP_TX:
 	  {
@@ -663,15 +654,15 @@ int tpo_comm(void* arg, char* sys_name)
         msg_send(msg_from, &cdg_error, sizeof(kdg_cmd_ask));
 
 		#ifdef TPO5
-				si_stop_tx(5);	//start stop trancemiter
+			si_stop_tx(5);	//start stop trancemiter
 		#else
-		uint32* regtx = (uint32*)0x02C40030;
-		uint32  regdat=0;
-		regdat = *regtx;
-		regdat = regdat & 0xFFFFFFFE;
-		uint32 dg = 10000000;
-		while(dg--);
-		uint32 rui = prc_disable();
+			uint32* regtx = (uint32*)0x02C40030;
+			uint32  regdat=0;
+			regdat = *regtx;
+			regdat = regdat & 0xFFFFFFFE;
+			uint32 dg = 10000000;
+			while(dg--);
+			uint32 rui = prc_disable();
 		#endif
 
 	  }

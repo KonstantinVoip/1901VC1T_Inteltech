@@ -27,7 +27,7 @@ Options=-r -o"%AMOEBA_TPO_PATH%\lib\tpo6_comm_tms6457.lib"
 Options=-r -o".\Release\tpo6_comm_tms6457.lib"
 
 ["Compiler" Settings: "Debug"]
-Options=-g -pdsw225 -fr"$(Proj_dir)\Debug" -i"%AMOEBA_OS_PATH%\tms_c64xx" -i"%AMOEBA_RTS_PATH%\src" -i"%AMOEBA_TPO_PATH%\source\include" -i"%AMOEBA_DRV_PATH%\gpio\tms_c64xx" -i"%AMOEBA_DRV_PATH%\dbgout\tms_c64xx" -i"%AMOEBA_DRV_PATH%\fwmem\tms_c64xx" -i"%AMOEBA_DRV_PATH%\net" -i"%AMOEBA_DRV_PATH%\net\tms_c64xx\tms6457" -i"%AMOEBA_DRV_PATH%\crypto" -i"%AMOEBA_DRV_PATH%\mapi" -d"_DEBUG" -d"CHIP_6457" -d"TPO6" -d"COMM" -mv6400+
+Options=-g -pdsw225 -fr"$(Proj_dir)\Debug" -i"%AMOEBA_OS_PATH%\tms_c64xx" -i"%AMOEBA_RTS_PATH%\src" -i"%AMOEBA_TPO_PATH%\source\include" -i"%AMOEBA_DRV_PATH%\gpio\tms_c64xx" -i"%AMOEBA_DRV_PATH%\dbgout\tms_c64xx" -i"%AMOEBA_DRV_PATH%\fwmem\tms_c64xx" -i"%AMOEBA_DRV_PATH%\net" -i"%AMOEBA_DRV_PATH%\net\tms_c64xx\tms6457" -i"%AMOEBA_DRV_PATH%\crypto" -i"%AMOEBA_DRV_PATH%\mapi" -d"_DEBUG" -d"CHIP_6457" -d"TPO6" -d"COMM" -mv6400
 
 ["Compiler" Settings: "Release"]
 Options=-pdsw225 -o3 -fr"$(Proj_dir)\Release" -mv6400

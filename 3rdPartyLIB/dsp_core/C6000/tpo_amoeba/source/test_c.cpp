@@ -1,3 +1,23 @@
+/**********************************************************************************************************************
+*                                        (c) COPYRIGHT by ZAO RCZI FORT.                                             *
+*        ..                                       All rights reserved.                                               *
+***********************************************************************************************************************
+* Module      : test_c.cpp
+* Description : 
+* Author      : 
+******************************************************************************
+******************************************************************************
+* Module's Description Record:
+* ============================
+* Module's revision history:
+* ==========================
+* --------- $Log:  $
+* --------- Initial revision
+******************************************************************************/
+
+
+
+
 #include <os_syscall.h>
 #include <drv_dbgout.h>
 #include <rts.h>
@@ -9,10 +29,10 @@
 
 
 #ifdef TPO5
-#include <drv_eth6412.h>
-#include <drv_eth6412_emac.h>
-#include <drv_eth6412_mdio.h>
-#include <net_struct.h>
+	#include <drv_eth6412.h>
+	#include <drv_eth6412_emac.h>
+	#include <drv_eth6412_mdio.h>
+	#include <net_struct.h>
 #endif
 
 #ifdef TPO7
@@ -35,25 +55,23 @@
 
 #ifdef TPO6
 #ifndef CHIP_6457
-#include <drv_dp83820.h>
+	#include <drv_dp83820.h>
 #else
-#include "qdma_rwrd.h"
-#include <drv_eth6457.h>
-//#include <drv_eth6457_etcl.h>
-#include <drv_eth6457_emac.h>
-//#include <drv_eth6457_emachal.h>
-#include <drv_eth6457_sgmii.h>
-//#include <drv_eth6457_sgmiihal.h>
-#include <net_struct.h>
+	#include "qdma_rwrd.h"
+	#include <drv_eth6457.h>
+	//#include <drv_eth6457_etcl.h>
+	#include <drv_eth6457_emac.h>
+	//#include <drv_eth6457_emachal.h>
+	#include <drv_eth6457_sgmii.h>
+	//#include <drv_eth6457_sgmiihal.h>
+	#include <net_struct.h>
 
 #endif
 
 #endif
 
 extern hash_window hwindow[];
-
 extern void* sh_mem_write;    
-
 extern void* sh_mem_read_proc;       //начло общей памяти на чтение из процессора 1
 extern void* sh_mem_read_crypt;      //начло общей памяти на чтение из шифратора
 
@@ -163,26 +181,25 @@ void ReadDARAM1(uint16 addr,void* buf,uint16 len)
 
 //#ifdef TPO5
 #ifdef CHIP_6412
-
-//----------------------------------------------------------------------------
-void WriteDARAM(uint16 addr,void* buf,uint16 len)
-{
-uint16 l=(len+3)>>2;
-uint32* s=(uint32*)buf;
-uint32* d=(uint32*)((char*)sh_mem_write+addr);
-	while(l--)
-		_amem4(d++)=_mem4(s++);
+	//----------------------------------------------------------------------------
+	void WriteDARAM(uint16 addr,void* buf,uint16 len)
+	{
+	uint16 l=(len+3)>>2;
+	uint32* s=(uint32*)buf;
+	uint32* d=(uint32*)((char*)sh_mem_write+addr);
+		while(l--)
+			_amem4(d++)=_mem4(s++);
 }
 #else
 
-void WriteDARAM(uint16 addr,void* buf,uint16 len)
-{
-uint16 l=(len+7)>>3;
-uint64* s=(uint64*)buf;
-uint64* d=(uint64*)((char*)sh_mem_write+addr);
-while(l--)
-	_amem8(d++)=_mem8(s++);
-}
+	void WriteDARAM(uint16 addr,void* buf,uint16 len)
+	{
+	uint16 l=(len+7)>>3;
+	uint64* s=(uint64*)buf;
+	uint64* d=(uint64*)((char*)sh_mem_write+addr);
+	while(l--)
+		_amem8(d++)=_mem8(s++);
+	}
 #endif
 
 //----------------------------------------------------------------------------
@@ -213,30 +230,34 @@ res = analysis_hash_fwmem(hwindow);
 return res == 0 ? 0 : 1;
 }
 
-//----------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:  uint32 TestDozu(kdg_rez_test* result)	    
+Remarks:			    
+*******************************************************************************/
 uint32 TestDozu(kdg_rez_test* result)
 {
 //uint32 res = 0;
 //int error = 0;
 uint32 sh_d = SH_DOZU/8;
+
 #ifdef TPO_M711B
-uint32 start_adr = 0x100;
+	uint32 start_adr = 0x100;
 #else
-uint32 start_adr = 0;
+	uint32 start_adr = 0;
 #endif
 
 
 
 #ifdef TPO5
-uint32 buf[LEN_BUF_FOR_TEST_DOZU];
-#define	DAT555	0x55555555
-#define	DATAAA	0xAAAAAAAA
-uint32 one = 1;
+	uint32 buf[LEN_BUF_FOR_TEST_DOZU];
+	#define	DAT555	0x55555555
+	#define	DATAAA	0xAAAAAAAA
+	uint32 one = 1;
 #else
-uint64 buf[LEN_BUF_FOR_TEST_DOZU];
-#define	DAT555	0x5555555555555555
-#define	DATAAA	0xAAAAAAAAAAAAAAAA
-uint64 one = 1;
+	uint64 buf[LEN_BUF_FOR_TEST_DOZU];
+	#define	DAT555	0x5555555555555555
+	#define	DATAAA	0xAAAAAAAAAAAAAAAA
+	uint64 one = 1;
 #endif
 
 
@@ -306,27 +327,31 @@ return TPO_OK;
 }
 
 
-//----------------------------------------------------------------------------
+
+/*****************************************************************************
+Syntax:  uint32 TestMove() 	    
+Remarks:			    
+*******************************************************************************/
 uint32 TestMove()
 {
 //uint32 res = 0;
 //int error = 0;
 #ifdef TPO_M711B
-uint32 start_adr = 0x100;
+	uint32 start_adr = 0x100;
 #else
-uint32 start_adr = 0;
+	uint32 start_adr = 0;
 #endif
 
 #ifdef TPO5
-uint32 buf[LEN_BUF_FOR_TEST_DOZU];
-#define	DAT555	0x55555555
-#define	DATAAA	0xAAAAAAAA
-uint32 one = 1;
+	uint32 buf[LEN_BUF_FOR_TEST_DOZU];
+	#define	DAT555	0x55555555
+	#define	DATAAA	0xAAAAAAAA
+	uint32 one = 1;
 #else
-uint64 buf[LEN_BUF_FOR_TEST_DOZU];
-#define	DAT555	0x5555555555555555
-#define	DATAAA	0xAAAAAAAAAAAAAAAA
-uint64 one = 1;
+	uint64 buf[LEN_BUF_FOR_TEST_DOZU];
+	#define	DAT555	0x5555555555555555
+	#define	DATAAA	0xAAAAAAAAAAAAAAAA
+	uint64 one = 1;
 #endif
 
 
@@ -352,52 +377,55 @@ return TPO_OK;
 #define GPIO_CLR_DATA       (*(volatile uint32*)0x02b0001c) // GPIO Clear Data Register
 #define GPIO_IN_DATA        (*(volatile uint32*)0x02b00020) // GPIO Input Data Register
 
-
+/*****************************************************************************
+Syntax:  void alp_sinhrosig_tst()	    
+Remarks:			    
+*******************************************************************************/
 void alp_sinhrosig_tst()
 {
-uint32 res = GPIO_DIR;
-GPIO_DIR = res & 0xFFDF;
+	uint32 res = GPIO_DIR;
+	GPIO_DIR = res & 0xFFDF;
 
-GPIO_SET_DATA = 0x20;
+	GPIO_SET_DATA = 0x20;
 
-asm ( " nop " );
-asm ( " nop " );
-asm ( " nop " );
-asm ( " nop " );
-asm ( " nop " );
-asm ( " nop " );
-asm ( " nop " );
-asm ( " nop " );
-asm ( " nop " );
-asm ( " nop " );
-GPIO_CLR_DATA = 0x20;
+	asm ( " nop " );
+	asm ( " nop " );
+	asm ( " nop " );
+	asm ( " nop " );
+	asm ( " nop " );
+	asm ( " nop " );
+	asm ( " nop " );
+	asm ( " nop " );
+	asm ( " nop " );
+	asm ( " nop " );
+	GPIO_CLR_DATA = 0x20;
 }
 
 
 
-
-
-
-//----------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:  uint32 TestMove_ST1(kdg_rez_test* result)	    
+Remarks:			    
+*******************************************************************************/
 uint32 TestMove_ST1(kdg_rez_test* result)
 {
 #ifdef TPO_M711B
-uint32 start_adr = 0x100;
+	uint32 start_adr = 0x100;
 #else
-uint32 start_adr = 0;
+	uint32 start_adr = 0;
 #endif
 uint32 sh_d = SH_DOZU/8;
 
 #ifdef TPO5
-uint32 buf[LEN_BUF_FOR_TEST_DOZU];
-#define	DAT555	0x55555555
-#define	DATAAA	0xAAAAAAAA
-uint32 one = 1;
+	uint32 buf[LEN_BUF_FOR_TEST_DOZU];
+	#define	DAT555	0x55555555
+	#define	DATAAA	0xAAAAAAAA
+	uint32 one = 1;
 #else
-uint64 buf[LEN_BUF_FOR_TEST_DOZU+5];
-#define	DAT555	0x5555555555555555
-#define	DATAAA	0xAAAAAAAAAAAAAAAA
-uint64 one = 1;
+	uint64 buf[LEN_BUF_FOR_TEST_DOZU+5];
+	#define	DAT555	0x5555555555555555
+	#define	DATAAA	0xAAAAAAAAAAAAAAAA
+	uint64 one = 1;
 #endif
 
 ReadDARAM_CRYPT0(start_adr, buf, LEN_DUZU_FOR_TEST);
@@ -436,43 +464,12 @@ return TPO_OK;
 #define		EN				(*(uint32 *)0x01B00000)
 #define		DIR				(*(uint32 *)0x01B00004)
 #define		VAL				(*(uint32 *)0x01B00008)
-/*
-uint32 Send_Recive_Packet(uint32 FileNet, void* Pack_wr, void* Pack_rd, uint32 len)
-{
 
 
-net_descriptor* p_txd = NULL;
-net_descriptor* p_rxd = NULL;
-
-//uint32 tim = 0x500000;
-
-while(1)
-{
-  if( drv_ioctl( FileNet, NET_SEND_GET, &p_txd ) != OSE_OK ) 	//готовим к отправке
-	return TPO_ERR;
-  if( p_txd == NULL ) 
-	return TPO_ERR;
-  if( LEN_BUF1_FOR_TEST_SK > p_txd->size )
-	return TPO_ERR;
-
-//	sleep_m(50);
-//while(tim--);
-
-  memcpy( p_txd->data, Pack_wr, len );
-  p_txd->length = len;
-
-
-  if( drv_ioctl( FileNet, NET_SEND_PUT, &p_txd ) != OSE_OK ) 	//отправляем
-	return TPO_ERR;
-}
-
-
-
-  return 0;
-}
-*/
-
-
+/*****************************************************************************
+Syntax:  uint32 Send_Recive_Packet(uint32 FileNet, void* Pack_wr, void* Pack_rd, uint32 len)	    
+Remarks:			    
+*******************************************************************************/
 uint32 Send_Recive_Packet(uint32 FileNet, void* Pack_wr, void* Pack_rd, uint32 len)
 {
 /*
@@ -544,11 +541,53 @@ uint32 tim = 0x500000;
 }
 
 
+/*
+uint32 Send_Recive_Packet(uint32 FileNet, void* Pack_wr, void* Pack_rd, uint32 len)
+{
 
+
+net_descriptor* p_txd = NULL;
+net_descriptor* p_rxd = NULL;
+
+//uint32 tim = 0x500000;
+
+while(1)
+{
+  if( drv_ioctl( FileNet, NET_SEND_GET, &p_txd ) != OSE_OK ) 	//готовим к отправке
+	return TPO_ERR;
+  if( p_txd == NULL ) 
+	return TPO_ERR;
+  if( LEN_BUF1_FOR_TEST_SK > p_txd->size )
+	return TPO_ERR;
+
+//	sleep_m(50);
+//while(tim--);
+
+  memcpy( p_txd->data, Pack_wr, len );
+  p_txd->length = len;
+
+
+  if( drv_ioctl( FileNet, NET_SEND_PUT, &p_txd ) != OSE_OK ) 	//отправляем
+	return TPO_ERR;
+}
+
+
+
+  return 0;
+}
+*/
 //----------------------------------------------------------------------------
 //#define ERR_RW_M		1//1 - ошибка общения с модулем или системная
 //#define ERR_LOOP_M		2//2 - ошибка LOOPBACK в модуле
 //#define ERR_LOOP_PHY	4//4 - ошибка LOOPBACK в физической среде
+
+
+
+
+/*****************************************************************************
+Syntax:  uint32 Test_SK() 	    
+Remarks:			    
+*******************************************************************************/
 uint32 Test_SK()
 {
 uint32 res = 0;
@@ -576,70 +615,70 @@ uint32 FileNet = drv_mkd("/dev/net/eth0");
 
 
 #ifdef TPO5
-dev_reg phy_reg;
-
-phy_reg.device = PHY_RW_REG;
-phy_reg.reg = PHYREG_ID1;
-error = drv_ioctl(FileNet, NET_READ_REG, &phy_reg);
+	dev_reg phy_reg;
+	phy_reg.device = PHY_RW_REG;
+	phy_reg.reg = PHYREG_ID1;
+	
+	error = drv_ioctl(FileNet, NET_READ_REG, &phy_reg);
 	if(error != OSE_OK)
 	{
-		res = TPO_ERR;
-		goto end_tst_sk;	
+			res = TPO_ERR;
+			goto end_tst_sk;	
 	}
-id1 = phy_reg.value & 0xFFFF;
+	id1 = phy_reg.value & 0xFFFF;
 
-phy_reg.reg = PHYREG_ID2;
-error = drv_ioctl(FileNet, NET_READ_REG, &phy_reg);
+	phy_reg.reg = PHYREG_ID2;
+	error = drv_ioctl(FileNet, NET_READ_REG, &phy_reg);
 	if(error != OSE_OK)
 	{
-		res = TPO_ERR;
-		goto end_tst_sk;	
+			res = TPO_ERR;
+			goto end_tst_sk;	
 	}
-id2 = phy_reg.value & 0xFF00;
+	id2 = phy_reg.value & 0xFF00;
 
-if((id1 != 0x0013)|(id2 != 0x7800))
- if((id1 != 0x0022)|(id2 != 0x1500))
-	res|=ERR_RW_LXT;
+	if((id1 != 0x0013)|(id2 != 0x7800))
+	 if((id1 != 0x0022)|(id2 != 0x1500))
+		res|=ERR_RW_LXT;
 
-phy_reg.reg = PHYREG_CONTROL;
+	phy_reg.reg = PHYREG_CONTROL;
 
-error = drv_ioctl(FileNet, NET_READ_REG, &phy_reg);
+	error = drv_ioctl(FileNet, NET_READ_REG, &phy_reg);
 
-phy_reg.value |= PHYREG_CONTROL_LOOPBACK;		//загоняем модуль в loopback
-error = drv_ioctl(FileNet, NET_WRITE_REG, &phy_reg);
+	phy_reg.value |= PHYREG_CONTROL_LOOPBACK;		//загоняем модуль в loopback
+	error = drv_ioctl(FileNet, NET_WRITE_REG, &phy_reg);
 	if(error != OSE_OK)
 	{
-		res = TPO_ERR;
-		goto end_tst_sk;	
+			res = TPO_ERR;
+			goto end_tst_sk;	
 	}
 
-sleep_m(100);//1000
+	sleep_m(100);//1000
 
-error = Send_Recive_Packet(FileNet, buf_big_wr, buf_big_rd, LEN_BUF1_FOR_TEST_SK);	
-	if((error == TPO_ERR) | (memcmp(buf_big_wr, buf_big_rd, LEN_BUF1_FOR_TEST_SK)))
-		res|=ERR_LOOP_LXT;
+	error = Send_Recive_Packet(FileNet, buf_big_wr, buf_big_rd, LEN_BUF1_FOR_TEST_SK);	
+		if((error == TPO_ERR) | (memcmp(buf_big_wr, buf_big_rd, LEN_BUF1_FOR_TEST_SK)))
+			res|=ERR_LOOP_LXT;
 
-error = Send_Recive_Packet(FileNet, buf_small_wr, buf_small_rd, LEN_BUF2_FOR_TEST_SK);
-	if((error == TPO_ERR) | (memcmp(buf_small_wr, buf_small_rd, LEN_BUF2_FOR_TEST_SK)))
-		res|=ERR_LOOP_LXT;
+	error = Send_Recive_Packet(FileNet, buf_small_wr, buf_small_rd, LEN_BUF2_FOR_TEST_SK);
+		if((error == TPO_ERR) | (memcmp(buf_small_wr, buf_small_rd, LEN_BUF2_FOR_TEST_SK)))
+			res|=ERR_LOOP_LXT;
 
 
-phy_reg.reg = PHYREG_CONTROL;
-phy_reg.value ^= PHYREG_CONTROL_LOOPBACK;	//снимаем loopback
-phy_reg.value |= (PHYREG_CONTROL_SPEED100 | PHYREG_CONTROL_DUPLEXFULL);	
-error = drv_ioctl(FileNet, NET_WRITE_REG, &phy_reg);
+	phy_reg.reg = PHYREG_CONTROL;
+	phy_reg.value ^= PHYREG_CONTROL_LOOPBACK;	//снимаем loopback
+	phy_reg.value |= (PHYREG_CONTROL_SPEED100 | PHYREG_CONTROL_DUPLEXFULL);	
+	error = drv_ioctl(FileNet, NET_WRITE_REG, &phy_reg);
 	if(error != OSE_OK)
 	{
-		res = TPO_ERR;
-		goto end_tst_sk;	
+			res = TPO_ERR;
+			goto end_tst_sk;	
 	}
 
 
 
-memset(buf_big_rd, 0, LEN_BUF1_FOR_TEST_SK);
-memset(buf_small_rd, 0, LEN_BUF2_FOR_TEST_SK);
+	memset(buf_big_rd, 0, LEN_BUF1_FOR_TEST_SK);
+	memset(buf_small_rd, 0, LEN_BUF2_FOR_TEST_SK);
 //#else
-#endif
+#endif  //endif TPO5
 
 sleep_m(500);//1500
 
@@ -652,13 +691,13 @@ error = drv_ioctl(FileNet, NET_LINK, &link);
 
 if(link)
 {
-error = Send_Recive_Packet(FileNet, buf_big_wr, buf_big_rd, LEN_BUF1_FOR_TEST_SK);
-	if((error == TPO_ERR) | (memcmp(buf_big_wr, buf_big_rd, LEN_BUF1_FOR_TEST_SK)))
-		res|=ERR_LOOP_PHY;
+	error = Send_Recive_Packet(FileNet, buf_big_wr, buf_big_rd, LEN_BUF1_FOR_TEST_SK);
+		if((error == TPO_ERR) | (memcmp(buf_big_wr, buf_big_rd, LEN_BUF1_FOR_TEST_SK)))
+			res|=ERR_LOOP_PHY;
 
-error = Send_Recive_Packet(FileNet, buf_small_wr, buf_small_rd, LEN_BUF2_FOR_TEST_SK);
-	if((error == TPO_ERR) | (memcmp(buf_small_wr, buf_small_rd, LEN_BUF2_FOR_TEST_SK)))
-		res|=ERR_LOOP_PHY;
+	error = Send_Recive_Packet(FileNet, buf_small_wr, buf_small_rd, LEN_BUF2_FOR_TEST_SK);
+		if((error == TPO_ERR) | (memcmp(buf_small_wr, buf_small_rd, LEN_BUF2_FOR_TEST_SK)))
+			res|=ERR_LOOP_PHY;
 }
 else
 res|=ERR_LOOP_PHY;
@@ -671,7 +710,11 @@ return res;
 }
 
 
-//----------------------------------------------------------------------------
+
+/*****************************************************************************
+Syntax:  void Start_Test_N(kdg_rez_test* result)	    
+Remarks:			    
+*******************************************************************************/
 void Start_Test_N(kdg_rez_test* result)
 {
 
@@ -720,8 +763,10 @@ void Start_Test_N(kdg_rez_test* result)
 return;
 }
 
-
-//процесс - тест тока для 5ки
+/*****************************************************************************
+Syntax:  int TestDOZU_Nagr(void* arg)	    
+Remarks: Процесс - тест тока для 5ки			    
+*******************************************************************************/
 int TestDOZU_Nagr(void* arg)
 {
 #define L 0x300/4
@@ -743,8 +788,8 @@ buf0[0] = 0;
 buf1[0] = 0;
 do
 {
-ReadDARAM0(0,buf0,4);
-ReadDARAM1(0,buf1,4);
+	ReadDARAM0(0,buf0,4);
+	ReadDARAM1(0,buf1,4);
 }
 while((buf0[0] != 0x5a5a5a5a) | (buf1[0] != 0x5a5a5a5a));
 
@@ -824,11 +869,11 @@ while(1);
 }
 
 
-
-
-
 extern uint32 sv_msg_open;
-
+/*****************************************************************************
+Syntax:  int Sv_Msg(void* arg)	    
+Remarks:			    
+*******************************************************************************/
 int Sv_Msg(void* arg)
 {
 
@@ -1174,46 +1219,50 @@ while(1);
 
 #ifdef TPO7
 #ifdef CHIP_6457
-extern uint32 read_res_fifo;
 
-int Read_Res_Fifo(void* arg)
-{
-
-uint32 pack1[30];
-uint32 pack2[30];
-uint32 *chnl;
-uint16 res=0;
-
-
-while(1)
-{
-	if(read_res_fifo)
+	extern uint32 read_res_fifo;
+/*****************************************************************************
+Syntax:  int Read_Res_Fifo(void* arg)	    
+Remarks:			    
+*******************************************************************************/
+	int Read_Res_Fifo(void* arg)
 	{
-	res = FIFO_outIsReady();
-		switch(res)
+
+	uint32 pack1[30];
+	uint32 pack2[30];
+	uint32 *chnl;
+	uint16 res=0;
+
+
+	while(1)
+	{
+		if(read_res_fifo)
 		{
-			case 0:
-			prc_yield();
-			break;
-
-			case 1:
-			while(1);
-			break;
-
-			default:
+		res = FIFO_outIsReady();
+			switch(res)
 			{
-			 
-//!!!!?????????			res = FIFO_ReadPacket( pack1, pack2, chnl, 0);
-			while(1);
+				case 0:
+				prc_yield();
+				break;
+
+				case 1:
+				while(1);
+				break;
+
+				default:
+				{
+				 
+				//!!!!?????????			res = FIFO_ReadPacket( pack1, pack2, chnl, 0);
+				while(1);
+				}
 			}
+		
+		
+		
 		}
-	
-	
-	
+		else
+		prc_yield();
 	}
-	else
-	prc_yield();
-}
 
 }
 #endif

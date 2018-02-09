@@ -35,12 +35,12 @@
 
 
 #ifdef CHIP_6457
-CSL_Edma3ParamSetup param_wr;
-CSL_Edma3ParamSetup param_rd;
-CSL_Edma3ParamSetup param_rd_proc;
+	CSL_Edma3ParamSetup param_wr;
+	CSL_Edma3ParamSetup param_rd;
+	CSL_Edma3ParamSetup param_rd_proc;
 
-CSL_Edma3ParamSetup param1_rd;
-CSL_Edma3ParamSetup param2_rd;
+	CSL_Edma3ParamSetup param1_rd;
+	CSL_Edma3ParamSetup param2_rd;
 #endif
 
 volatile int qdma2ch_len;
@@ -214,19 +214,19 @@ void QDMA_StartRead(void* dst,void* src,uint16 len)
     if(l)
     {
         #ifdef CHIP_6457
-        param_rd.srcAddr     = (uint32)src;
-        param_rd.aCntbCnt    = CSL_EDMA3_CNT_MAKE(len,1);
-        param_rd.dstAddr     = (uint32)dst;
-        param_rd.srcDstBidx  = CSL_EDMA3_BIDX_MAKE(0,0);
-        param_rd.linkBcntrld = CSL_EDMA3_LINKBCNTRLD_MAKE(CSL_EDMA3_LINK_DEFAULT,0);
-        param_rd.srcDstCidx  = CSL_EDMA3_CIDX_MAKE(0,0);
-        param_rd.cCnt        = 1;
-        
-        EDMA3_qdmaIntClear( QDMA_CHANNEL_RD );
-        EDMA3_qdmaConfigArgs( QDMA_PARAMNUM_RD, &param_rd );
+	        param_rd.srcAddr     = (uint32)src;
+	        param_rd.aCntbCnt    = CSL_EDMA3_CNT_MAKE(len,1);
+	        param_rd.dstAddr     = (uint32)dst;
+	        param_rd.srcDstBidx  = CSL_EDMA3_BIDX_MAKE(0,0);
+	        param_rd.linkBcntrld = CSL_EDMA3_LINKBCNTRLD_MAKE(CSL_EDMA3_LINK_DEFAULT,0);
+	        param_rd.srcDstCidx  = CSL_EDMA3_CIDX_MAKE(0,0);
+	        param_rd.cCnt        = 1;
+	        
+	        EDMA3_qdmaIntClear( QDMA_CHANNEL_RD );
+	        EDMA3_qdmaConfigArgs( QDMA_PARAMNUM_RD, &param_rd );
         #else
-        EDMA_intClear(TCCINTNUM_READ);
-        EDMA_qdmaConfigArgs(0x01370000,(uint32)src,l,(uint32)dst,0);//Urgent priority 
+	        EDMA_intClear(TCCINTNUM_READ);
+	        EDMA_qdmaConfigArgs(0x01370000,(uint32)src,l,(uint32)dst,0);//Urgent priority 
         #endif
     }
 }
@@ -259,19 +259,19 @@ void QDMA_StartWrite(void* dst,void* src,uint16 len)
     if(l)
     {
         #ifdef CHIP_6457
-        param_wr.srcAddr     = (uint32)src;
-        param_wr.aCntbCnt    = CSL_EDMA3_CNT_MAKE(l*4,1);
-        param_wr.dstAddr     = (uint32)dst;
-        param_wr.srcDstBidx  = CSL_EDMA3_BIDX_MAKE(0,0);
-        param_wr.linkBcntrld = CSL_EDMA3_LINKBCNTRLD_MAKE(CSL_EDMA3_LINK_DEFAULT,0);
-        param_wr.srcDstCidx  = CSL_EDMA3_CIDX_MAKE(0,0);
-        param_wr.cCnt        = 1;
+	        param_wr.srcAddr     = (uint32)src;
+	        param_wr.aCntbCnt    = CSL_EDMA3_CNT_MAKE(l*4,1);
+	        param_wr.dstAddr     = (uint32)dst;
+	        param_wr.srcDstBidx  = CSL_EDMA3_BIDX_MAKE(0,0);
+	        param_wr.linkBcntrld = CSL_EDMA3_LINKBCNTRLD_MAKE(CSL_EDMA3_LINK_DEFAULT,0);
+	        param_wr.srcDstCidx  = CSL_EDMA3_CIDX_MAKE(0,0);
+	        param_wr.cCnt        = 1;
 
-        EDMA3_qdmaIntClear( QDMA_CHANNEL_WR );
-        EDMA3_qdmaConfigArgs( QDMA_PARAMNUM_WR, &param_wr );
+	        EDMA3_qdmaIntClear( QDMA_CHANNEL_WR );
+	        EDMA3_qdmaConfigArgs( QDMA_PARAMNUM_WR, &param_wr );
         #else	
-        EDMA_intClear(TCCINTNUM_WRITE);
-        EDMA_qdmaConfigArgs(0x01360000,(uint32)src,l,(uint32)dst,0);//Urgent priority 
+	        EDMA_intClear(TCCINTNUM_WRITE);
+	        EDMA_qdmaConfigArgs(0x01360000,(uint32)src,l,(uint32)dst,0);//Urgent priority 
         #endif	
     }
 }
@@ -292,7 +292,11 @@ uint16 QDMA_CheckEndWrite()
         return 0;
 
 }
-//----------------------------------------------------------------------------
+
+/*****************************************************************************
+Syntax:  void QDMA_init() 	    
+Remarks:			    
+*******************************************************************************/
 void QDMA_init()
 {
 #ifdef CHIP_6457

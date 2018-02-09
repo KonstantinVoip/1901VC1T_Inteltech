@@ -61,38 +61,38 @@ uint32 cry_hash_fwmem(s_hash* ctx, void* start_vector, hash_window* hwin)
     length = hwin->end_addr - hwin->start_addr + 1;
 	offset = hwin->start_addr;
 
-//once_again:
-//    error = drv_ioctl(fwm_file, FWMEM_SET_OFFSET, &offset);
-//    if(error) goto err_cry_hash;
+		//once_again:
+		//    error = drv_ioctl(fwm_file, FWMEM_SET_OFFSET, &offset);
+		//    if(error) goto err_cry_hash;
 
     while(length)
     {
       size = (length > sizeof(hash_text)) ? sizeof(hash_text) : length;
       //Чтение данных:
 
-	int_old = int_disable();
+  	  int_old = int_disable();
 
       error = drv_ioctl(fwm_file, FWMEM_SET_OFFSET,  &offset);
       fwrw.buffer = hash_text;
       fwrw.length = size;
       error = drv_ioctl(fwm_file, FWMEM_READ, &fwrw);
 
-    int_enable(int_old);
+      int_enable(int_old);
       if(error) goto err_cry_hash;
 
-	int_old = int_disable();
+ 	  int_old = int_disable();
 		
       error = drv_ioctl(fwm_file, FWMEM_SET_OFFSET, &offset);
       fwrw1.buffer = hash_text_test;
       fwrw1.length = size;
       error = drv_ioctl(fwm_file, FWMEM_READ, &fwrw1);
 
-    int_enable(int_old);
+      int_enable(int_old);
       if(error) goto err_cry_hash;
 
 
-	if(memcmp(hash_text, hash_text_test, size))
-	goto err_cry_hash;
+	  if(memcmp(hash_text, hash_text_test, size))
+	  goto err_cry_hash;
 
 
       cry_hash_cont(ctx, hash_text, size);

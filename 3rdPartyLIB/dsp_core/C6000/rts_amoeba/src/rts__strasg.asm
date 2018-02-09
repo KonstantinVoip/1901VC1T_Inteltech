@@ -1,6 +1,6 @@
 ;******************************************************************************
-;* strasg  v5.1.0                                                             *
-;* Copyright (c) 1998-2005  Texas Instruments Incorporated                    *
+;* strasg  v6.0.8                                                             *
+;* Copyright (c) 1998-2006  Texas Instruments Incorporated                    *
 ;******************************************************************************
 ;        .include c60asm.i
 
@@ -18,7 +18,7 @@
 ;     _nassert(cnt >= 7);
 ; 
 ;     for (i=0;i<cnt;i++)
-;       *dst++ = *src++;
+; 	*dst++ = *src++;
 ; }
 
 ;******************************************************************************
@@ -35,12 +35,151 @@
 ;*                                                                            *
 ;******************************************************************************
 
-FP      .set    A15
-DP      .set    B14
-SP      .set    B15
+FP	.set	A15
+DP	.set	B14
+SP	.set	B15
 
-        .clink
-        .global __strasg
+;******************************************************************************
+;
+; ACTIVE VERSION OF "strasg" . This version is interruptible
+; GOING FORWARD IT REPLACES "strasg"
+; "strasgi_64plus" is the more efficient but 64 plus specific version of strasg
+;
+;******************************************************************************
+
+           .if .TMS320C64_PLUS
+           
+	.sect	".text:__strasgi_64plus"
+	.clink
+	.global	__strasgi_64plus
+        
+__strasgi_64plus:  .asmfunc
+
+           MV      .L1     A4, A30      ; Save dst
+||         SHR     .S2X    A6,2,B31     ; Count / 4 
+
+           MV      .L2     B4, B30      ; Save src
+||         SUB     .S2     B31,4,B31    ; Adjust ILC due to SPLOOPD
+           
+           SPLOOPD   1                  ; Dynamic Length of 7
+||         MVC     .S2     B31,ILC
+
+;** -------KERNEL-------------------------------------------------------------*
+
+           LDW   .D2T2    *B30++,B31    ; Grab from source
+           
+           NOP             4            ; Load Delay
+           
+           MV      .L1X    B31,A31      ; Move to the other side
+           
+           SPKERNEL 0,0                 ; 6 Cycles of Epilog Overlapped
+||         STW   .D1T1     A31,*A30++   ; Dump to dest
+
+;** -------EPILOG-------------------------------------------------------------*
+
+           RETNOP  .S2     B3, 5
+           ; RETURN  OCCURS                  
+           
+           .endasmfunc
+
+           .endif
+
+	.sect	".text:__strasgi"
+	.clink
+	.global	__strasgi
+        
+__strasgi:  .asmfunc
+
+;** -----------PROLOG---------------------------------------------------------*
+
+           LDW     .D2T2   *B4++,B2     ;            
+||         SHR     .S2X    A6,2,B0      ;     
+||         SHR     .S1     A6,2,A1      ;      
+      
+           LDW     .D2T2   *B4++,B5     ;            
+||         MV      .L1     A4, A0       ; Save dst
+
+           LDW     .D2T2   *B4++,B6     ;            
+
+           LDW     .D2T2   *B4++,B7     ;             
+
+           LDW     .D2T2   *B4++,B8     ;            
+||         SUB     .S2     B0,6,B0      ;
+
+           LDW     .D2T2   *B4++,B9     ;             
+||         MV      .L1X    B2,A3        ;           
+||         CMPGT   .L2     B0,6,B1      ; Do we need to Loop anymore?
+
+;** -----------KERNEL---------------------------------------------------------*
+LOOP:
+
+   [ B1]   B       .S2     LOOP 
+|| [ B0]   LDW     .D2T2   *B4++,B2     ;            
+|| [ B0]   SUB     .L2     B0,1,B0      ;      
+|| [ A1]   STW     .D1T1   A3,*A4++     ;      
+|| [ A1]   SUB     .S1     A1,1,A1      ;    
+||         MV      .L1X    B5,A5        ;           
+      
+   [ B0]   LDW     .D2T2   *B4++,B5     ;            
+|| [ B0]   SUB     .S2     B0,1,B0      ;   
+|| [ A1]   STW     .D1T1   A5,*A4++     ;      
+|| [ A1]   SUB     .S1     A1,1,A1      ;   
+||         MV      .L1X    B6,A6        ;           
+
+   [ B0]   LDW     .D2T2   *B4++,B6     ;            
+|| [ B0]   SUB     .S2     B0,1,B0      ;   
+|| [ A1]   STW     .D1T1   A6,*A4++     ;      
+|| [ A1]   SUB     .S1     A1,1,A1      ;
+||         MV      .L1X    B7,A7        ;           
+
+   [ B0]   LDW     .D2T2   *B4++,B7     ;            
+|| [ B0]   SUB     .S2     B0,1,B0      ;   
+|| [ A1]   STW     .D1T1   A7,*A4++     ;      
+|| [ A1]   SUB     .S1     A1,1,A1      ;   
+||         MV      .L1X    B8,A8        ;           
+
+   [ B0]   LDW     .D2T2   *B4++,B8     ;            
+|| [ B0]   SUB     .S2     B0,1,B0      ;   
+|| [ A1]   STW     .D1T1   A8,*A4++     ;      
+|| [ A1]   SUB     .S1     A1,1,A1      ;   
+||         MV      .L1X    B9,A9        ;           
+
+   [ B0]   LDW     .D2T2   *B4++,B9     ;            
+|| [ B0]   SUB     .S2     B0,1,B0      ;   
+|| [ A1]   STW     .D1T1   A9,*A4++     ;      
+|| [ A1]   SUB     .S1     A1,1,A1      ;   
+||         MV      .L1X    B2,A3        ;           
+||         CMPGT   .L2     B0,6,B1      ; Do we need to Loop anymore?
+
+;** -----------EPILOG---------------------------------------------------------*
+
+           RET     .S2     B3
+|| [ A1]   STW     .D1T2   B2,*A4++     ;      
+|| [ A1]   SUB     .S1     A1,1,A1      ;   
+      
+   [ A1]   STW     .D1T2   B5,*A4++     ;      
+|| [ A1]   SUB     .S1     A1,1,A1      ;   
+
+   [ A1]   STW     .D1T2   B6,*A4++     ;      
+|| [ A1]   SUB     .S1     A1,1,A1      ;   
+
+   [ A1]   STW     .D1T2   B7,*A4++     ;      
+|| [ A1]   SUB     .S1     A1,1,A1      ;   
+
+   [ A1]   STW     .D1T2   B8,*A4++     ;      
+|| [ A1]   SUB     .S1     A1,1,A1      ;   
+
+   [ A1]   STW     .D1T2   B9,*A4       ;      
+||         MV      .L1     A0, A4       ; Restore dst
+
+        .endasmfunc
+
+;******************************************************************************
+; strasg IS BEING DEPRECATED. IT IS NOT INTERRUPTIBLE. REPLACED  WITH strasgi
+;******************************************************************************
+	.sect	".text:__strasg"
+	.clink
+	.global	__strasg
 
 ;******************************************************************************
 ;* FUNCTION NAME: __strasg                                                    *

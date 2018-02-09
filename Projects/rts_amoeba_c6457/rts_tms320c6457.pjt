@@ -248,7 +248,7 @@ Options=-r -o"%AMOEBA_RTS_PATH%\lib\rts.tms320c6457.lib"
 Options=-r -o".\Release\tms320c6457.lib"
 
 ["Compiler" Settings: "Debug"]
-Options=-g -pdsw225 -o3 -eoo -fr"$(Proj_dir)\obj" -i"%AMOEBA_OS_PATH%\tms_c64xx" -i"%AMOEBA_RTS_PATH%\src" -d"CHIP_6457" -mi0 -mv6400+ --mem_model:data=far
+Options=-g -pdsw225 -o3 -eoo -fr"$(Proj_dir)\obj" -i"%AMOEBA_OS_PATH%\tms_c64xx" -i"%AMOEBA_RTS_PATH%\src" -d"CHIP_6457" -mi0 -mv6400 --mem_model:data=far
 
 ["Compiler" Settings: "Release"]
 Options=-pdsw225 -o3 -fr"$(Proj_dir)\Release" -mv6400
