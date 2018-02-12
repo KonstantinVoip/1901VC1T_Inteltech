@@ -115,7 +115,7 @@ void os_config()
 // Заглушка для тестирования ОС и драйверов без ТПО нужно тогда удалить библиотеку ТПО tpo_15_iface.lib
 // Если нужно Тестировать с ТПО то тогда нужно закоментировать этот вызов os_main чтобы os_main
 // вызывался из ТПО и стартовал
-#if 0
+//#if 0
 int os_main(void* arg)
 {
 
@@ -124,7 +124,7 @@ int os_main(void* arg)
     asm(" nop");
   }
 }
-#endif
+//#endif
 
 
 
@@ -278,7 +278,7 @@ int os_process(void* arg)
 	dev_assignLetter(usbhc_plug); //назначение букв usb партициям
     drv_vfat_trigger_plug();
 
-#if 0
+//#if 0
     //Оставлю это не завтра  меж платный обмен IPMP!!! 17.01.2018
     //МежПроцессорный обмен по шине MCBSP c ЦП 
     fprintf(dbg_out,"iface(ПП)_pv44:13-Init_IPMP0_MCBSP<->MAIN\n");
@@ -294,7 +294,7 @@ int os_process(void* arg)
     fprintf(dbg_out,"iface(ПП)_pv44:14-Init Interprocess Communication\n");
     //msg_start ->>os_message_start
     msg_start( 1, 8 );  //1 порядковый номер ЦП в нашеё системе
-#endif
+//#endif
 
 	 fprintf(dbg_out,"iface(ПП)_pv44:++OS_Startup Succesful++\n");
      fclose(dbg_out); //Зарывем Отладочный вывоод
@@ -307,28 +307,7 @@ int os_process(void* arg)
     prc_system();    //Функция переводит процесс в состояние спящего системного процесса.
 
 
-
-
-	#if 0  
-    s_prc_attr pattr;
-    memset( &pattr, 0, sizeof(pattr) );
-    pattr.stack = 4096;   
-    fprintf(dbg_out,"14 - Создание основного процесса СИОС\n");
-    prc_create( &os_main, NULL, 0, &pattr );
-	//    prc_create( &test_process_1, NULL, 0, &pattr );
-	//    prc_create( &test_process_2, NULL, 0, &pattr );
-    fprintf(dbg_out,"15 - Система запущена!!!\n");
-    fclose(dbg_out);
-    prc_system();
-    #endif
-
-
-
-  
-
 }
-
-
 //#endif
 
 

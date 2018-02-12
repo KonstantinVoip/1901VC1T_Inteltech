@@ -1,9 +1,9 @@
-menuitem "tpo5_iface";
+menuitem "tpo6_iface";
 
 hotmenu start()
 {
 GEL_Reset();
-GEL_Load("C:/1901VC1T_Inteltech/Projects/os_drv_amoeba_c6416/os_drv_iface_tms6416_pv040/Debug/os_drv_iface_tms6416_pv40.out");
+GEL_Load("C:/1901VC1T_Inteltech/Projects/os_drv_amoeba_c6416/os_drv_iface_tms6416_pv044/Debug/os_drv_iface_tms6416_pv44.out");
 PC=0;
 }
 

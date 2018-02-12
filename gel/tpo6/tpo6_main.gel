@@ -1,9 +1,9 @@
-menuitem "tpo5_main";
+menuitem "tpo6_main";
 
 hotmenu start()
 {
 GEL_Reset();
-GEL_Load("C:/1901VC1T_Inteltech/Projects/os_drv_amoeba_c6416/os_drv_main_tms6416_mb5/Debug/os_drv_main_tms6416_mb5.out");
+GEL_Load("C:/1901VC1T_Inteltech/Projects/os_drv_amoeba_c6416/os_drv_main_tms6416_mb6/Debug/os_drv_main_tms6416_mb6.out");
 PC=0;
 }
 
