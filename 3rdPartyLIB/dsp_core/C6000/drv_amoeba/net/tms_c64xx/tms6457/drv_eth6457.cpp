@@ -268,28 +268,28 @@ int32 eth6457_ioctl ( s_os_driver_descriptor* d, int32 cmd, const void* arg )
             //**************************************************
             // Initialize EMAC setup  /
             //
-            //      Configuration Mode Flags:
-            //  CfgModeFlags Configuration Mode Flags
-// EMAC_CONFIG_MODEFLG_CHPRIORITY          0x00001     // Use Tx channel priority
-// EMAC_CONFIG_MODEFLG_MACLOOPBACK         0x00002     // MAC internal loopback
-// EMAC_CONFIG_MODEFLG_RXCRC               0x00004     // Include CRC in RX frames
-// EMAC_CONFIG_MODEFLG_TXCRC               0x00008     // Tx frames include CRC
-// EMAC_CONFIG_MODEFLG_PASSERROR           0x00010     // Pass error frames
-// EMAC_CONFIG_MODEFLG_PASSCONTROL         0x00020     // Pass control frames
-// EMAC_CONFIG_MODEFLG_PASSALL             0x00040     // pass all frames
-// EMAC_CONFIG_MODEFLG_RXQOS               0x00080     // Enable QOS at receive side
-// EMAC_CONFIG_MODEFLG_RXNOCHAIN           0x00100     // Select no buffer chaining
-// EMAC_CONFIG_MODEFLG_RXOFFLENBLOCK       0x00200     // Enable offset/length blocking
-// EMAC_CONFIG_MODEFLG_RXOWNERSHIP         0x00400     // Use ownership bit as 1
-// EMAC_CONFIG_MODEFLG_RXFIFOFLOWCNTL      0x00800     // Enable rx fifo flow control
-// EMAC_CONFIG_MODEFLG_CMDIDLE             0x01000     // Enable IDLE command
-// EMAC_CONFIG_MODEFLG_TXSHORTGAPEN        0x02000     // Enable tx short gap
-// EMAC_CONFIG_MODEFLG_TXPACE              0x04000     // Enable tx pacing
-// EMAC_CONFIG_MODEFLG_TXFLOWCNTL          0x08000     // Enable tx flow control
-// EMAC_CONFIG_MODEFLG_RXBUFFERFLOWCNTL    0x10000     // Enable rx buffer flow control
-// EMAC_CONFIG_MODEFLG_FULLDUPLEX          0x20000     // Set full duplex mode
-// EMAC_CONFIG_MODEFLG_GIGABIT             0x40000     // Set gigabit
-// EMAC_CONFIG_MODEFLG_EXTEN               0x80000     // Set external enable bit
+            //Configuration Mode Flags:
+            //CfgModeFlags Configuration Mode Flags
+			// EMAC_CONFIG_MODEFLG_CHPRIORITY          0x00001     // Use Tx channel priority
+			// EMAC_CONFIG_MODEFLG_MACLOOPBACK         0x00002     // MAC internal loopback
+			// EMAC_CONFIG_MODEFLG_RXCRC               0x00004     // Include CRC in RX frames
+			// EMAC_CONFIG_MODEFLG_TXCRC               0x00008     // Tx frames include CRC
+			// EMAC_CONFIG_MODEFLG_PASSERROR           0x00010     // Pass error frames
+			// EMAC_CONFIG_MODEFLG_PASSCONTROL         0x00020     // Pass control frames
+			// EMAC_CONFIG_MODEFLG_PASSALL             0x00040     // pass all frames
+			// EMAC_CONFIG_MODEFLG_RXQOS               0x00080     // Enable QOS at receive side
+			// EMAC_CONFIG_MODEFLG_RXNOCHAIN           0x00100     // Select no buffer chaining
+			// EMAC_CONFIG_MODEFLG_RXOFFLENBLOCK       0x00200     // Enable offset/length blocking
+			// EMAC_CONFIG_MODEFLG_RXOWNERSHIP         0x00400     // Use ownership bit as 1
+			// EMAC_CONFIG_MODEFLG_RXFIFOFLOWCNTL      0x00800     // Enable rx fifo flow control
+			// EMAC_CONFIG_MODEFLG_CMDIDLE             0x01000     // Enable IDLE command
+			// EMAC_CONFIG_MODEFLG_TXSHORTGAPEN        0x02000     // Enable tx short gap
+			// EMAC_CONFIG_MODEFLG_TXPACE              0x04000     // Enable tx pacing
+			// EMAC_CONFIG_MODEFLG_TXFLOWCNTL          0x08000     // Enable tx flow control
+			// EMAC_CONFIG_MODEFLG_RXBUFFERFLOWCNTL    0x10000     // Enable rx buffer flow control
+			// EMAC_CONFIG_MODEFLG_FULLDUPLEX          0x20000     // Set full duplex mode
+			// EMAC_CONFIG_MODEFLG_GIGABIT             0x40000     // Set gigabit
+			// EMAC_CONFIG_MODEFLG_EXTEN               0x80000     // Set external enable bit
 
             econf->ModeFlags = EMAC_CONFIG_MODEFLG_RXNOCHAIN | EMAC_CONFIG_MODEFLG_PASSALL
                              | EMAC_CONFIG_MODEFLG_FULLDUPLEX | EMAC_CONFIG_MODEFLG_MACLOOPBACK

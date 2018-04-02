@@ -552,269 +552,292 @@ int TestSDRAM()
 
 }
 #ifdef TPO5
-void F_test_dnsd_crc(kdg_rez_test* result)
-{
-
-//    uint32 res = 0;
-    uint32 err = 0;
-    uint32 dnsd = drv_mkd( "/dev/dnsd" );
-		
-//	err = drv_ioctl( dnsd, DNSD_READ_CRC, &res );
-//	result->rez = err;
-	err = drv_ioctl( dnsd, DNSD_READ_CRC, &result->rez );
-	err = drv_ioctl( dnsd, DNSD_READ_ADC, &result->data );
-
-	drv_rmd(dnsd);
-//	return res;
-
-}
-
-void F_zavesti_dnsd(kdg_rez_test* result)
-{
-
-//    uint32 res = 0;
-    uint32 err = 0;
-    uint8 K0K1[64];
-    uint8 K0[32];
-    uint32 resultat;
-
-    uint32 dnsd = drv_mkd( "/dev/dnsd" );
-		
-    memset( K0K1, 0, sizeof( K0K1 ) );
-    memset( K0, 0x00, sizeof( K0 ) );
-
-for(uint8 g=0; g<64; g++)
-K0K1[g]=g;
-		
-//	err = drv_ioctl( dnsd, DNSD_READ_CRC, &res );
-//	result->rez = err;
-
-    err = drv_ioctl( dnsd, DNSD_K0K1_WRITE, &K0K1 );
-    if( err )
-		result->rez|=ERR_DNSD_TIMEOUT;
-    sleep_s( 3 );
-
-    err = drv_ioctl( dnsd, DNSD_INIT, 0 );
-    if( err )
-		result->rez|=ERR_DNSD_TIMEOUT;
-    sleep_s( 3 );
-
-	drv_rmd(dnsd);
-//	return res;
-
-}
-
-void F_dnsd_prochitat(kdg_rez_test* result)
-{
-
-    uint32 err = 0;
-    uint32 resultat;
-    uint8 K0[32];
-    memset( K0, 0x00, sizeof( K0 ) );
-
-    uint32 dnsd = drv_mkd( "/dev/dnsd" );
-		
-		
-//	err = drv_ioctl( dnsd, DNSD_READ_CRC, &res );
-//	result->rez = err;
-
-    err = drv_ioctl( dnsd, DNSD_K0_READ, &K0 );
-    if( err )
-		resultat|=ERR_DNSD_TIMEOUT;
-
-    memcpy( result->buf, K0, sizeof( K0 ) );
-
-	drv_rmd(dnsd);
-//	return res;
-
-}
-
-int F_test_dnsd_vd(uint32 cik, kdg_rez_test* result)
-{
-
-    uint32 res = 0;
-    uint32 err = 0;
-
-
-    uint8 K0K1[64];
-    uint8 K0[32];
-    uint8 Err_time[32];
-    uint32 resultat;
-
-    uint32 dnsd = drv_mkd( "/dev/dnsd" );
-		
-
-    memset( K0K1, 0x55, sizeof( K0K1 ) );
-    memset( K0K1, 0xAA, sizeof( K0 ) );
-    memset( K0, 0x00, sizeof( K0 ) );
-    memset( Err_time, 0xFF, sizeof( K0 ) );
-
-    err = drv_ioctl( dnsd, DNSD_K0K1_WRITE, &K0K1 );
-    if( err )
-		res|=ERR_DNSD_TIMEOUT;
-    sleep_s( 1 );//3
-
-    // Read K0 and compare with K0
-    err = drv_ioctl( dnsd, DNSD_K0_READ, &K0 );
-    if( !memcmp( &K0, &Err_time, sizeof( K0 ) ) )
-		res|=ERR_DNSD_TIMEOUT;
-    if( memcmp( &K0, &K0K1, sizeof( K0 ) ) )
+	/*****************************************************************************
+	Syntax:  void F_test_dnsd_crc(kdg_rez_test* result) 	    
+	Remarks:			    
+	*******************************************************************************/
+	void F_test_dnsd_crc(kdg_rez_test* result)
 	{
-		res|=ERR_DNSD_READ_C0;
-		memcpy( result->buf, K0, sizeof( K0 ) );
+
+	    //uint32 res = 0;
+		uint32 err = 0;
+		uint32 dnsd = drv_mkd( "/dev/dnsd" );
+			
+		//	err = drv_ioctl( dnsd, DNSD_READ_CRC, &res );
+		//	result->rez = err;
+		err = drv_ioctl( dnsd, DNSD_READ_CRC, &result->rez );
+		err = drv_ioctl( dnsd, DNSD_READ_ADC, &result->data );
+
+		drv_rmd(dnsd);
+		//	return res;
+	}
+    
+	/*****************************************************************************
+	Syntax:  void F_zavesti_dnsd(kdg_rez_test* result) 	    
+	Remarks:			    
+	*******************************************************************************/
+	void F_zavesti_dnsd(kdg_rez_test* result)
+	{
+
+		//uint32 res = 0;
+		uint32 err = 0;
+		uint8 K0K1[64];
+		uint8 K0[32];
+		uint32 resultat;
+
+		uint32 dnsd = drv_mkd( "/dev/dnsd" );
+			
+		memset( K0K1, 0, sizeof( K0K1 ) );
+		memset( K0, 0x00, sizeof( K0 ) );
+
+		for(uint8 g=0; g<64; g++)
+		K0K1[g]=g;
+			
+		//	err = drv_ioctl( dnsd, DNSD_READ_CRC, &res );
+		//	result->rez = err;
+
+		err = drv_ioctl( dnsd, DNSD_K0K1_WRITE, &K0K1 );
+		if( err )
+			result->rez|=ERR_DNSD_TIMEOUT;
+		sleep_s( 3 );
+
+		err = drv_ioctl( dnsd, DNSD_INIT, 0 );
+		if( err )
+			result->rez|=ERR_DNSD_TIMEOUT;
+		sleep_s( 3 );
+
+		drv_rmd(dnsd);
+	//	return res;
 
 	}
+	/*****************************************************************************
+	Syntax:  void F_dnsd_prochitat(kdg_rez_test* result)	    
+	Remarks:			    
+	*******************************************************************************/
+	void F_dnsd_prochitat(kdg_rez_test* result)
+	{
 
-	if(cik==2)//в цыклах выход.
-		if(res)
-			return 1;
+		uint32 err = 0;
+		uint32 resultat;
+		uint8 K0[32];
+		memset( K0, 0x00, sizeof( K0 ) );
+
+		uint32 dnsd = drv_mkd( "/dev/dnsd" );
+			
+			
+	//	err = drv_ioctl( dnsd, DNSD_READ_CRC, &res );
+	//	result->rez = err;
+
+		err = drv_ioctl( dnsd, DNSD_K0_READ, &K0 );
+		if( err )
+			resultat|=ERR_DNSD_TIMEOUT;
+
+		memcpy( result->buf, K0, sizeof( K0 ) );
+
+		drv_rmd(dnsd);
+	//	return res;
+
+	}
+    /*****************************************************************************
+	Syntax:  int F_test_dnsd_vd(uint32 cik, kdg_rez_test* result)	    
+	Remarks:			    
+	*******************************************************************************/
+	int F_test_dnsd_vd(uint32 cik, kdg_rez_test* result)
+	{
+
+		uint32 res = 0;
+		uint32 err = 0;
+
+
+		uint8 K0K1[64];
+		uint8 K0[32];
+		uint8 Err_time[32];
+		uint32 resultat;
+
+		uint32 dnsd = drv_mkd( "/dev/dnsd" );
+			
+
+		memset( K0K1, 0x55, sizeof( K0K1 ) );
+		memset( K0K1, 0xAA, sizeof( K0 ) );
+		memset( K0, 0x00, sizeof( K0 ) );
+		memset( Err_time, 0xFF, sizeof( K0 ) );
+
+		err = drv_ioctl( dnsd, DNSD_K0K1_WRITE, &K0K1 );
+		if( err )
+			res|=ERR_DNSD_TIMEOUT;
+		sleep_s( 1 );//3
+
+		// Read K0 and compare with K0
+		err = drv_ioctl( dnsd, DNSD_K0_READ, &K0 );
+		if( !memcmp( &K0, &Err_time, sizeof( K0 ) ) )
+			res|=ERR_DNSD_TIMEOUT;
+		if( memcmp( &K0, &K0K1, sizeof( K0 ) ) )
+		{
+			res|=ERR_DNSD_READ_C0;
+			memcpy( result->buf, K0, sizeof( K0 ) );
+
+		}
+
+		if(cik==2)//в цыклах выход.
+			if(res)
+				return 1;
+			else
+				return 0;
+
+		err = drv_ioctl( dnsd, DNSD_INIT, 0 );
+		if( err )
+			res|=ERR_DNSD_TIMEOUT;
+		sleep_s( 1 );
+		// Read K0 and compare with K0
+		memset( K0, 0x00, sizeof( K0 ) );
+		err = drv_ioctl( dnsd, DNSD_K0_READ, &K0 );
+		if( !memcmp( &K0, &Err_time, sizeof( K0 ) ) )
+			res|=ERR_DNSD_TIMEOUT;
+		if( memcmp( &K0, &K0K1, sizeof( K0 ) ) )
+		{
+			res|=ERR_DNSD_READ_C0;
+			memcpy( result->buf, K0, sizeof( K0 ) );
+
+		}
+
+
+		// Plate LED ON
+		if(cik==0)
+		{
+			err = drv_ioctl( dnsd, DNSD_LED_ON, 0 );
+			if( err )
+			res|=ERR_DNSD_TIMEOUT;
+			sleep_s( 3 );
+		}
 		else
-			return 0;
-
-    err = drv_ioctl( dnsd, DNSD_INIT, 0 );
-    if( err )
-		res|=ERR_DNSD_TIMEOUT;
-    sleep_s( 1 );
-    // Read K0 and compare with K0
-    memset( K0, 0x00, sizeof( K0 ) );
-    err = drv_ioctl( dnsd, DNSD_K0_READ, &K0 );
-    if( !memcmp( &K0, &Err_time, sizeof( K0 ) ) )
-		res|=ERR_DNSD_TIMEOUT;
-    if( memcmp( &K0, &K0K1, sizeof( K0 ) ) )
-	{
-		res|=ERR_DNSD_READ_C0;
-		memcpy( result->buf, K0, sizeof( K0 ) );
-
-	}
-
-
-    // Plate LED ON
-	if(cik==0)
-	{
-	    err = drv_ioctl( dnsd, DNSD_LED_ON, 0 );
-    	if( err )
-		res|=ERR_DNSD_TIMEOUT;
-    	sleep_s( 3 );
-	}
-	else
-	{
-    	err = drv_ioctl( dnsd, DNSD_PlateLED_ON, 0 );
-	    if( err )
+		{
+			err = drv_ioctl( dnsd, DNSD_PlateLED_ON, 0 );
+			if( err )
+				res|=ERR_DNSD_TIMEOUT;
+			sleep_s( 2 );
+			// Plate LED OFF
+			err = drv_ioctl( dnsd, DNSD_PlateLED_OFF, 0 );
+			if( err )
 			res|=ERR_DNSD_TIMEOUT;
-	    sleep_s( 2 );
-    	// Plate LED OFF
-	    err = drv_ioctl( dnsd, DNSD_PlateLED_OFF, 0 );
-    	if( err )
-		res|=ERR_DNSD_TIMEOUT;
-    	sleep_s( 1 );
-	}
-    // Read K0 & compare with K1
-    memset( K0, 0x00, sizeof( K0 ) );
-    err = drv_ioctl( dnsd, DNSD_K0_READ, &K0 );
-    if( !memcmp( &K0, &Err_time, sizeof( K0 ) ) )
-		res|=ERR_DNSD_TIMEOUT;
-//    if(!memcmp( &K0, &K0K1 + sizeof( K0 ), sizeof( K0 ) ) )
-    if(memcmp( &K0, &K0K1[32], sizeof( K0 ) ) )
-		res|=ERR_DNSD_TRIGGER;
-
-
-	drv_rmd(dnsd);
-	return res;
-
-}
-
-
-
-int F_dnsd_vkl_vd(uint32 n)
-{
-    uint32 res = 0;
-    uint32 err = 0;
-
-uint32 dnsd = drv_mkd( "/dev/dnsd" );
-
-	if(n==0)
-	{
-	    err = drv_ioctl( dnsd, DNSD_LED_ON, 0 );
-    	if( err )
-		res|=ERR_DNSD_TIMEOUT;
-//    	sleep_s( 3 );
-	}
-	else
-	{
-    	err = drv_ioctl( dnsd, DNSD_PlateLED_ON, 0 );
-	    if( err )
+			sleep_s( 1 );
+		}
+		// Read K0 & compare with K1
+		memset( K0, 0x00, sizeof( K0 ) );
+		err = drv_ioctl( dnsd, DNSD_K0_READ, &K0 );
+		if( !memcmp( &K0, &Err_time, sizeof( K0 ) ) )
 			res|=ERR_DNSD_TIMEOUT;
-//	    sleep_s( 1 );
-    	// Plate LED OFF
-//	    err = drv_ioctl( dnsd, DNSD_PlateLED_OFF, 0 );
-//    	if( err )
-//		res|=ERR_DNSD_TIMEOUT;
-//    	sleep_s(  );
+	//    if(!memcmp( &K0, &K0K1 + sizeof( K0 ), sizeof( K0 ) ) )
+		if(memcmp( &K0, &K0K1[32], sizeof( K0 ) ) )
+			res|=ERR_DNSD_TRIGGER;
+
+
+		drv_rmd(dnsd);
+		return res;
+
 	}
 
+    	}
+    /*****************************************************************************
+	Syntax:  int F_dnsd_vkl_vd(uint32 n)	    
+	Remarks:			    
+	*******************************************************************************/
+	int F_dnsd_vkl_vd(uint32 n)
+	{
+		uint32 res = 0;
+		uint32 err = 0;
 
-drv_rmd(dnsd);
+		uint32 dnsd = drv_mkd( "/dev/dnsd" );
 
-}
+		if(n==0)
+		{
+			err = drv_ioctl( dnsd, DNSD_LED_ON, 0 );
+			if( err )
+			res|=ERR_DNSD_TIMEOUT;
+	//    	sleep_s( 3 );
+		}
+		else
+		{
+			err = drv_ioctl( dnsd, DNSD_PlateLED_ON, 0 );
+			if( err )
+				res|=ERR_DNSD_TIMEOUT;
+	//	    sleep_s( 1 );
+			// Plate LED OFF
+	//	    err = drv_ioctl( dnsd, DNSD_PlateLED_OFF, 0 );
+	//    	if( err )
+	//		res|=ERR_DNSD_TIMEOUT;
+	//    	sleep_s(  );
+		}
 
 
+	drv_rmd(dnsd);
 
-int F_dnsd_vikl_vd(uint32 n)
-{
-    uint32 res = 0;
-    uint32 err = 0;
+	}
 
-uint32 dnsd = drv_mkd( "/dev/dnsd" );
+    /*****************************************************************************
+	Syntax:  int F_dnsd_vikl_vd(uint32 n)	    
+	Remarks:			    
+	*******************************************************************************/
+	int F_dnsd_vikl_vd(uint32 n)
+	{
+		uint32 res = 0;
+		uint32 err = 0;
 
-    	// Plate LED OFF
-	    err = drv_ioctl( dnsd, DNSD_PlateLED_OFF, 0 );
-    	if( err )
+	    uint32 dnsd = drv_mkd( "/dev/dnsd" );
+
+		// Plate LED OFF
+		err = drv_ioctl( dnsd, DNSD_PlateLED_OFF, 0 );
+		if( err )
 		res|=ERR_DNSD_TIMEOUT;
 
 
-drv_rmd(dnsd);
+	    drv_rmd(dnsd);
 
-}
+	}
+
+    /*****************************************************************************
+	Syntax:  void F_test_dnsd_lux(kdg_rez_test* result)	    
+	Remarks:			    
+	*******************************************************************************/
+	void F_test_dnsd_lux(kdg_rez_test* result)
+	{
+
+	//    uint32 res = 0;
+		uint32 err = 0;
+		uint32 dnsd = drv_mkd( "/dev/dnsd" );
+			
+	//	err = drv_ioctl( dnsd, DNSD_READ_CRC, &res );
+	//	result->rez = err;
+		err = drv_ioctl( dnsd, DNSD_LUX, &result->rez );
+
+		drv_rmd(dnsd);
+	//	return res;
+
+	}
+
+	/*****************************************************************************
+	Syntax:  void F_test_dnsd_magic(kdg_rez_test* result)	    
+	Remarks:			    
+	*******************************************************************************/
+
+	void F_test_dnsd_magic(kdg_rez_test* result)
+	{
+
+	//    uint32 res = 0;
+		uint32 err = 0;
+		uint32 dnsd = drv_mkd( "/dev/dnsd" );
+			
+	//	err = drv_ioctl( dnsd, DNSD_READ_CRC, &res );
+	//	result->rez = err;
+		err = drv_ioctl( dnsd, DNSD_MAGIC, &result->rez );
+
+		drv_rmd(dnsd);
+	//	return res;
+
+	}
 
 
 
-void F_test_dnsd_lux(kdg_rez_test* result)
-{
-
-//    uint32 res = 0;
-    uint32 err = 0;
-    uint32 dnsd = drv_mkd( "/dev/dnsd" );
-		
-//	err = drv_ioctl( dnsd, DNSD_READ_CRC, &res );
-//	result->rez = err;
-	err = drv_ioctl( dnsd, DNSD_LUX, &result->rez );
-
-	drv_rmd(dnsd);
-//	return res;
-
-}
-
-
-
-void F_test_dnsd_magic(kdg_rez_test* result)
-{
-
-//    uint32 res = 0;
-    uint32 err = 0;
-    uint32 dnsd = drv_mkd( "/dev/dnsd" );
-		
-//	err = drv_ioctl( dnsd, DNSD_READ_CRC, &res );
-//	result->rez = err;
-	err = drv_ioctl( dnsd, DNSD_MAGIC, &result->rez );
-
-	drv_rmd(dnsd);
-//	return res;
-
-}
-
-
-
-#endif
+#endif   //ENDIF TPO5
 
 //----------------------------------------------------------------------------
 /*
@@ -1043,8 +1066,10 @@ int usb_test_rw(uint32 dev)
 return 0;
 }
 
-
-//----------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:  uint32 TestCelostnost()  
+Remarks: Sparka est D			    
+*******************************************************************************/
 uint32 TestCelostnost()
 {
 
@@ -1676,7 +1701,10 @@ return;
 }
 
 
-
+/*****************************************************************************
+Syntax:  void Start_Test_N(kdg_rez_test* result)	    
+Remarks:			    
+*******************************************************************************/
 
 void Start_Test_N(kdg_rez_test* result)
 {

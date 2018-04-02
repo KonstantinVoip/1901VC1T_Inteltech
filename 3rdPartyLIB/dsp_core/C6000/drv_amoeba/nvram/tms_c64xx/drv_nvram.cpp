@@ -3,9 +3,9 @@
 // !: sarc: all
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // !: codepage: cp1251
-// !: d: Модуль содержит реализацию функций драйвера NVRAM.
+// !: d: Модуль содержит реализацию функций драйвера NVRAM(ЭОЗУ) ЦП.
 // !: d: 
-// !: -: 
+// !: [drv_nvram.cpp] 
 // ---------------------------------------------------------------------------
 #include <drv_nvram.h>
 #include <rts.h>
@@ -86,18 +86,21 @@ int32 nvram_write (s_os_driver_descriptor* d, const void* buf, int32 length)
 // ---------------------------------------------------------------------------
 int32 nvram_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* arg )
 {
-  //int32 err1,err2;
-    int32 error = OSE_OK;
 
+    int32 error = OSE_OK;
+    
+	#ifndef NO_OS_MEMTST
+		int32 err1,err2;        //skd_patch err1 и err2 comment 
+		err1=0;err2=0;
+    #endif
+    
     switch( cmd )
     {
-    //================================
-    //Standard control command:
-    //================================
+       //Standard control command:
         case IOC_INIT_DESCRIPTOR:
 		case IOC_DEINIT_DESCRIPTOR:
 			break;
-            
+        //    
         case IOC_INIT:
         {
             uint32 bpo_file;
@@ -109,23 +112,24 @@ int32 nvram_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* arg )
                 nvram_align();
                 break;
             }
+           
             #ifndef NO_OS_MEMTST
-            //  Тест хранения
-            err1 = nvram_keep();
-            //  Адресный тест
-            err2 = nvram_addr();
+	            //  Тест хранения
+	            err1 = nvram_keep();
+	            //  Адресный тест
+	            err2 = nvram_addr();
 
-            if(err2==OSE_OK)
-              error = err1;
-            else 
-              error = err2;
+	            if(err2==OSE_OK)
+	              error = err1;
+	            else 
+	              error = err2;
             #endif
         }
         break;
-
+        //
         case IOC_DEINIT:
           break;
-
+        //
         case IOC_INODE_SELECT:
         {
             if( arg == NULL ) return OSE_NULL_PARAM;
@@ -138,7 +142,7 @@ int32 nvram_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* arg )
             drv_rfs( d );
         }
         break;
-
+        //
         default:
           return OSE_BAD_CMD;
     }

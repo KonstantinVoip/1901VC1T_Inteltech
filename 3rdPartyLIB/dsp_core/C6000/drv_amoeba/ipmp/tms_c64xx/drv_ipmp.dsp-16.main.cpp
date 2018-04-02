@@ -75,7 +75,11 @@ struct s_dsp_context
   bool                          terminate;
 };
 
-// ---------------------------------------------------------------------------
+
+/*****************************************************************************
+Syntax:  static int32 ipmp_dsp16_load_plis( const void* arg ) 	    
+Remarks: Загрузка Прошивки FPGA sv6.bin			    
+*******************************************************************************/
 static int32 ipmp_dsp16_load_plis( const void* arg )
 {
   int32 r;
@@ -502,7 +506,7 @@ int32 ipmp_dsp16_main_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* a
       #endif
     }
     break;
-
+    //Загрузка Прошивки FPGA
     case IPMP_LOAD_PLIS:
     {
       if( arg == NULL ) return OSE_NULL_PARAM;
@@ -523,41 +527,58 @@ int32 ipmp_dsp16_main_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* a
   return OSE_OK;
 
 }
-// ---------------------------------------------------------------------------
+
+/*****************************************************************************
+Syntax:  int32 drv_ipmp_dsp16_plug( const char* path, uint32 comm_n )	    
+Remarks: 			    
+*******************************************************************************/
 int32 drv_ipmp_dsp16_plug( const char* path, uint32 comm_n )
 {
   s_dsp_context ctx;
 
   if( comm_n >= 3 ) return OSE_OUT_OF_A_RANGE;
 
+
+  //Для Коммуникационного 0 мы считываем прошивку FPGA с USB флэшки и загружаем в ПЛИС. 
   if( comm_n == 0 )
   {
     uint32 d = drv_mkd( "/vfat/a/sv6.bin" );
-    if( d == RES_VOID ) return OSE_NO_DEVICE;
+    if( d == RES_VOID ) 
+    {
+    return OSE_NO_DEVICE;
+    }
+    
     if( drv_open( d, DRV_RD ) != OSE_OK )
     {
       drv_rmd( d );
       return OSE_PERMISSION_DENIED;
     }
+    
     s_os_mem_block* block = mem_alloc( C_PLIS_LENGTH, 1 );
     if( block == NULL )
     {
       drv_rmd( d );
       return OSE_NO_MEMORY;
     }
+    
     void* ptr = mem_ptr( block );
     int32 res = drv_read( d, ptr, C_PLIS_LENGTH );
     drv_rmd( d );
+    
     if( res != C_PLIS_LENGTH )
     {
       mem_free( block );
       return OSE_NOT_ENOUGHT_DATA;
     }
+    
+    //загрузка в ПЛИС прошивки.
     res = ipmp_dsp16_load_plis( ptr );
     mem_free( block );
     if( res != OSE_OK ) return res;
+  
   }
 
+  //Для коммуникационного 1 и 2 код. 
   memset( &ctx, 0, sizeof(ctx) );
   ctx.n = comm_n;
   comm_n = 0x000000d0 + ( comm_n << 4 );

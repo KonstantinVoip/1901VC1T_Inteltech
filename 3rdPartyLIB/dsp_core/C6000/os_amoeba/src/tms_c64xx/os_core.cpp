@@ -5,7 +5,7 @@
 // !: codepage: cp866
 // !: d: Модуль содержит реализацию функций управления процессами, менеджер
 // !: d: памяти и менеджер хипа.
-// !: -:
+// !: [os_core.cpp]
 // ---------------------------------------------------------------------------
 #define SYSCALL_DIRECT
 #include <os.h>
@@ -286,10 +286,11 @@ l_psw_end:
   v_os_errno = v_os_current_process->errno;
   // Clear quant counter for current process
   #if defined(CHIP_6412) || defined(CHIP_6416)
-  REG_CNT0 = 0;
+ 	 REG_CNT0 = 0;
   #endif
+ 
   #if defined(CHIP_6457)
-  REG_CNTLO0 = 0;
+ 	 REG_CNTLO0 = 0;
   #endif
 
   asm( " b    .s2   l_swt0     " );
@@ -483,9 +484,9 @@ int32 os_process_create( int (*prc_func)(void*), void* arg, int32 arg_len, s_prc
   int_enable( is );
 
   #ifdef OS_SUPPORT_SYNCHRONIZATION
-  int32 res = syn_open( nprocess->id );
-  if(res != OSE_OK)
-    return res;
+	  int32 res = syn_open( nprocess->id );
+	  if(res != OSE_OK)
+	    return res;
   #endif
 
   return (int32)nprocess->id;
@@ -747,7 +748,10 @@ void os_mem_free( s_os_mem_block* block )
 
   int_enable( is );
 }
-// ---------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:  void os_mem_free_by_pid( uint16 pid ) 	    
+Remarks:			    
+*******************************************************************************/
 void os_mem_free_by_pid( uint16 pid )
 {
   s_os_mem_block* page[4];
@@ -757,12 +761,16 @@ void os_mem_free_by_pid( uint16 pid )
 
   page[0] = (s_os_mem_block*)&OS_MPAGE0_BEGIN;
   page[1] = (s_os_mem_block*)&OS_MPAGE1_BEGIN;
-  page[2] = (s_os_mem_block*)&OS_MPAGE2_BEGIN;
-  page[3] = (s_os_mem_block*)&OS_MPAGE3_BEGIN;
+ 
+ //SKD PAtch no OS_MPAGE2 and OS_MPAGE3
+ //page[2] = (s_os_mem_block*)&OS_MPAGE2_BEGIN;
+ //page[3] = (s_os_mem_block*)&OS_MPAGE3_BEGIN;
 
   is = int_disable();
 
-  for( i = 0; i < 4; i++ )
+  //skd patch 2 page block
+  //for( i = 0; i < 4; i++ )
+  for( i = 0; i < 2; i++ )
   {
     cblock = page[i];
     if( cblock == NULL ) continue;
@@ -780,7 +788,10 @@ void os_mem_free_by_pid( uint16 pid )
 
   int_enable( is );
 }
-// ---------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:  void os_mem_stat( s_os_mem_stat* stat ) 	    
+Remarks:			    
+*******************************************************************************/
 void os_mem_stat( s_os_mem_stat* stat )
 {
   s_os_mem_block* page_end[4];
@@ -791,14 +802,16 @@ void os_mem_stat( s_os_mem_stat* stat )
   if( stat == NULL ) return;
   memset( stat, 0, sizeof(s_os_mem_stat) );
 
-  page_end[0] = (s_os_mem_block*)&OS_MPAGE0_END;
-  page_end[1] = (s_os_mem_block*)&OS_MPAGE1_END;
-  page_end[2] = (s_os_mem_block*)&OS_MPAGE2_END;
-  page_end[3] = (s_os_mem_block*)&OS_MPAGE3_END;
+  page_end[0] = (s_os_mem_block*)&OS_MPAGE0_END;  //Internal RAM
+  page_end[1] = (s_os_mem_block*)&OS_MPAGE1_END;  //External SDRAM
+  
+  //skd patch no MPAGE2 and MPAGE3
+ //page_end[2] = (s_os_mem_block*)&OS_MPAGE2_END;
+ //page_end[3] = (s_os_mem_block*)&OS_MPAGE3_END;
 
   is = int_disable();
-
-  for( i = 0; i < 4; i++ )
+  //for( i = 0; i < 4; i++ )
+  for( i = 0; i < 2; i++ )
   {
     cblock = v_page[i];
     if( cblock == NULL ) continue;
@@ -1236,17 +1249,30 @@ void os_heap_stat( s_os_heap* heap, s_os_heap_stat* stat )
 
   if( sysheap ) int_enable( is );
 }
-// ---------------------------------------------------------------------------
+
+/*****************************************************************************
+Syntax:  void os_syscall_sfault_vector()	    
+Remarks:			    
+*******************************************************************************/
 void os_syscall_sfault_vector()
 {
   os_sfault( OSSF_UNIMPLEMENTED_SYSCALL );
 }
-// ---------------------------------------------------------------------------
+
+/*****************************************************************************
+Syntax:  void os_syscall_null_vector()	    
+Remarks:			    
+*******************************************************************************/
 void os_syscall_null_vector()
 {
   /* Nothing */
 }
-// ---------------------------------------------------------------------------
+
+
+/*****************************************************************************
+Syntax: void os_syscall_init_table()	    
+Remarks:			    
+*******************************************************************************/
 void os_syscall_init_table()
 {
   for( int32 i = 0; i < SYSCALL__COUNT__; i++ ) __os_syscall_table__[i] = (void*)(uint32)&os_syscall_sfault_vector;
@@ -1372,6 +1398,13 @@ void os_sfault( uint32 code )
   prc_yield();
 }
 // ---------------------------------------------------------------------------
+
+
+/*****************************************************************************
+Syntax:  void os_cinit () 
+Remarks: Функция производит инициализацию глобальных переменных и вызов
+		 конструкторов классов глобальных переменых.			    
+*******************************************************************************/
 void os_cinit()
 {
   uint8* sptr;
@@ -1425,41 +1458,49 @@ void os_cinit()
 // ---------------------------------------------------------------------------
 #pragma CODE_SECTION( ".os_init_code" );
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 #ifndef NO_OS_MEMTST
-static bool os_memncmp( char* ptr, char c, uint32 l )
-{
-  for( uint32 i = 0; i < l; i++, ptr++ ) if( (*ptr) != c ) return false;
-  return true;
-}
+	static bool os_memncmp( char* ptr, char c, uint32 l )
+	{
+	  for( uint32 i = 0; i < l; i++, ptr++ ) if( (*ptr) != c ) return false;
+	  return true;
+	}
 #endif
+
+
 // ---------------------------------------------------------------------------
 #pragma CODE_SECTION( ".os_init_code" );
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+/*****************************************************************************
+Syntax:  static bool os_memtst( uint32 start_mem, uint32 end_mem )	    
+Remarks: Функция Тестирования ОЗУ SDRAM Центрального Процессора.очень долго!			    
+*******************************************************************************/
 static bool os_memtst( uint32 start_mem, uint32 end_mem )
 {
+ 
   #ifdef NO_OS_MEMTST
-  return true;
+ 	  return true;
   #else
-  uint32 i, length;
-  uint8* ptr;
+	  uint32 i, length;
+	  uint8* ptr;
 
-  if((!start_mem)&&(!end_mem))return true;
+	  if((!start_mem)&&(!end_mem))return true;
 
-  if(end_mem < start_mem)return false;   
+	  if(end_mem < start_mem)return false;   
 
-  length = ( end_mem - start_mem ) & 0xfffffff0;
-  
-  // Address test
-  for( ptr = (uint8*)start_mem, i = 0; i < length; i++, ptr++ ) (*ptr) = i;
-  for( ptr = (uint8*)start_mem, i = 0; i < length; i++, ptr++ ) if( (*ptr) != (uint8)( i & 0x000000ff ) ) return false;
-  // Data test
-  memset( (void*)start_mem, 0x55, length );
-  if( !os_memncmp( (char*)start_mem, 0x55, length ) ) return false;
-  memset( (void*)start_mem, 0xaa, length );
-  if( !os_memncmp( (char*)start_mem, 0xaa, length ) ) return false;
-  // Clear
-  memset( (void*)start_mem, 0, length );
-  return true;
+	  length = ( end_mem - start_mem ) & 0xfffffff0;
+	  
+	  // Address test
+	  for( ptr = (uint8*)start_mem, i = 0; i < length; i++, ptr++ ) (*ptr) = i;
+	  for( ptr = (uint8*)start_mem, i = 0; i < length; i++, ptr++ ) if( (*ptr) != (uint8)( i & 0x000000ff ) ) return false;
+	  // Data test
+	  memset( (void*)start_mem, 0x55, length );
+	  if( !os_memncmp( (char*)start_mem, 0x55, length ) ) return false;
+	  memset( (void*)start_mem, 0xaa, length );
+	  if( !os_memncmp( (char*)start_mem, 0xaa, length ) ) return false;
+	  // Clear
+	  memset( (void*)start_mem, 0, length );
+	  return true;
   #endif
 }
 // ---------------------------------------------------------------------------
@@ -1484,8 +1525,13 @@ static s_os_mem_block* os_init_mem_page(uint32 start_addr_page, uint32 end_addr_
   return page;
 }
 // ---------------------------------------------------------------------------
+
 #pragma CODE_SECTION( ".os_init_code" );
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+/*****************************************************************************
+Syntax:  void os_initialize_core()	    
+Remarks: Инициализация нижнего уровня		    
+*******************************************************************************/
 void os_initialize_core()
 {
   s_prc_attr pattr;
@@ -1495,7 +1541,7 @@ void os_initialize_core()
 
   // Initialize PLL
   #if defined(CHIP_6457)
-  os_pll_init_module();
+  	os_pll_init_module();
   #endif
 
   // System init stage 0
@@ -1560,6 +1606,8 @@ void os_initialize_core()
   {
     REG_OSTS1 |= OSTS1_MPAGE1_FAIL;
   }
+  
+  /*   //SKD PATCH no MPAGE2 and MPAGE3 from device
   if( !os_memtst((uint32)&OS_MPAGE2_BEGIN, (uint32)&OS_MPAGE2_END ) )
   {
     REG_OSTS1 |= OSTS1_MPAGE2_FAIL;
@@ -1568,11 +1616,16 @@ void os_initialize_core()
   {
     REG_OSTS1 |= OSTS1_MPAGE3_FAIL;
   }
-  
+  */
+
  // Initialize external memory pages
   v_page[1] = os_init_mem_page( (uint32)&OS_MPAGE1_BEGIN, (uint32)&OS_MPAGE1_END );
+ 
+    //Skd patch no external Memory Page MPAGE2 and MPAGE3
+  /* 
   v_page[2] = os_init_mem_page( (uint32)&OS_MPAGE2_BEGIN, (uint32)&OS_MPAGE2_END );
   v_page[3] = os_init_mem_page( (uint32)&OS_MPAGE3_BEGIN, (uint32)&OS_MPAGE3_END );
+  */
 
   // Create IDLE process
   pattr.priority = PRIORITY_IDLE;
@@ -1616,6 +1669,11 @@ void os_initialize_core()
 // ---------------------------------------------------------------------------
 #pragma CODE_SECTION( ".os_init_scall" );
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+/*****************************************************************************
+Syntax:  void os_syscall_copy_table( void* dst, int32 length ) 	    
+Remarks:			    
+*******************************************************************************/
 void os_syscall_copy_table( void* dst, int32 length )
 {
   if( (uint32)dst <= (uint32)&OS_NMISTACK_END ) return;
