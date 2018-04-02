@@ -1,0 +1,1 @@
+sh %OS_PATH%/res/script/mkcore-tms320c64xx.sh pjt/m711-ir-core-iface pjt/m711-ir-core-iface/pjt/bin/pjt.out pjt/m711-ir-core-iface/pjt/bin/core-iface.lif 0 1 1

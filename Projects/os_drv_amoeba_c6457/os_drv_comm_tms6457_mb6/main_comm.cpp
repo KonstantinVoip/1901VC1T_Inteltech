@@ -93,7 +93,7 @@ void os_config()
 // Заглушка для тестирования ОС и драйверов без ТПО нужно тогда удалить библиотеку ТПО tpo_15_main.lib
 // Если нужно Тестировать с ТПО то тогда нужно закоментировать этот вызов os_main чтобы os_main
 // вызывался из ТПО и стартовал для ЦП(main)Процессоров
-#if 0
+//#if 0
 int os_main(void* arg)
 {
 
@@ -102,7 +102,7 @@ int os_main(void* arg)
     asm(" nop");
   }
 }
-#endif
+//#endif
 
 
 
@@ -119,6 +119,10 @@ int os_process(void* arg)
     uint32 d = RES_VOID;
     uint32 number_of_comm_cpu=0;
  
+    //EMAC_Pkt *pRX, *pTX;   //буфера для пакета      
+
+
+
     
     
     // Initialize the OS root file system
@@ -131,25 +135,34 @@ int os_process(void* arg)
     drv_rmd(d);
     if(error != OSE_OK) return os_panic();
     drv_dbgout_plug();
-    #ifdef COMM_ONLY
-    print("COMM_ONLY was defined for project build.\n");
-    #endif
-    print("OS Root File System has been successfully initialized.\n"); 
+   
+    
+   // #ifdef COMM_ONLY
+  //  print("COMM_ONLY was defined for project build.\n");
+  //  #endif
+  //  print("OS Root File System has been successfully initialized.\n"); 
   
     // ----------------------------------------------------------  
     print("Initializing FWMEM driver: ");
     error = drv_fwmem_plug("/fwmem", 0xb0000000, &fwmem_s29al032dxxxxx04_gpio_m632_comm );    
-    if(error == OSE_OK) print("OK\n"); else print("ERROR\n");
-   if(error != OSE_OK) REG_OSTS0 |= OSTS0_FWMEM_FAIL;
+    if(error != OSE_OK)
+    {
+     REG_OSTS0 |= OSTS0_FWMEM_FAIL;
+	 print("Error_?Initializing FWMEM driver:?");
+    }
  
- 
-#if 0 //Межпроцессорное Взаимодействие комментарим Получение номера коммуникационного с Центрального
+#if 0 //Межпроцессорное Взаимодействие комментарим Получение номера коммуникационного с Центрального ЦП
   
     // ----------------------------------------------------------  
     print("Initializing IPMP DOZU driver: ");    
     error = drv_ipmp_dsp16_plug( "/dev/ipmp/ipmp0", IPMP_DSP16_CH_BOTH );
-    if(error == OSE_OK) print("OK\n"); else print("ERROR\n");
-    if(error != OSE_OK) REG_OSTS1 |= OSTS1_EXCH_MAIN_FAIL;  
+    if(error != OSE_OK)
+    {
+     REG_OSTS1 |= OSTS1_EXCH_MAIN_FAIL; 
+     print("Error_?Initializing IPMP DOZU driver:?");
+    }
+
+
     
     // ----------------------------------------------------------  
     struct 
@@ -159,12 +172,16 @@ int os_process(void* arg)
     } processor;
     d = drv_mkd("/dev/ipmp/ipmp0");
     error = drv_ioctl(d, IPMP_NUMBER, &number_of_comm_cpu);
-    if(error != OSE_OK) os_panic();
+    if(error != OSE_OK)
+    {
+      print("Error_?GET_num_of_cpu_from_MAIN:?");
+      os_panic();
+    }
     drv_rmd(d);
     strcpy(processor.name, "comm");
     processor.name[4] = '0' + number_of_comm_cpu;
     processor.name[5] = 0;
- 
+   
 #endif  // 
     
     // ----------------------------------------------------------  
@@ -178,14 +195,23 @@ int os_process(void* arg)
     netcfg.mac[2] = 0xc0;
     netcfg.mac[3] = 0xa8;
     netcfg.mac[4] = number_of_comm_cpu;
-    netcfg.mac[5] = 0x01;    
+    netcfg.mac[5] = 0x01; 
+    netcfg.flags = NETCFG_PROMISCUOUSE; //promisc regim enable.
+       
+
+    //идём в drv_eth6457.cpp 
     error = drv_eth6457_plug( "/dev/net/eth0", netcfg, 64, 64);
-    if(error == OSE_OK) print("OK\n"); else print("ERROR\n");
-    if(error != OSE_OK) REG_OSTS0 |= OSTS0_NETCARD_FAIL;    
+    if(error != OSE_OK)
+    {
+     REG_OSTS0 |= OSTS0_NETCARD_FAIL;
+     print("Error_?Initializing Network Adapter drive:?");
+    }
+
     
+   /// EMAC_sendPacket( Handle hEMAC, EMAC_Pkt *pPkt );
+
 
 #if 0 //Межпроцессорное Взаимодействие комментарим 
-
     // ----------------------------------------------------------  
     print("Running Inter-Process Exchange: ");
     error  = sys_setname(processor.name);
@@ -230,7 +256,8 @@ int os_process(void* arg)
  
 #endif //Межпроцессорное Взаимодействие комментарим  
     
-    // ----------------------------------------------------------  
+    //Получение времени с Центрального процессора. 
+#if 0
     print("Setting system time: ");
     s_message* tm_msg;
     error = msg_recv(&tm_msg, SEM_INFINITY);
@@ -244,8 +271,11 @@ int os_process(void* arg)
     {
         print("ERROR\n");    
     }
+#endif    
     
-      //видимо это мы выделяем стек для задач и запускаем os_main наш любимый
+    
+    
+    //видимо это мы выделяем стек для задач и запускаем os_main наш любимый
     s_prc_attr pattr;
     memset( &pattr, 0, sizeof(pattr) );
     pattr.stack = 4096;  //16384   // 16 Kb //4Кб                
