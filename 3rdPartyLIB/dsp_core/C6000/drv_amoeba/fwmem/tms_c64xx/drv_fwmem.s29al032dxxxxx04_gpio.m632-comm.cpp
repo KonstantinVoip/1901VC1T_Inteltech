@@ -3,13 +3,17 @@
 // !: sarc: m632-comm
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // !: codepage: cp866
-// !: d:
-// !: -: 
+// !: d:Драйвер Нижнего Уровня для работы с Паралельной Флэшкой S29AL032D емкостью [4М/байт].
+// !: [drv_fwmem.s29al032dxxxx04_gpio.m632]
 // ---------------------------------------------------------------------------
 #include <drv_fwmem.h>
 #include <drv_gpio.h>
 #include <os.h>
-// ---------------------------------------------------------------------------
+
+/*****************************************************************************
+Syntax:  uint32 fwmem_s29al032dxxxxx04_gpio_translate_address( s_fwmem_context* ctx, uint32 address )	    
+Remarks: ?			    
+*******************************************************************************/
 uint32 fwmem_s29al032dxxxxx04_gpio_translate_address( s_fwmem_context* ctx, uint32 address )
 {
 /*
@@ -25,7 +29,11 @@ uint32 fwmem_s29al032dxxxxx04_gpio_translate_address( s_fwmem_context* ctx, uint
 */  
   return address & 0xffffffff;
 }
-// ---------------------------------------------------------------------------
+
+/*****************************************************************************
+Syntax:  int32 fwmem_s29al032dxxxxx04_gpio_init( s_fwmem_context* ctx )	    
+Remarks: 		    
+*******************************************************************************/
 int32 fwmem_s29al032dxxxxx04_gpio_init( s_fwmem_context* ctx )
 {
   ctx->arg0 = RES_VOID;
@@ -40,7 +48,11 @@ int32 fwmem_s29al032dxxxxx04_gpio_init( s_fwmem_context* ctx )
   
   return OSE_OK;
 }
-// ---------------------------------------------------------------------------
+
+/*****************************************************************************
+Syntax:  int32 fwmem_s29al032dxxxxx04_gpio_deinit( s_fwmem_context* ctx )   
+Remarks: 		    
+*******************************************************************************/
 int32 fwmem_s29al032dxxxxx04_gpio_deinit( s_fwmem_context* ctx )
 {
   return OSE_OK;
@@ -58,7 +70,10 @@ int32 fwmem_s29al032dxxxxx04_gpio_sector_count( s_fwmem_context* ctx, uint32* ar
   (*arg) = 71;
   return OSE_OK;
 }
-// ---------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:  int32 fwmem_s29al032dxxxxx04_gpio_sector_clear( s_fwmem_context* ctx, uint32 sector ) 
+Remarks: Стираем Сектор в FLASH памяти.		    
+*******************************************************************************/
 int32 fwmem_s29al032dxxxxx04_gpio_sector_clear( s_fwmem_context* ctx, uint32 sector )
 {
   volatile uint8& REG_555 = (*(uint8*)( ctx->address + 0x00000555 ));
@@ -98,7 +113,12 @@ int32 fwmem_s29al032dxxxxx04_gpio_sector_clear( s_fwmem_context* ctx, uint32 sec
 
   return OSE_OK;
 }
-// ---------------------------------------------------------------------------
+
+
+/*****************************************************************************
+Syntax:  int32 fwmem_s29al032dxxxxx04_gpio_write_buffer( s_fwmem_context* ctx, uint32 offset, void* data, uint32 length )    
+Remarks: Пишем данные в Паралельную FLASH память		    
+*******************************************************************************/
 int32 fwmem_s29al032dxxxxx04_gpio_write_buffer( s_fwmem_context* ctx, uint32 offset, void* data, uint32 length )
 {
   volatile uint8 chkv;
@@ -141,7 +161,11 @@ int32 fwmem_s29al032dxxxxx04_gpio_write_buffer( s_fwmem_context* ctx, uint32 off
 
   return OSE_OK;
 }
-// ---------------------------------------------------------------------------
+
+/*****************************************************************************
+Syntax:  int32 fwmem_s29al032dxxxxx04_gpio_read_buffer( s_fwmem_context* ctx, uint32 offset, void* data, uint32 length   
+Remarks: Читаем данные из Паралельной FLASH памяти		    
+*******************************************************************************/
 int32 fwmem_s29al032dxxxxx04_gpio_read_buffer( s_fwmem_context* ctx, uint32 offset, void* data, uint32 length )
 {
   register uint32 addr;

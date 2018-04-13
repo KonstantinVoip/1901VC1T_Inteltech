@@ -1,7 +1,7 @@
 //**************************************************************************************************
 //                         Copyright (C) 2009 RCZI
 //--------------------------------------------------------------------------------------------------
-// FILENAME....... drv_gpio.cpp
+// FILENAME....... drv_gpio.main-m448-16.cpp
 // DATE CREATED... 13/10/2009
 // LAST MODIFIED.. 23/12/2009
 // DRIVER VERSION. 1.1
@@ -33,6 +33,17 @@
 *       КОНСТАНТЫ
 \**************************************************************************************************/
 #define NUMBER_DSP_GPIO         16
+
+//Работа с ПЛИС
+#define GPIO_PROG               ( 1 << 15 )
+#define GPIO_INIT               ( 1 << 12 )
+#define GPIO_CLK                ( 1 << 14 )
+#define GPIO_DOUT               ( 1 << 13 )
+#define GPIO_DONE               ( 1 << 11 )
+#define GPIO_SWITCH             ( 1 << 2  )
+
+#define GPIO__PRESAVED__        ( GPIO_INIT | GPIO_DOUT | GPIO_CLK )
+
 
 /**************************************************************************************************\
 *       СТРУКТУРЫ
@@ -543,16 +554,6 @@ int32 gpio_value(s_gpio_operation* gpio)
 /**************************************************************************************************\
 *   Сброс ПЛИС
 \***sss********************************************************************************************/
-
-#define GPIO_PROG               ( 1 << 15 )
-#define GPIO_INIT               ( 1 << 12 )
-#define GPIO_CLK                ( 1 << 14 )
-#define GPIO_DOUT               ( 1 << 13 )
-#define GPIO_DONE               ( 1 << 11 )
-#define GPIO_SWITCH             ( 1 << 2  )
-
-#define GPIO__PRESAVED__        ( GPIO_INIT | GPIO_DOUT | GPIO_CLK )
-
 int32 gpio_reset_plis(s_gpio_load_plis* tsk)
 {
   register uint32 is;
@@ -599,9 +600,15 @@ int32 gpio_reset_plis(s_gpio_load_plis* tsk)
 
   return OSE_OK;
 }
-/**************************************************************************************************\
-*   Загрузка ПЛИС
-\***sss********************************************************************************************/
+
+
+
+/*****************************************************************************
+Syntax:  int32 gpio_load_plis( s_gpio_load_plis* tsk )	    
+Remarks: Здесь Происходжит Загрузка ПЛИС и передача данных размером с прошивку sv5.bin 
+		 sv6.bin или sv7.bin (дрыганье пинами) по GPIO 
+         от MAIN CPU к FPGA  и подтверждение что ПЛИС загрузилась.  			    
+*******************************************************************************/
 int32 gpio_load_plis( s_gpio_load_plis* tsk )
 {
   uint8 cb;
@@ -640,7 +647,7 @@ int32 gpio_load_plis( s_gpio_load_plis* tsk )
   // Wait for PLIS
   while( ( ( REG_GPVAL & GPIO_INIT ) == 0 ) || ( ( REG_GPVAL & GPIO_DONE ) != 0 ) );
   
-  // Load PLIS
+  // Load PLIS  (дрыгаем пинами)
   for( gpio_i = 0; gpio_i < tsk->size; gpio_i++ )
   {
     if( !( REG_GPVAL & GPIO_INIT ) ) { error = OSE_CANT_WRITE; goto m_return; }
@@ -654,8 +661,8 @@ int32 gpio_load_plis( s_gpio_load_plis* tsk )
     }
   }
   
-  error = ( REG_GPVAL & GPIO_DONE ) ? OSE_OK : OSE_DROPPED;
-
+  error = ( REG_GPVAL & GPIO_DONE ) ? OSE_OK : OSE_DROPPED; //ожидаем подтверждения от FPGA
+  
 m_return:
 
   // Reconfigure GPIO

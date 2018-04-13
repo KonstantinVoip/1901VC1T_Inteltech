@@ -215,7 +215,7 @@ int os_process(void* arg)
        asm(" nop");
       }
    drv_rmd( d );
-   fprintf(dbg_out,"comm(СП)_sv39:04-Get_Num_Iface =%d\n",number_of_comm_cpu);
+   fprintf(dbg_out,"comm(СП)_sv39:04-Get_Num_COMM =%d\n",number_of_comm_cpu);
      
   
    //Вот Имя в межпроцессорном обмене

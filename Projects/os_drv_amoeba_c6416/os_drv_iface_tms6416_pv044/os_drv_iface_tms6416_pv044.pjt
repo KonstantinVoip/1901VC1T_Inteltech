@@ -68,14 +68,12 @@ Source="..\..\..\3rdPartyLIB\dsp_core\C6000\os_amoeba\src\tms_c64xx\os_semaphore
 Source="..\..\..\3rdPartyLIB\dsp_core\C6000\os_amoeba\src\tms_c64xx\os_system.cpp"
 Source="..\..\..\3rdPartyLIB\dsp_core\C6000\os_amoeba\src\tms_c64xx\os_time.cpp"
 Source="..\..\..\3rdPartyLIB\dsp_core\C6000\rts_amoeba\lib\rts.tms320c6416.lib"
+Source="..\..\..\3rdPartyLIB\dsp_core\C6000\tpo_amoeba\lib\tpo6_iface_tms6416.lib"
 Source="main_iface.cpp"
-Source="mem_fpga_pv040.cmd"
-Source="mem_isp176x.pv044.cmd"
-Source="os_memory_debug.cmd"
-Source="sections.cmd"
-
-["Debug" Settings]
-FinalBuildCmd=sh C:/1901VC1T_Inteltech/out/util/bin/mkcore-tms320c64xx.sh C:/1901VC1T_Inteltech/out/util/bin/os_drv_iface_tms6416_pv044.out  C:/1901VC1T_Inteltech/out/util/bin/core-iface.lif 5 2 2 1
+Source="cmd\debug\os_memory_debug_iface.cmd"
+Source="cmd\debug\os_sections_debug_iface.cmd"
+Source="cmd\mem_fpga_pv040.cmd"
+Source="cmd\mem_isp176x.pv044.cmd"
 
 ["Compiler" Settings: "Debug"]
 Options=-g -pdsw225 -fr"$(Proj_dir)\Debug" -i"%AMOEBA_OS_PATH%\tms_c64xx" -i"%AMOEBA_RTS_PATH%\src" -i"%AMOEBA_DRV_PATH%\emif" -i"%AMOEBA_DRV_PATH%\gpio\tms_c64xx" -i"%AMOEBA_DRV_PATH%\mcbsp\tms_c64xx" -i"%AMOEBA_DRV_PATH%\csl\tms_c64xx" -i"%AMOEBA_DRV_PATH%\dbgout\tms_c64xx" -i"%AMOEBA_DRV_PATH%\led\tms_c64xx" -i"%AMOEBA_DRV_PATH%\fpga\pv40" -i"%AMOEBA_DRV_PATH%\display\tms_c64xx\powertip" -i"%AMOEBA_DRV_PATH%\ipmp\tms_c64xx" -i"%AMOEBA_DRV_PATH%\rtc\ds1302\tms_c64xx" -i"%AMOEBA_DRV_PATH%\rnd\tms_c64xx" -i"%AMOEBA_DRV_PATH%\kbd\tms_c64xx\4x6_keys" -i"%AMOEBA_DRV_PATH%\fwmem\tms_c64xx" -i"%AMOEBA_DRV_PATH%\rik\tms_c64xx" -i"%AMOEBA_DRV_PATH%\usb\tms_c64xx" -i"%AMOEBA_DRV_PATH%\usb\tms_c64xx\scsi" -i"%AMOEBA_DRV_PATH%\usb\tms_c64xx\usbd" -i"%AMOEBA_DRV_PATH%\usb\tms_c64xx\usbhcd" -i"%AMOEBA_DRV_PATH%\usb\tms_c64xx\usbhcd\isp176x" -i"%AMOEBA_DRV_PATH%\usb\tms_c64xx\usbhcd\necupd720150" -i"%AMOEBA_DRV_PATH%\usb\tms_c64xx\usbmsd" -i"%AMOEBA_DRV_PATH%\crypto" -i"%AMOEBA_DRV_PATH%\fs\fat" -i"%AMOEBA_DRV_PATH%\fs\vfat" -d"_DEBUG" -d"NO_OS_MEMTST" -d"USBHC_ADDR=0x6c000000" -d"CHIP_6416" -d"ISP176_BUS_32=1" -mv6400 --mem_model:data=far
@@ -88,28 +86,4 @@ Options=-c -m".\Debug\os_drv_iface_tms6416_pv044.map" -o".\Debug\os_drv_iface_tm
 
 ["Linker" Settings: "Release"]
 Options=-c -m".\Release\os_drv_iface_tms6416_pv044.map" -o".\Release\os_drv_iface_tms6416_pv044.out" -w -x
-
-["mem_fpga_pv040.cmd" Settings: "Debug"]
-LinkOrder=1
-
-["mem_fpga_pv040.cmd" Settings: "Release"]
-LinkOrder=1
-
-["mem_isp176x.pv044.cmd" Settings: "Debug"]
-LinkOrder=1
-
-["mem_isp176x.pv044.cmd" Settings: "Release"]
-LinkOrder=1
-
-["os_memory_debug.cmd" Settings: "Debug"]
-LinkOrder=1
-
-["os_memory_debug.cmd" Settings: "Release"]
-LinkOrder=1
-
-["sections.cmd" Settings: "Debug"]
-LinkOrder=1
-
-["sections.cmd" Settings: "Release"]
-LinkOrder=1
 

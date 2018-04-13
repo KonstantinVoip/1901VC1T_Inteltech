@@ -33,9 +33,9 @@
 
 
 //Виды Сборок добавлю Потом
+//FILE* dbg_out;
 
-
-
+//FILE* dbg_out;
 
 
 
@@ -140,7 +140,7 @@ void os_config()
 
 
 // ---------------------------------------------------------------------------
-// Заглушка для тестирования ОС и драйверов без ТПО нужно тогда удалить библиотеку ТПО tpo_15_main.lib
+// Заглушка для тестирования ОС и драйверов без ТПО нужно тогда удалить библиотеку ТПО tpo_16_main.lib
 // Если нужно Тестировать с ТПО то тогда нужно закоментировать этот вызов os_main чтобы os_main
 // вызывался из ТПО и стартовал для ЦП(main)Процессоров
 //#if 0
@@ -168,7 +168,8 @@ int os_process(void* arg)
     int32 error = OSE_OK;  
     uint32 d = RES_VOID;
     s_gpio_start_value gpio;
-    FILE* dbg_out;
+   
+  
 
       
    
@@ -179,10 +180,7 @@ int os_process(void* arg)
     if( d == RES_VOID )
     {
         //fprintf(dbg_out,"?d_error_stop =%d\n?",d);
-        while(1);
-	 	{
-	 		 asm( " nop" );
-	 	}
+		  while(true) asm(" idle");
 
 	}
 
@@ -212,16 +210,35 @@ int os_process(void* arg)
     
 
 	error = drv_dbgout_plug();
-    dbg_out = fopen( "/dev/dbgout", "w" );
-
+    if(error) 
+    {
+      FILE* dbgout = fopen( "/dev/dbgout", "w" );
+      fprintf(dbgout,"??main(CPU)_ERRORsv43:02-DBGOUT??\n");
+      REG_OSTS0 |= OSTS0_FWMEM_FAIL;  
+      fclose( dbgout );
+      while(true) asm(" idle");
+    }
     
    
+
+    
+    FILE* dbgout;
+    dbgout = fopen( "/dev/dbgout", "w" );
+    
+
     gpio.reg_gpen  = 0x46f0;
     gpio.reg_gpdir = 0x4600;
     gpio.reg_gpval = 0x0000;
-    fprintf(dbg_out,"main(ЦП)_sv43:01-Init_GPIO\n");
+    fprintf(dbgout,"main(CPU)_sv43:01-Init_GPIO\n");
     error = drv_gpio_plug(&gpio);
-    if(error) REG_OSTS0 |= OSTS0_GPIO_FAIL;
+    if(error) 
+    {
+ 
+      fprintf(dbgout,"??main(CPU)_ERRORsv43:02-Init_GPIO??\n");
+      REG_OSTS0 |= OSTS0_GPIO_FAIL;
+	  while(true) asm(" idle");
+    }
+
     else
 	{
         // Reset PLIS видимо сбрасваем ПЛИС по сигналу GPIO
@@ -234,16 +251,13 @@ int os_process(void* arg)
         lplis.gpio_dout = 13;
         lplis.gpio_done = 11;
         lplis.gpio_switch = 2;
-        fprintf(dbg_out,"main(ЦП)_sv43:02-GPIO_ResetFPGA\n");
+        fprintf(dbgout,"main(CPU)_sv43:02-GPIO_ResetFPGA\n");
         error=drv_ioctl( d, GPIO_RESET_PLIS, &lplis );
         
         if(error)
    	    {
-  			fprintf(dbg_out,"?GPIO_ResetFPGA:error =%d\n?",error);
-     		while(1);
-	 		{
-	 		 asm( " nop" );
-	 		}
+  			fprintf(dbgout,"?GPIO_ResetFPGA:error =%d\n?",error);
+			while(true) asm(" idle");
 		}
       
 	   drv_rmd( d ); 
@@ -251,51 +265,63 @@ int os_process(void* arg)
 	} //end else
     
 
-    fprintf(dbg_out,"main(ЦП)_sv43:02-Init_ФЛЭШ_(FLASH)\n");
+    fprintf(dbgout,"main(CPU)_sv43:02-Init_(FLASH)\n");
     error = drv_fwmem_plug("/fwmem", 0x64000000, &fwmem_s29al032dxxxxx04_gpio );
     if(error) 
     {
-      fprintf(dbg_out,"?main(ЦП)_ERRORsv43:02-InitФЛЭШ(FLASH)??\n");
+      fprintf(dbgout,"?main(CPU)_ERRORsv43:02-Init(FLASH)??\n");
       REG_OSTS0 |= OSTS0_FWMEM_FAIL;  
+	  while(true) asm(" idle");
     }
 
-    fprintf(dbg_out,"main(ЦП)_sv43:03-Init_MCBSP\n");
+    fprintf(dbgout,"main(CPU)_sv43:03-Init_MCBSP\n");
     error = drv_mcbsp_plug(&mcbsp_ctx);
     if(error)
     {
-       fprintf(dbg_out,"??main(ЦП)_ERROR:03-Init_MCBSP\n)??\n");
+       fprintf(dbgout,"??main(CPU)_ERROR:03-Init_MCBSP\n)??\n");
        REG_OSTS0 |= OSTS0_MCBSP_FAIL;
+       while(true) asm(" idle");
     }
 
-    	//Для Боевого(Release) Проекта только Старт SYSLOG!!! 
-    fprintf(dbg_out,"main(ЦП)_sv43:05-Init_журнала syslog\n");
-    syslog_init();
-    syslog_level(LOG_DEBUG);
+    //Для Боевого(Release) Проекта только Старт SYSLOG!!! 
+    //fprintf(dbg_out,"main(ЦП)_sv43:05-Init_журнала syslog\n");
+    //syslog_init();
+    //syslog_level(LOG_DEBUG);
 
 
-    fprintf(dbg_out,"main(ЦП)_sv43:06-Init_ЭОЗУ(NVRAM)\n");
+    fprintf(dbgout,"main(CPU)_sv43:06-Init_(NVRAM)\n");
     if( ( error = drv_nvram_plug("/dev/nvram") ) != OSE_OK )
     {
-     
-      fprintf(dbg_out,"??main(ЦП)__ERROR3:06-Init_ЭОЗУ(NVRAM)??\n");
+      
+      fprintf(dbgout,"?main(CPU)_sv43__ERROR:06-Init_(NVRAM)??\n");
       if(error == OSE_DATA_TEST_ERROR)
+	    {
         REG_OSTS0 |= OSTS0_NVRAM_FAIL1;
+        }
       else
+        {
         REG_OSTS0 |= OSTS0_NVRAM_FAIL2;
+        }
+        while(true) asm(" idle");
+       
     }
 
+	
     //Инициализация USB контроллера
     // ----------------------------------------------------------  
-    fprintf(dbg_out,"main(ЦП)_sv43:07 - Init_USB Controller\n");
+    fprintf(dbgout,"main(CPU)_sv43:07 - Init_USB Controller\n");
+    fclose( dbgout ); 
+    
+    
     uint32 usbhc_plug;
     s_usbhc_plug usbhc;
     usbhc.isp.gpio_number = 8;
     usbhc.nec.gpio_number = 7;    
-    error = drv_usbhc_plug(&usbhc, &usbhc_plug);    
+    error = drv_usbhc_plug(&usbhc, &usbhc_plug);  //go drv_usb.cpp  line 775  
     
     if(error) 
     {
-   	 fprintf(dbg_out,"??main(ЦП)__ERROR3:06-Init_USB Controller??\n"); 
+   	 //fprintf(dbgout,"??main(ЦП)_sv43_ERROR:06-Init_USB Controller??\n"); 
    	 REG_OSTS0 |= OSTS0_USBHC_FAIL;
     }
     else
@@ -317,27 +343,30 @@ int os_process(void* arg)
         }
     }
 
-
-	 fprintf(dbg_out,"main(ЦП)_sv43:08-Init_usb0_flash\n");
+    // FILE* dbgout = fopen( "/dev/dbgout", "w" ); 
+	// fprintf(dbgout,"main(ЦП)_sv43:08-Init_usb0_flash\n");
+     //fclose( dbgout ); 
+     
      error=wait_msd0_flash();
      if(error)
      {
-	   fprintf(dbg_out,"?Error wait_usb0_flash\n?",error);
+	  // fprintf(dbgout,"?Error wait_usb0_flash\n?",error);
 	   REG_OSTS0 |= OSTS0_MSD0_FAIL;
-       while(1);
-	 	{
-	 	asm( " nop" );
-	 	}
+       while(true) asm(" idle");
+
 	 }
 
     dev_assign_letter(usbhc_plug); //ничего не возвращает функция нам.
 
 
-    fprintf(dbg_out,"main(ЦП)_sv43:09-Init_usb0_VFAT_DRV\n");
+    dbgout = fopen( "/dev/dbgout", "w" ); 
+    fprintf(dbgout,"main(CPU)_sv43:09-Init_usb0_VFAT_DRV\n");
+
     error=drv_vfat_trigger_plug();
 	if(error)
 	{
-       fprintf(dbg_out,"?Error_usb0_VFAT_DRV\n?",error);
+       fprintf(dbgout,"?Error_usb0_VFAT_DRV\n?",error);
+	   while(true) asm(" idle"); 
 	}
 
      
@@ -348,43 +377,53 @@ int os_process(void* arg)
     //modsyn_m448m16_init переопределно в os_syn Спарка просто вистент по таймату
 	//Функция описывает counter и задержку в миллисекундах для синхронизации Спарки.
 	//По Истечении времении Спарки подвиснет выдаст OS_FAIL 
-    fprintf(dbg_out,"main(ЦП)_sv43:10-Init_SPARKA\n");
-    error=syn_init( 20, 60*60000, NULL ); 
 
+//#if 0   
+    fprintf(dbgout,"main(CPU)_sv43:10-Init_SPARKA\n");
+    error=syn_init( 20, 60*60000, NULL ); 
+//#endif
 
     
     //Инициализация Межплатного Обмена с Интерфейсной Платой  ПВ-044 
     //IPMP0 через MCBSP0 ->iface  , MCBSP1 <--iface
-    fprintf(dbg_out,"main(ЦП)_sv43:11-Init_IPMP0_MCBSP <->PV44_IFACE\n");
+ 
+#if 0 
+    fprintf(dbgout,"main(CPU)_sv43:11-Init_IPMP0_MCBSP <->PV44_IFACE\n");
     error = drv_ipmp_mcbsp_plug( "/dev/ipmp/ipmp0" );
     if(error)
     {
      REG_OSTS1 |= OSTS1_EXCH_IFACE_FAIL;
-    }
+     while(1)
+	 {
+       asm( " nop" );
+	 }
 
+
+    }
+#endif 
     //+++++++++++Три Коммуникационных Процессора TMS6457+++++++++++++++
  
 
+//#if 0
+
     //IPMP1 через ДОЗУ  с COMM0 Здесь Происходит Загрузка прошивка ПЛИС sv6.bin только для Коммуникационного_0
-    fprintf(dbg_out,"main(ЦП)_sv43:12-IPMP1<-->COMM0_LOAD_FPGA_\n");
+    fprintf(dbgout,"main(CPU)_sv43:12-IPMP1<-->COMM0_LOAD_FPGA_\n");
+    fclose( dbgout );
     error = drv_ipmp_dsp16_plug( "/dev/ipmp/ipmp1", 0 );
     if(error)
     {
      REG_OSTS1 |= OSTS1_EXCH_COMM0_FAIL;
-     fprintf(dbg_out,"?IPMP1<-->COMM0_LOAD_FPGA:error=%d_stop\n?",error);
-     while(1);
-	 {
-	 	asm( " nop" );
-	 }
+     //fprintf(dbgout,"?IPMP1<-->COMM0_LOAD_FPGA:error=%d_stop\n?",error);
+	 while(true) asm(" idle"); 
 	}
-    
+#if 0    
     //IPMP2 через ДОЗУ  с COMM1   
-    fprintf(dbg_out,"main(ЦП)_sv43:13-IPMP2<-->COMM1_\n");
+    fprintf(dbgout,"main(CPU)_sv43:13-IPMP2<-->COMM1_\n");
     error = drv_ipmp_dsp16_plug( "/dev/ipmp/ipmp2", 1 );
     if(error)
     {
      REG_OSTS1 |= OSTS1_EXCH_COMM1_FAIL;
-     fprintf(dbg_out,"?IPMP2<-->COMM1:error=%d_stop\n?",error);
+     fprintf(dbgout,"?IPMP2<-->COMM1:error=%d_stop\n?",error);
      while(1);
 	 {
 	 	asm( " nop" );
@@ -392,32 +431,35 @@ int os_process(void* arg)
 	}
  
     //IPMP3 через ДОЗУ  с COMM2   
-    fprintf(dbg_out,"main(ЦП)_sv43:14-IPMP3<-->COMM2\n");
+    fprintf(dbgout,"main(CPU)_sv43:14-IPMP3<-->COMM2\n");
     error = drv_ipmp_dsp16_plug( "/dev/ipmp/ipmp3", 2 );
     if(error)
     {
      REG_OSTS1 |= OSTS1_EXCH_COMM2_FAIL;
-     fprintf(dbg_out,"?IPMP3<-->COMM2:error=%d_stop\n?",error);
+     fprintf(dbgout,"?IPMP3<-->COMM2:error=%d_stop\n?",error);
      while(1);
 	 {
 	 	asm( " nop" );
 	 }
 	}
 
+#endif
 
    	//// Функция инициализирует и запускает процесс межпроцессорно-процессного
     // обмена. Переменная id указывает на уникальный номер процессора в
     // системе (от 0 до 255)  //Ядро ОС отсюда функция вызываеться
-    fprintf(dbg_out,"main(ЦП)_sv43:15-Init Interprocess Communication\n"); 
+    dbgout = fopen( "/dev/dbgout", "w" ); 
+    fprintf(dbgout,"main(CPU)_sv43:15-Init Interprocess Communication\n"); 
    // msg_start( 2, 24 );
     msg_start( 2, 8 );
 
  
     // ----------------------------------------------------------  
-    fprintf(dbg_out,"main(ЦП)_sv43:!OS_START_OK!\n");
+    fprintf(dbgout,"main(CPU)_sv43:!OS_START_OK!\n");
+    fclose( dbgout ); 
     s_prc_attr pattr;
     memset(&pattr, 0, sizeof(s_prc_attr));
-    pattr.stack = 0x2000;
+    pattr.stack = 8192;
     prc_create(&os_main, NULL, 0, &pattr);
     prc_system();
     return 0;

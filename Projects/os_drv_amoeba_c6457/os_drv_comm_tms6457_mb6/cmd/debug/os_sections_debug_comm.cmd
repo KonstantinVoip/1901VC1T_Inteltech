@@ -1,15 +1,17 @@
 /* -- DO NOT REMOVE ----------------------------------------------------------
-// !: arch = tms320c6000
-// !: sarc = all
+// !: arch = tms320c6457
+// !: sarc = COMM CPU 
 // !: proj = soft-debug
-// !: desc = 
+// !: desc = Отладочный варинат Секции для tms6457 коммуникационных Процессоров
+// !: desc = Используеться только внутреняя память 2М/байт Internal_RAM с
+// !: desc = с адреса 0x00900000 внешней флэшки нет у нас. 0x900000 - 0xB00000  (2М/байт)
 // ------------------------------------------------------------------------ */
 
 SECTIONS
 {
   .os_ivect     : { }                                   > OS_IVECT
 
-  .os_loader    : fill = 0x00000000 { }                 > OS_LOADER
+  .os_loader    : { }                                   > OS_LOADER
 
   .os_init_ep   : { }                                   > OS_INIT_EP
 
@@ -29,25 +31,8 @@ SECTIONS
   .os_nmistack  : {
                     _OS_ISTACK_END = .;
                     _OS_NMISTACK_BEGIN = .;
+                    _OS_NMISTACK_END = _OS_NMISTACK_BEGIN + 0x00000400;
                   }                                     > OS_NMISTACK
-
-  .os_code      : {
-                    _OS_NMISTACK_END = .;
-                  }                                     > OS_CODE
-
-  .mpage0       : {
-                    _OS_MPAGE0_BEGIN = .;
-                    _OS_MPAGE0_END   = 0x00100000;
-
-                    _OS_MPAGE1_BEGIN = 0x90000000;
-                    _OS_MPAGE1_END   = 0x90800000;
-                    
-                    _OS_MPAGE2_BEGIN = 0x00000000;
-                    _OS_MPAGE2_END   = 0x00000000;
-                    
-                    _OS_MPAGE3_BEGIN = 0x00000000;
-                    _OS_MPAGE3_END   = 0x00000000;
-                  }                                     > MPAGE0
 
   .cinit        : { }                                   > OS_CODE
   .pinit        : { }                                   > OS_CODE
@@ -58,6 +43,21 @@ SECTIONS
   .far          : { }                                   > OS_CODE
   .cio          : { }                                   > OS_CODE
   .switch       : { }                                   > OS_CODE
- // .template     : { }                                   > OS_CODE
+//.template     : { }                                   > OS_CODE   //не используеться в новой версии компилятора
+//$build.attributes : { }                               > OS_CODE   //не используеться в новой версии компилятора
 
+  .mpage0       : {
+                    _OS_MPAGE0_BEGIN = 0x00950000;
+                    _OS_MPAGE0_END   = 0x00990000;
+
+                    _OS_MPAGE1_BEGIN = 0x009D8000;
+                    _OS_MPAGE1_END   = 0x009F0000;
+
+//                  _OS_MPAGE2_BEGIN = 0x00000000;
+//                  _OS_MPAGE2_END   = 0x00000000;
+
+//                  _OS_MPAGE3_BEGIN = 0x00000000;
+//                  _OS_MPAGE3_END   = 0x00000000;
+                  }                                     > MPAGE0
+  .netcard     : load = NETCARD, type = NOLOAD
 }

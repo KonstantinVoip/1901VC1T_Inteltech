@@ -18,6 +18,8 @@
 #include <os.h>
 // ---------------------------------------------------------------------------
 
+
+
 uint8 _CIOBUF_[256];
 uint32 dbgout_sem = RES_VOID;
 int32 dbgout_buf_offset = 0;

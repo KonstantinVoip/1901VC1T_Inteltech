@@ -58,6 +58,10 @@ OSSF_UNIMPLEMENTED_SYSCALL - исключение, вызванное попыткой вызвать системную фу
 
 OSSF_PROTECTION_FAULT - исключение, вызванное попыткой
  несанкционированного доступа к ресурсу ОС.
+
+OSSF_SDRAMTEST_FAULT       - Ошибка Теста внешней SDRAM процессора
+
+OSSF_INTERNALRAMTEST_FAULT - Ошибка Теста внутренней  InternalRAM процессора 
 *******************************************************************************/
 void os_segfault()
 {
@@ -92,6 +96,20 @@ void os_segfault()
       while( true )
         asm( " nop" );
     }
+    //add skd 12042018
+    case OSSF_SDRAMTEST_FAULT:
+	{
+       while( true )
+        asm( " nop" );
+	}
+
+    //add skd 12042018
+    case OSSF_INTERNALRAMTEST_FAULT:
+	{
+       while( true )
+        asm( " nop" );
+	}
+
 
     default: // x_O probably someone break the system memory
     {
@@ -399,7 +417,7 @@ int32 os_process_create( int (*prc_func)(void*), void* arg, int32 arg_len, s_prc
   }
   
   // Set start process function (it's for debug, may be deleted):
-//  nprocess->func = prc_func;
+  //  nprocess->func = prc_func;
 
   // Initialize process context
   memset( npreg, 0, sizeof(s_os_register) );
@@ -503,7 +521,7 @@ void os_process_exit()
 
   // Lock process switching
   #ifdef OS_SUPPORT_SYNCHRONIZATION
-  syn_close( v_os_current_process->id );
+ 	 syn_close( v_os_current_process->id );
   #endif
   
   is = int_disable();
@@ -628,7 +646,11 @@ int32 os_process_join( uint16 pid )
   sem_lock( jsem, SEM_INFINITY );
   return OSE_OK;
 }
-// ---------------------------------------------------------------------------
+
+/*****************************************************************************
+Syntax:  s_os_mem_block* os_mem_alloc( int32 length, uint32 pagenum )	    
+Remarks: Возвращает блок памяти нужной длинны из страницы PAGE=0 или PAGE=1			    
+*******************************************************************************/
 s_os_mem_block* os_mem_alloc( int32 length, uint32 pagenum )
 {
   s_os_mem_block* cblock;
@@ -644,13 +666,13 @@ s_os_mem_block* os_mem_alloc( int32 length, uint32 pagenum )
   }
   else if( pagenum > 3 )
   {
-    return NULL;
+    return NULL;//Ошибка не выделили память
   }
   else
   {
     fi = ti = (int32)pagenum;
   }
-  if( length <= 0 ) return NULL;
+  if( length <= 0 ) return NULL;  //Ошибка не выделили память
 
   if( length & 15 ) nlength = ( length & 0xfffffff0 ) + 16; else nlength = length;
 
@@ -685,8 +707,8 @@ s_os_mem_block* os_mem_alloc( int32 length, uint32 pagenum )
           if( v_os_core_call ) cblock->pid = 0; else cblock->pid = v_os_current_process->id;
           // Restore process switching
           int_enable( is );
-          return cblock;
-        }
+          return cblock; //Всё OK память выделена возвращаемся
+         }
       }
 
       cblock = cblock->next;
@@ -696,10 +718,12 @@ s_os_mem_block* os_mem_alloc( int32 length, uint32 pagenum )
 
   // Restore process switching
   int_enable( is );  
-
-  return NULL;
+  return NULL; //Ошибка не выделили память
 }
-// ---------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:  void os_mem_free( s_os_mem_block* block )	    
+Remarks: Очищаем Память			    
+*******************************************************************************/
 void os_mem_free( s_os_mem_block* block )
 {
   register uint32 is;
@@ -761,7 +785,10 @@ void os_mem_free_by_pid( uint16 pid )
 
   page[0] = (s_os_mem_block*)&OS_MPAGE0_BEGIN;
   page[1] = (s_os_mem_block*)&OS_MPAGE1_BEGIN;
- 
+  //skd add
+  page[2] = NULL;
+  page[3] = NULL;
+
  //SKD PAtch no OS_MPAGE2 and OS_MPAGE3
  //page[2] = (s_os_mem_block*)&OS_MPAGE2_BEGIN;
  //page[3] = (s_os_mem_block*)&OS_MPAGE3_BEGIN;
@@ -804,7 +831,9 @@ void os_mem_stat( s_os_mem_stat* stat )
 
   page_end[0] = (s_os_mem_block*)&OS_MPAGE0_END;  //Internal RAM
   page_end[1] = (s_os_mem_block*)&OS_MPAGE1_END;  //External SDRAM
-  
+  page_end[2] = NULL;
+  page_end[3] = NULL;
+
   //skd patch no MPAGE2 and MPAGE3
  //page_end[2] = (s_os_mem_block*)&OS_MPAGE2_END;
  //page_end[3] = (s_os_mem_block*)&OS_MPAGE3_END;
@@ -850,7 +879,11 @@ void* os_mem_ptr( s_os_mem_block* block )
 {
   return (void*)( (char*)block + sizeof(s_os_mem_block) );
 }
-// ---------------------------------------------------------------------------
+
+/*****************************************************************************
+Syntax:  void os_heap_init( s_os_heap* heap )	    
+Remarks:			    
+*******************************************************************************/
 void os_heap_init( s_os_heap* heap )
 {
   uint32* heap_begin;
@@ -867,7 +900,10 @@ void os_heap_init( s_os_heap* heap )
   heap_begin = (uint32*)( (uint32)heap->block + heap->block->length + sizeof(s_os_mem_block) - 4 );
   heap_begin[0] = 0xffffffff;
 }
-// ---------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:  void* os_heap_alloc( s_os_heap* heap, int32 size, int32 align )	    
+Remarks:			    
+*******************************************************************************/
 void* os_heap_alloc( s_os_heap* heap, int32 size, int32 align )
 {
   uint32* blast;
@@ -968,7 +1004,10 @@ alloc_again:
 
   return NULL;
 }
-// ---------------------------------------------------------------------------
+/*****************************************************************************
+Syntax:  void os_heap_free( s_os_heap* heap, void* ptr )	    
+Remarks: 			    
+*******************************************************************************/
 void os_heap_free( s_os_heap* heap, void* ptr )
 {
   uint32 b;
@@ -1066,7 +1105,11 @@ void os_heap_free( s_os_heap* heap, void* ptr )
 
   os_sfault( OSSF_BAD_DESCRIPTOR );
 }
-// ---------------------------------------------------------------------------
+
+/*****************************************************************************
+Syntax:  s_os_heap* os_heap_create( int32 size )	    
+Remarks: 			    
+*******************************************************************************/
 s_os_heap* os_heap_create( int32 size )
 {
   s_os_heap* rheap;
@@ -1126,7 +1169,11 @@ s_os_heap* os_heap_create( int32 size )
 
   return rheap;
 }
-// ---------------------------------------------------------------------------
+
+/*****************************************************************************
+Syntax:  void os_heap_destroy( s_os_heap* heap )	    
+Remarks: 			    
+*******************************************************************************/
 void os_heap_destroy( s_os_heap* heap )
 {
   register uint32 is;
@@ -1153,7 +1200,12 @@ void os_heap_destroy( s_os_heap* heap )
 
   os_mem_free( heap->block );
 }
-// ---------------------------------------------------------------------------
+
+
+/*****************************************************************************
+Syntax:  bool os_heap_isin( s_os_heap* heap, void* ptr )	    
+Remarks: 			    
+*******************************************************************************/
 bool os_heap_isin( s_os_heap* heap, void* ptr )
 {
   register uint32 is;
@@ -1271,7 +1323,7 @@ void os_syscall_null_vector()
 
 /*****************************************************************************
 Syntax: void os_syscall_init_table()	    
-Remarks:			    
+Remarks:Таблица Переопределния 			    
 *******************************************************************************/
 void os_syscall_init_table()
 {
@@ -1455,57 +1507,85 @@ void os_cinit()
     }
   }
 }
-// ---------------------------------------------------------------------------
+
+
+/*****************************************************************************
+Syntax:  static bool os_memncmp( char* ptr, char c, uint32 l )	    
+Remarks: Функции Тестирования Памяти SDRAM and Internal_RAM			    
+*******************************************************************************/
 #pragma CODE_SECTION( ".os_init_code" );
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+static bool os_memncmp( char* ptr, char c, uint32 l )
+{
+   for( uint32 i = 0; i < l; i++, ptr++ ) 
+   if( (*ptr) != c )
+	 {
+	   return false;
+	 }
+ return true;
+}
 
-#ifndef NO_OS_MEMTST
-	static bool os_memncmp( char* ptr, char c, uint32 l )
-	{
-	  for( uint32 i = 0; i < l; i++, ptr++ ) if( (*ptr) != c ) return false;
-	  return true;
-	}
-#endif
 
 
-// ---------------------------------------------------------------------------
-#pragma CODE_SECTION( ".os_init_code" );
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 /*****************************************************************************
 Syntax:  static bool os_memtst( uint32 start_mem, uint32 end_mem )	    
 Remarks: Функция Тестирования ОЗУ SDRAM Центрального Процессора.очень долго!			    
 *******************************************************************************/
+#pragma CODE_SECTION( ".os_init_code" );
 static bool os_memtst( uint32 start_mem, uint32 end_mem )
 {
  
-  #ifdef NO_OS_MEMTST
+  #ifdef NO_OS_MEMTST   //если не исаользовать функцию тестирования Памяти.
  	  return true;
   #else
 	  uint32 i, length;
 	  uint8* ptr;
 
-	  if((!start_mem)&&(!end_mem))return true;
-
-	  if(end_mem < start_mem)return false;   
-
+	  if((!start_mem)&&(!end_mem))
+	  {
+	  	return true;
+      }
+	  
+	  if(end_mem < start_mem)
+	  {
+	  	return false;   
+      } 
+	  
 	  length = ( end_mem - start_mem ) & 0xfffffff0;
 	  
 	  // Address test
 	  for( ptr = (uint8*)start_mem, i = 0; i < length; i++, ptr++ ) (*ptr) = i;
-	  for( ptr = (uint8*)start_mem, i = 0; i < length; i++, ptr++ ) if( (*ptr) != (uint8)( i & 0x000000ff ) ) return false;
+	  for( ptr = (uint8*)start_mem, i = 0; i < length; i++, ptr++ ) 
+	  
+	  if( (*ptr) != (uint8)( i & 0x000000ff ) ) 
+	  {
+	  	return false;
+	  }
+	  
 	  // Data test
 	  memset( (void*)start_mem, 0x55, length );
-	  if( !os_memncmp( (char*)start_mem, 0x55, length ) ) return false;
+	  if( !os_memncmp( (char*)start_mem, 0x55, length ) )
+	  {
+	  	return false;
+	  }
+	  
 	  memset( (void*)start_mem, 0xaa, length );
-	  if( !os_memncmp( (char*)start_mem, 0xaa, length ) ) return false;
+	  if( !os_memncmp( (char*)start_mem, 0xaa, length ) ) 
+	  {
+	  	return false;
+	  }
 	  // Clear
 	  memset( (void*)start_mem, 0, length );
 	  return true;
   #endif
 }
-// ---------------------------------------------------------------------------
+
+
+
+/*****************************************************************************
+Syntax:  static s_os_mem_block* os_init_mem_page(uint32 start_addr_page, uint32 end_addr_page)	    
+Remarks: 		    
+*******************************************************************************/
 #pragma CODE_SECTION( ".os_init_code" );
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 static s_os_mem_block* os_init_mem_page(uint32 start_addr_page, uint32 end_addr_page)
 {
   uint32 length;
@@ -1524,14 +1604,12 @@ static s_os_mem_block* os_init_mem_page(uint32 start_addr_page, uint32 end_addr_
 
   return page;
 }
-// ---------------------------------------------------------------------------
-
-#pragma CODE_SECTION( ".os_init_code" );
 
 /*****************************************************************************
 Syntax:  void os_initialize_core()	    
 Remarks: Инициализация нижнего уровня		    
 *******************************************************************************/
+#pragma CODE_SECTION( ".os_init_code" );
 void os_initialize_core()
 {
   s_prc_attr pattr;
@@ -1555,16 +1633,23 @@ void os_initialize_core()
   // All calls from this function is OS calls
   v_os_core_call = 1;
 
-  // Initialize memory pages
+  //Test Internal RAM CPU
+  /////////////////////// Initialize memory pages  and TEST Internal Memory RAM Memory CPU////////////////////////////////
   if( os_memtst( (uint32)&OS_MPAGE0_BEGIN, (uint32)&OS_MPAGE0_END ) )
   {
     v_page[0] = os_init_mem_page( (uint32)&OS_MPAGE0_BEGIN, (uint32)&OS_MPAGE0_END );
   }
-  else
+  else  //Ошибка Теста  InternalRAM нужно клиниться.
   {
     REG_OSTS1 |= OSTS1_MPAGE0_FAIL;
     v_page[0] = NULL;
+    os_sfault(OSSF_INTERNALRAMTEST_FAULT);
+    while( true )
+    asm( " nop" );
+  
   }
+ 
+ 
   v_page[1] = NULL;
   v_page[2] = NULL;
   v_page[3] = NULL;
@@ -1593,20 +1678,35 @@ void os_initialize_core()
   // Configure core
   os_config();
 
-  // Test external memory
+
+  //Тест SDRAM
+  //А если Равно нулю Что делать.? значит нет внешнеё памяти
   if((core_init_cfg.extram_start != 0)&&((core_init_cfg.extram_end != 0)))
   {
     if( !os_memtst(core_init_cfg.extram_start, core_init_cfg.extram_end ) )
     {
-      REG_OSTS1 |= OSTS1_EXTRAM_FAIL;
+      REG_OSTS1 |= OSTS1_EXTRAM_FAIL;    //Ошибка Тестирования SDRAM
+      os_sfault( OSSF_SDRAMTEST_FAULT ); //Ошибка Тестирования SDRAM
+      
+      while( true )
+      asm( " nop" );
     }
+    
   }
-  // Test MPAGE memory
-  if( !os_memtst((uint32)&OS_MPAGE1_BEGIN, (uint32)&OS_MPAGE1_END ) )
+ 
+  // Initialize external memory pages
+  v_page[1] = os_init_mem_page( (uint32)&OS_MPAGE1_BEGIN, (uint32)&OS_MPAGE1_END );
+  
+
+
+  //Зачем Этот Третий Тест
+  // Test MPAGE 1 memory Так Как она входит в страницу Памяти SDRAM
+ /* if( !os_memtst((uint32)&OS_MPAGE1_BEGIN, (uint32)&OS_MPAGE1_END ) )
   {
     REG_OSTS1 |= OSTS1_MPAGE1_FAIL;
   }
-  
+ */ 
+
   /*   //SKD PATCH no MPAGE2 and MPAGE3 from device
   if( !os_memtst((uint32)&OS_MPAGE2_BEGIN, (uint32)&OS_MPAGE2_END ) )
   {
@@ -1618,9 +1718,6 @@ void os_initialize_core()
   }
   */
 
- // Initialize external memory pages
-  v_page[1] = os_init_mem_page( (uint32)&OS_MPAGE1_BEGIN, (uint32)&OS_MPAGE1_END );
- 
     //Skd patch no external Memory Page MPAGE2 and MPAGE3
   /* 
   v_page[2] = os_init_mem_page( (uint32)&OS_MPAGE2_BEGIN, (uint32)&OS_MPAGE2_END );
@@ -1666,14 +1763,13 @@ void os_initialize_core()
   prc_enable( 1 );
   prc_yield();
 }
-// ---------------------------------------------------------------------------
-#pragma CODE_SECTION( ".os_init_scall" );
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 
 /*****************************************************************************
 Syntax:  void os_syscall_copy_table( void* dst, int32 length ) 	    
 Remarks:			    
 *******************************************************************************/
+#pragma CODE_SECTION( ".os_init_scall" );
 void os_syscall_copy_table( void* dst, int32 length )
 {
   if( (uint32)dst <= (uint32)&OS_NMISTACK_END ) return;

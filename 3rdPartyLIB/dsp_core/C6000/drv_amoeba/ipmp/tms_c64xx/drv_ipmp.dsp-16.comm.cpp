@@ -1,3 +1,19 @@
+/**********************************************************************************************************************
+*                                        (c) COPYRIGHT by ZAO RCZI FORT.                                             *
+*        ..                                       All rights reserved.                                               *
+***********************************************************************************************************************
+* Module      : drv_ipmp.dsp-16.comm.cpp
+* Description : 
+* Author      : 
+******************************************************************************
+******************************************************************************
+* Module's Description Record:
+* ============================
+* Module's revision history:
+* ==========================
+* --------- $Log:  $
+* --------- Initial revision
+******************************************************************************/
 #include <drv_ipmp.dsp-16.h>
 #include <os.h>
 // ---------------------------------------------------------------------------
@@ -262,8 +278,8 @@ static int ipmp_dsp16_tx_process( void* arg )
         sem_unlock( send_sem );
 
         #ifdef NEED_STAT
-        _mem8( &dsp_stat.tx_count ) = _mem8( &dsp_stat.tx_count ) + 1;
-        _mem8( &dsp_stat.tx_bytes ) = _mem8( &dsp_stat.tx_bytes ) + (uint64)m->length;
+	        _mem8( &dsp_stat.tx_count ) = _mem8( &dsp_stat.tx_count ) + 1;
+	        _mem8( &dsp_stat.tx_bytes ) = _mem8( &dsp_stat.tx_bytes ) + (uint64)m->length;
         #endif
     
         msg_free( m );
@@ -563,7 +579,7 @@ int32 ipmp_dsp16_comm_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* a
       memset( &mctx, 0, sizeof(mctx) );
       send_sem = RES_VOID;
       #ifdef NEED_STAT
-      memset( &dsp_stat, 0, sizeof(s_ipmp_stat) );
+     	 memset( &dsp_stat, 0, sizeof(s_ipmp_stat) );
       #endif
       sparca_test = false;
       sparca_tack = false;
@@ -626,13 +642,13 @@ int32 ipmp_dsp16_comm_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* a
     break;
     
     #ifdef NEED_STAT
-    case IPMP_STAT:
-    {
-      if( arg == NULL ) return OSE_NULL_PARAM;
-      s_ipmp_stat* s = (s_ipmp_stat*)const_cast<void*>( arg );
-      memcpy( s, &dsp_stat, sizeof(s_ipmp_stat) );
-    }
-    break;
+	    case IPMP_STAT:
+	    {
+	      if( arg == NULL ) return OSE_NULL_PARAM;
+	      s_ipmp_stat* s = (s_ipmp_stat*)const_cast<void*>( arg );
+	      memcpy( s, &dsp_stat, sizeof(s_ipmp_stat) );
+	    }
+	    break;
     #endif
 
     case IPMP_NUMBER:

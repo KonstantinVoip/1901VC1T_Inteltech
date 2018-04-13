@@ -230,7 +230,7 @@ int tpo_comm(void* arg, char* sys_name)
 
 
 	#ifdef CHIP_6457
-	QDMA_init();
+		QDMA_init();
 	#endif
 
 

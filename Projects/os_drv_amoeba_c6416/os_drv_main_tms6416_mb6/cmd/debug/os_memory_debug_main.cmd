@@ -1,8 +1,10 @@
 /* -- DO NOT REMOVE ----------------------------------------------------------
-// !: arch = tms320c6000
+// !: arch = tms320c6416
 // !: sarc = all
 // !: proj = soft-debug
 // !: desc = Отладочная Карта Памяти для tms6416 нет секции LOAD_PO
+// !: desc = используем весь объём SDRAM flash для платы СВ-043 = 16 M/bait с адреса 0x80000000
+// !: desc = внутренняя память Internal RAM CPU = 1024 [К/байт] c адреса 0x00000000
 // ------------------------------------------------------------------------ */
 SECTIONS
 {
@@ -22,5 +24,5 @@ MEMORY
   OS_CODE       : origin = 0x00004000, len = 0x0008c000  //Internal RAM_MAIN_CPU
   MPAGE0        : origin = 0x00090000, len = 0x00070000  //Internal RAM_MAIN_CPU
 
-  EXT_RAM       : origin = 0x80080000, len = 0x00620000   //SDRAM_MAIN_CPU
+  EXT_RAM       : origin = 0x80000000, len = 0x01000000   //16 M/bait SDRAM flash
 }

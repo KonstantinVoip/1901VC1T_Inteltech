@@ -66,6 +66,8 @@
 #include    <drv_dbgout.h>
 #endif
 
+
+
 //OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 //OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 //
@@ -801,10 +803,13 @@ int32 usb_init_driver()
     goto m_return;
   }
   internal_hub->pipe.device_speed = USB_HI_SPEED;
+ 
   #ifdef CONSOLE_DEBUG
-  {FILE* dbgout = fopen( "/dev/dbgout", "w" );
-  fprintf(dbgout,"<usbhc>[1]: Найдено новое USB устройство\n");
-  fclose( dbgout );}
+	  {
+	  FILE* dbgout = fopen( "/dev/dbgout", "w" );
+	  fprintf(dbgout,"<usbhc>[1]: Найдено новое USB устройство\n");
+	  fclose( dbgout );
+	  }
   #endif 
   //*** STAGE4 ***
   sem_usb = sem_alloc(1, NULL);
@@ -969,14 +974,16 @@ int usb_enumeration_process(void* arg)
                     //Сброс порта и начало SOF:
                     error = rqst_set_port_feature_with_status(device, FEATURE_PORT_RESET, port, &hub_desc->hub_port_status);
                     #ifdef CONSOLE_DEBUG
-                    {FILE* dbgout = fopen( "/dev/dbgout", "w" );    
+                    {
+                    FILE* dbgout = fopen( "/dev/dbgout", "w" );    
                     fprintf(dbgout,"<");
                     fprintf(dbgout,device->name);                    
                     fprintf(dbgout,">[");                    
                     char nport[8];memset(nport,0x0,8);itoa(port,nport);
                     fprintf(dbgout,nport);
                     fprintf(dbgout,"]: Найдено новое USB устройство\n");
-                    fclose( dbgout );}
+                    fclose( dbgout );
+                    }
                     #endif
                   }
                   //Если устройство отключено:
@@ -984,14 +991,16 @@ int usb_enumeration_process(void* arg)
                   {
                     usb_device_delete(device, port);
                     #ifdef CONSOLE_DEBUG
-                    {FILE* dbgout = fopen( "/dev/dbgout", "w" );
+                    {
+                    FILE* dbgout = fopen( "/dev/dbgout", "w" );
                     fprintf(dbgout,"<");
                     fprintf(dbgout,device->name);           
                     fprintf(dbgout,">[");                    
                     char nport[8];memset(nport,0x0,8);itoa(port,nport);
                     fprintf(dbgout,nport);
                     fprintf(dbgout,"]: USB устройство удалено\n");
-                    fclose( dbgout );}
+                    fclose( dbgout );
+                    }
                     #endif
                   }
                 }
@@ -1012,14 +1021,16 @@ int usb_enumeration_process(void* arg)
                   //  NOTE: Данные действия повторяем неограниченно, пока
                   //  наш isp176x чего-нибудь не найдет или "не умрет".
                   #ifdef CONSOLE_DEBUG
-                  {FILE* dbgout = fopen( "/dev/dbgout", "w" );
+                  {
+                  FILE* dbgout = fopen( "/dev/dbgout", "w" );
                   fprintf(dbgout,"<");
                   fprintf(dbgout,device->name);                    
                   fprintf(dbgout,">[");                    
                   char nport[8];memset(nport,0x0,8);itoa(port,nport);
                   fprintf(dbgout,nport);
                   fprintf(dbgout,"]: Ошибка - обнаружения порта\n");
-                  fclose(dbgout);}
+                  fclose(dbgout);
+                  }
                   #endif
                   error = rqst_clear_port_feature_with_status(device, FEATURE_PORT_POWER, port, &hub_desc->hub_port_status);
                   error = rqst_set_port_feature_with_status(device, FEATURE_PORT_POWER, port, &hub_desc->hub_port_status);             
@@ -1036,7 +1047,8 @@ int usb_enumeration_process(void* arg)
                 {
                   error = rqst_clear_port_feature_with_status(device, FEATURE_C_PORT_OVER_CURRENT, port, &hub_desc->hub_port_status);
                   #ifdef CONSOLE_DEBUG
-                  {FILE* dbgout = fopen( "/dev/dbgout", "w" );
+                  {
+                  FILE* dbgout = fopen( "/dev/dbgout", "w" );
                   fprintf(dbgout,"<");
                   fprintf(dbgout,device->name);                    
                   fprintf(dbgout,">[");                    
@@ -1558,7 +1570,8 @@ int32 usb_class_descriptor(s_list_usb_device* device, char* parent_name, char* s
     {                
       add_name_device(device, "aud", parent_name, self_name);
       #ifdef CONSOLE_DEBUG
-      {FILE* dbgout = fopen( "/dev/dbgout", "w" );
+      {
+      FILE* dbgout = fopen( "/dev/dbgout", "w" );
       fprintf(dbgout,"<");fprintf(dbgout,hub_name);fprintf(dbgout,">[");      
       char nport[8];memset(nport,0x0,8);itoa(hub_port,nport);
       fprintf(dbgout,nport);      
@@ -1573,14 +1586,16 @@ int32 usb_class_descriptor(s_list_usb_device* device, char* parent_name, char* s
     {
       add_name_device(device, "com", parent_name, self_name);
       #ifdef CONSOLE_DEBUG
-      {FILE* dbgout = fopen( "/dev/dbgout", "w" );
+      {
+      FILE* dbgout = fopen( "/dev/dbgout", "w" );
       fprintf(dbgout,"<");fprintf(dbgout,hub_name);fprintf(dbgout,">[");      
       char nport[8];memset(nport,0x0,8);itoa(hub_port,nport);
       fprintf(dbgout,nport);      
       fprintf(dbgout,"]: Устройство класса COMMUNICATIONS <");                     
       fprintf(dbgout,device->name);                    
       fprintf(dbgout,">\n");      
-      fclose(dbgout);}
+      fclose(dbgout);
+      }
       #endif
       break;
     }
@@ -1588,14 +1603,16 @@ int32 usb_class_descriptor(s_list_usb_device* device, char* parent_name, char* s
     {
       add_name_device(device, "hid", parent_name, self_name);
       #ifdef CONSOLE_DEBUG
-      {FILE* dbgout = fopen( "/dev/dbgout", "w" );
+      {
+      FILE* dbgout = fopen( "/dev/dbgout", "w" );
       fprintf(dbgout,"<");fprintf(dbgout,hub_name);fprintf(dbgout,">[");      
       char nport[8];memset(nport,0x0,8);itoa(hub_port,nport);
       fprintf(dbgout,nport);      
       fprintf(dbgout,"]: Устройство класса HUMAN INTERFACE <");                     
       fprintf(dbgout,device->name);                    
       fprintf(dbgout,">\n");      
-      fclose(dbgout);}
+      fclose(dbgout);
+      }
       #endif
       break;
     }
@@ -1603,14 +1620,16 @@ int32 usb_class_descriptor(s_list_usb_device* device, char* parent_name, char* s
     {              
       add_name_device(device, "dsp", parent_name, self_name);
       #ifdef CONSOLE_DEBUG
-      {FILE* dbgout = fopen( "/dev/dbgout", "w" );
+      {
+      FILE* dbgout = fopen( "/dev/dbgout", "w" );
       fprintf(dbgout,"<");fprintf(dbgout,hub_name);fprintf(dbgout,">[");      
       char nport[8];memset(nport,0x0,8);itoa(hub_port,nport);
       fprintf(dbgout,nport);      
       fprintf(dbgout,"]: Устройство класса MONITOR <");                     
       fprintf(dbgout,device->name);                    
       fprintf(dbgout,">\n");      
-      fclose(dbgout);}
+      fclose(dbgout);
+      }
       #endif
       break;
     }
@@ -1618,14 +1637,16 @@ int32 usb_class_descriptor(s_list_usb_device* device, char* parent_name, char* s
     {
       add_name_device(device, "phs", parent_name, self_name);
       #ifdef CONSOLE_DEBUG
-      {FILE* dbgout = fopen( "/dev/dbgout", "w" );
+      {
+      FILE* dbgout = fopen( "/dev/dbgout", "w" );
       fprintf(dbgout,"<");fprintf(dbgout,hub_name);fprintf(dbgout,">[");      
       char nport[8];memset(nport,0x0,8);itoa(hub_port,nport);
       fprintf(dbgout,nport);      
       fprintf(dbgout,"]: Устройство класса PHYSICAL INTERFACE <");                     
       fprintf(dbgout,device->name);                    
       fprintf(dbgout,">\n");      
-      fclose(dbgout);}
+      fclose(dbgout);
+      }
       #endif
       break;
     }
@@ -1633,14 +1654,16 @@ int32 usb_class_descriptor(s_list_usb_device* device, char* parent_name, char* s
     {
       add_name_device(device, "pwr", parent_name, self_name);
       #ifdef CONSOLE_DEBUG
-      {FILE* dbgout = fopen( "/dev/dbgout", "w" );
+      {
+      FILE* dbgout = fopen( "/dev/dbgout", "w" );
       fprintf(dbgout,"<");fprintf(dbgout,hub_name);fprintf(dbgout,">[");      
       char nport[8];memset(nport,0x0,8);itoa(hub_port,nport);
       fprintf(dbgout,nport);      
       fprintf(dbgout,"]: Устройство класса POWER <");                     
       fprintf(dbgout,device->name);                    
       fprintf(dbgout,">\n");      
-      fclose(dbgout);}
+      fclose(dbgout);
+      }
       #endif
       break;
     }
@@ -1650,14 +1673,16 @@ int32 usb_class_descriptor(s_list_usb_device* device, char* parent_name, char* s
       error = add_name_device(device, "prt", parent_name, self_name);
       if(error) break;      
       #ifdef CONSOLE_DEBUG
-      {FILE* dbgout = fopen( "/dev/dbgout", "w" );
+      {
+      FILE* dbgout = fopen( "/dev/dbgout", "w" );
       fprintf(dbgout,"<");fprintf(dbgout,hub_name);fprintf(dbgout,">[");      
       char nport[8];memset(nport,0x0,8);itoa(hub_port,nport);
       fprintf(dbgout,nport);      
       fprintf(dbgout,"]: Устройство класса PRINTER <");                     
       fprintf(dbgout,device->name);                    
       fprintf(dbgout,">\n");      
-      fclose(dbgout);}
+      fclose(dbgout);
+      }
       #endif
       context = get_driver_context(device->pipe.interface_class);
       if(context != NULL)
@@ -1670,14 +1695,16 @@ int32 usb_class_descriptor(s_list_usb_device* device, char* parent_name, char* s
       error = add_name_device(device, "msd", parent_name, self_name);
       if(error) break;      
       #ifdef CONSOLE_DEBUG
-      {FILE* dbgout = fopen( "/dev/dbgout", "w" );
+      {
+      FILE* dbgout = fopen( "/dev/dbgout", "w" );
       fprintf(dbgout,"<");fprintf(dbgout,hub_name);fprintf(dbgout,">[");      
       char nport[8];memset(nport,0x0,8);itoa(hub_port,nport);
       fprintf(dbgout,nport);      
       fprintf(dbgout,"]: Устройство класса MASS STORAGE <");                     
       fprintf(dbgout,device->name);                    
       fprintf(dbgout,">\n");      
-      fclose(dbgout);}
+      fclose(dbgout);
+      }
       #endif
       context = get_driver_context(device->pipe.interface_class);
       if(context != NULL)
@@ -1734,14 +1761,16 @@ int32 usb_class_descriptor(s_list_usb_device* device, char* parent_name, char* s
       error = add_name_device(device, "hub", parent_name, self_name);
       if(error) return error;
       #ifdef CONSOLE_DEBUG
-      {FILE* dbgout = fopen( "/dev/dbgout", "w" );
+      {
+      FILE* dbgout = fopen( "/dev/dbgout", "w" );
       fprintf(dbgout,"<");fprintf(dbgout,hub_name);fprintf(dbgout,">[");      
       char nport[8];memset(nport,0x0,8);itoa(hub_port,nport);
       fprintf(dbgout,nport);      
       fprintf(dbgout,"]: Устройство класса HUB <");                     
       fprintf(dbgout,device->name);                    
       fprintf(dbgout,">\n");      
-      fclose(dbgout);}
+      fclose(dbgout);
+      }
       #endif
 
       hub_int.id   = &hub_data->id;

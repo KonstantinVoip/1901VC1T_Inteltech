@@ -17,6 +17,8 @@
 #include <drv_ipmp.dsp-16.h>
 #include <drv_gpio.h>
 #include <rts.h>
+#include <drv_dbgout.h>
+
 
 #ifdef HAVE_ARAMEC
 	#include <ARAM_Exchange_main.h>
@@ -60,7 +62,7 @@
 struct s_dsp_context
 {
   #ifdef NEED_STAT
-  s_ipmp_stat                   stat;
+  	s_ipmp_stat                   stat;
   #endif
   int32                         rx_process;
   int32                         tx_process;
@@ -78,7 +80,7 @@ struct s_dsp_context
 
 /*****************************************************************************
 Syntax:  static int32 ipmp_dsp16_load_plis( const void* arg ) 	    
-Remarks: Загрузка Прошивки FPGA sv6.bin			    
+Remarks: Функция Загрузки Прошивки FPGA		    
 *******************************************************************************/
 static int32 ipmp_dsp16_load_plis( const void* arg )
 {
@@ -86,13 +88,18 @@ static int32 ipmp_dsp16_load_plis( const void* arg )
   uint32 d;
   s_gpio_load_plis lplis;
 
-  if( ( d = drv_mkd( "/dev/gpio" ) ) == RES_VOID ) return OSE_NO_DEVICE;
+  if( ( d = drv_mkd( "/dev/gpio" ) ) == RES_VOID )
+  {
+  return OSE_NO_DEVICE;
+  }
 
   lplis.data = const_cast<void*>( arg );
   lplis.size = C_PLIS_LENGTH;
-  r = drv_ioctl( d, GPIO_LOAD_PLIS, &lplis );
-
-  drv_rmd( d );
+  r = drv_ioctl( d, GPIO_LOAD_PLIS, &lplis );  //идем в os_driver_ioctl <-> [os_driver.cpp]
+                                               //потом в  gpio_ioctl()  <-> [drv_gpio.main-m448-16.cpp]
+                                               //потом выполняем gpio_load_plis и дергаем пинами.грузим
+											   //бинарник в FPGA
+  drv_rmd( d );                                   
 
   return r;
 }
@@ -212,10 +219,10 @@ static int ipmp_dsp16_tx_process( void* arg )
         sem_unlock( ctx->send_sem );
 
         #ifdef NEED_STAT
-        syn_begin();
-        _mem8( &ctx->stat.tx_count ) = _mem8( &ctx->stat.tx_count ) + 1;
-        _mem8( &ctx->stat.tx_bytes ) = _mem8( &ctx->stat.tx_bytes ) + (uint64)m->length;
-        syn_end();
+	        syn_begin();
+	        _mem8( &ctx->stat.tx_count ) = _mem8( &ctx->stat.tx_count ) + 1;
+	        _mem8( &ctx->stat.tx_bytes ) = _mem8( &ctx->stat.tx_bytes ) + (uint64)m->length;
+	        syn_end();
         #endif
 
         msg_free( m );
@@ -294,10 +301,10 @@ static int ipmp_dsp16_rx_process( void* arg )
               if( rc16 == c16 )
               {
                 #ifdef NEED_STAT
-                syn_begin();
-                _mem8( &ctx->stat.rx_count ) = _mem8( &ctx->stat.rx_count ) + 1;
-                _mem8( &ctx->stat.rx_bytes ) = _mem8( &ctx->stat.rx_bytes ) + (uint64)ctx->avg_message->length;
-                syn_end();
+	                syn_begin();
+	                _mem8( &ctx->stat.rx_count ) = _mem8( &ctx->stat.rx_count ) + 1;
+	                _mem8( &ctx->stat.rx_bytes ) = _mem8( &ctx->stat.rx_bytes ) + (uint64)ctx->avg_message->length;
+	                syn_end();
                 #endif
                 msg_queue_push( ctx->mctx.inq, ctx->avg_message );
                 ctx->avg_message = NULL;
@@ -307,10 +314,10 @@ static int ipmp_dsp16_rx_process( void* arg )
                 msg_free( ctx->avg_message );
                 ctx->avg_message = NULL;
                 #ifdef NEED_STAT
-                syn_begin();
-                _mem8( &ctx->stat.rx_drop ) = _mem8( &ctx->stat.rx_drop ) + 1;
-                _mem8( &ctx->stat.rx_drop_hash ) = _mem8( &ctx->stat.rx_drop_hash ) + 1;
-                syn_end();
+	                syn_begin();
+	                _mem8( &ctx->stat.rx_drop ) = _mem8( &ctx->stat.rx_drop ) + 1;
+	                _mem8( &ctx->stat.rx_drop_hash ) = _mem8( &ctx->stat.rx_drop_hash ) + 1;
+	                syn_end();
                 #endif
               }
             }
@@ -320,10 +327,10 @@ static int ipmp_dsp16_rx_process( void* arg )
               if( length & 7 ) recv_8b( ctx );
               recv_8b( ctx );
               #ifdef NEED_STAT
-              syn_begin();
-              _mem8( &ctx->stat.rx_drop ) = _mem8( &ctx->stat.rx_drop ) + 1;
-              _mem8( &ctx->stat.rx_drop_mem ) = _mem8( &ctx->stat.rx_drop_mem ) + 1;
-              syn_end();
+	              syn_begin();
+	              _mem8( &ctx->stat.rx_drop ) = _mem8( &ctx->stat.rx_drop ) + 1;
+	              _mem8( &ctx->stat.rx_drop_mem ) = _mem8( &ctx->stat.rx_drop_mem ) + 1;
+	              syn_end();
               #endif
             }
           }
@@ -338,9 +345,9 @@ static int ipmp_dsp16_rx_process( void* arg )
           default:
           {
             #ifdef NEED_STAT
-            syn_begin();
-            _mem8( &ctx->stat.rx_drop ) = _mem8( &ctx->stat.rx_drop ) + 1;
-            syn_end();
+	            syn_begin();
+	            _mem8( &ctx->stat.rx_drop ) = _mem8( &ctx->stat.rx_drop ) + 1;
+	            syn_end();
             #endif
           }
           break;
@@ -385,7 +392,12 @@ int32 ipmp_dsp16_main_write( s_os_driver_descriptor* d, const void* buf, int32 l
 {
   return -1;
 }
-//---------------------------------------------------------------------------
+
+
+/*****************************************************************************
+Syntax:  int32 ipmp_dsp16_main_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* arg )   
+Remarks: 			    
+*******************************************************************************/
 int32 ipmp_dsp16_main_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* arg )
 {
   switch( cmd )
@@ -467,22 +479,22 @@ int32 ipmp_dsp16_main_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* a
     break;
 
     #ifdef NEED_STAT
-    case IPMP_STAT:
-    {
-      if( arg == NULL ) return OSE_NULL_PARAM;
-      s_dsp_context* ctx = (s_dsp_context*)d->ctx->data;
-      s_ipmp_stat* s = (s_ipmp_stat*)const_cast<void*>( arg );
-      syn_begin();
-      memcpy( s, &ctx->stat, sizeof(s_ipmp_stat) );
-      syn_end();
-    }
-    break;
+	    case IPMP_STAT:
+	    {
+	      if( arg == NULL ) return OSE_NULL_PARAM;
+	      s_dsp_context* ctx = (s_dsp_context*)d->ctx->data;
+	      s_ipmp_stat* s = (s_ipmp_stat*)const_cast<void*>( arg );
+	      syn_begin();
+	      memcpy( s, &ctx->stat, sizeof(s_ipmp_stat) );
+	      syn_end();
+	    }
+	    break;
     #endif
 
     case IPMP_PAUSE:
     {
       #ifdef HAVE_ARAMEC
-      LockARAMExchange();
+      	LockARAMExchange();
       #endif
       s_dsp_context* ctx = (s_dsp_context*)d->ctx->data;
       sem_lock( ctx->send_sem, SEM_INFINITY );
@@ -502,7 +514,7 @@ int32 ipmp_dsp16_main_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* a
       while( ctx->state != S_EXCHANGE ) prc_yield();
       sem_unlock( ctx->send_sem );
       #ifdef HAVE_ARAMEC
-      UnlockARAMExchange();
+     	 UnlockARAMExchange();
       #endif
     }
     break;
@@ -530,14 +542,16 @@ int32 ipmp_dsp16_main_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* a
 
 /*****************************************************************************
 Syntax:  int32 drv_ipmp_dsp16_plug( const char* path, uint32 comm_n )	    
-Remarks: 			    
+Remarks: Сначала Попадаем Сюда После вызова функции 			    
 *******************************************************************************/
 int32 drv_ipmp_dsp16_plug( const char* path, uint32 comm_n )
 {
   s_dsp_context ctx;
 
-  if( comm_n >= 3 ) return OSE_OUT_OF_A_RANGE;
-
+  if( comm_n >= 3 ) 
+  {
+  	return OSE_OUT_OF_A_RANGE;
+  }
 
   //Для Коммуникационного 0 мы считываем прошивку FPGA с USB флэшки и загружаем в ПЛИС. 
   if( comm_n == 0 )
@@ -545,7 +559,7 @@ int32 drv_ipmp_dsp16_plug( const char* path, uint32 comm_n )
     uint32 d = drv_mkd( "/vfat/a/sv6.bin" );
     if( d == RES_VOID ) 
     {
-    return OSE_NO_DEVICE;
+    	return OSE_NO_DEVICE;
     }
     
     if( drv_open( d, DRV_RD ) != OSE_OK )
@@ -562,7 +576,7 @@ int32 drv_ipmp_dsp16_plug( const char* path, uint32 comm_n )
     }
     
     void* ptr = mem_ptr( block );
-    int32 res = drv_read( d, ptr, C_PLIS_LENGTH );
+    int32 res = drv_read( d, ptr, C_PLIS_LENGTH ); //читаем с USB прошивку
     drv_rmd( d );
     
     if( res != C_PLIS_LENGTH )
@@ -572,9 +586,13 @@ int32 drv_ipmp_dsp16_plug( const char* path, uint32 comm_n )
     }
     
     //загрузка в ПЛИС прошивки.
-    res = ipmp_dsp16_load_plis( ptr );
+    res = ipmp_dsp16_load_plis( ptr );  //Идём на строчку ->>> 83.
     mem_free( block );
-    if( res != OSE_OK ) return res;
+   
+    if( res != OSE_OK ) 
+    {
+    	return res;
+    }
   
   }
 
@@ -585,8 +603,16 @@ int32 drv_ipmp_dsp16_plug( const char* path, uint32 comm_n )
   ctx.flag_port = 0xa0007f00 | comm_n;
   ctx.data_port = 0xa0007f08 | comm_n;
   
+     
+
+
   return drv_plug( path, INOT_FILE, &ipmp_dsp16_main_open, &ipmp_dsp16_main_close, &ipmp_dsp16_main_read, &ipmp_dsp16_main_write, &ipmp_dsp16_main_ioctl, &ctx, sizeof(ctx) );
 }
+
+
+
+
+
 // ---------------------------------------------------------------------------
 int32 drv_ipmp_dsp16_unplug( const char* name )
 {

@@ -1,8 +1,9 @@
 /* -- DO NOT REMOVE ----------------------------------------------------------
-// !: arch = tms320c6000
-// !: sarc = all
+// !: arch = tms320c6416
+// !: sarc = IFACE CPU PV-044 board
 // !: proj = soft-debug
-// !: desc = Отладочный варинат Секции для tms6416
+// !: desc = Отладочный варинат Секции для tms6416 используём всё емкость SDRAM 8 м/байт
+// !: desc = Для Интерфейсной Платы ПВ-044  8М/байт c 0x90000000
 // ------------------------------------------------------------------------ */
 
 SECTIONS
@@ -28,16 +29,11 @@ SECTIONS
                   }                                     > OS_CODE
   .mpage0       : {
                     _OS_MPAGE0_BEGIN = .;                
-                    _OS_MPAGE0_END   = 0x00100000;     //Internal RAM CPU tms6416.
+                    _OS_MPAGE0_END   = 0x00100000;     //Internal RAM CPU tms6416. 1 M/bait
 
-                    _OS_MPAGE1_BEGIN = 0x806A0000;     //SDRAM
-                    _OS_MPAGE1_END   = 0x80800000;     //SDRAM
-                    
-//                    _OS_MPAGE2_BEGIN = 0x00000000;   //тоже нету секций 
-//                    _OS_MPAGE2_END   = 0x00000000;
-                    
-//                    _OS_MPAGE3_BEGIN = 0x00000000;
-//                    _OS_MPAGE3_END   = 0x00000000;
+                    _OS_MPAGE1_BEGIN = 0x90000000;     //8 M/bait External SDRAM memory
+                    _OS_MPAGE1_END   = 0x90800000;     //0x00800000 = 8 М/байт
+
                   }                                     > MPAGE0
 
   .cinit        : { }                                   > OS_CODE

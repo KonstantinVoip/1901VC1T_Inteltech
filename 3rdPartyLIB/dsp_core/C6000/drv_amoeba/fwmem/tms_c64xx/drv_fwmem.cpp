@@ -2,16 +2,16 @@
 *                                        (c) COPYRIGHT by ZAO RCZI FORT.                                             *
 *        ..                                       All rights reserved.                                               *
 ***********************************************************************************************************************
-* Module      :drv_fwmem.cpp
+* Module      :[drv_fwmem.cpp]
 * Description : 
-* Author      : 
+* Author      :Драйвер внешней FLASH памяти Уровень Абстаркции Файловой Системы.
 ******************************************************************************
 ******************************************************************************
 * Module's Description Record:
 * ============================
 * Module's revision history:
 * ==========================
-* --------- $Log: mpcdrvlbcCyclone.h $
+* --------- $Log:  $
 * --------- Initial revision
 ******************************************************************************/
 #include <drv_fwmem.h>
@@ -26,6 +26,8 @@ struct s_fwmem_data
   s_fwmem_record                record;
   uint32                        record_offset;
 };
+
+
 
 // ---------------------------------------------------------------------------
 int32 fwmem_open( s_os_driver_descriptor* d, uint16 access )
@@ -70,6 +72,9 @@ int32 fwmem_write( s_os_driver_descriptor* d, const void* buf, int32 length )
 {
   return OSE_PERMISSION_DENIED;
 }
+
+
+
 // ---------------------------------------------------------------------------
 static int32 add_inode( s_inode*& list, s_fwmem_record& frec )
 {
@@ -107,12 +112,19 @@ static int32 add_inode( s_inode*& list, s_fwmem_record& frec )
 
   return OSE_OK;
 }
-// ---------------------------------------------------------------------------
+
+
+/*****************************************************************************
+Syntax:  int32 fwmem_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* arg )  	    
+Remarks: Функция ioctl_linux 			    
+*******************************************************************************/
 int32 fwmem_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* arg )
 {
   s_fwmem_data* cdata = (s_fwmem_data*)d->data;
   s_fwmem_context* dctxdata = (s_fwmem_context*)d->ctx->data;
 
+   
+  //////////////////////////START IOC///////////////////////// 
   switch( cmd )
   {
     case IOC_INIT:
@@ -125,7 +137,7 @@ int32 fwmem_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* arg )
       if( r != OSE_OK ) return r;
     }
     break;
-
+    //
     case IOC_DEINIT:
     {
       s_os_driver_context* dctx = (s_os_driver_context*)const_cast<void*>( arg );
@@ -134,7 +146,7 @@ int32 fwmem_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* arg )
       if( r != OSE_OK ) return r;
     }
     break;
-
+    //
     case IOC_EOF:
     {
       if( ( d->access & DRV_OPENED ) == 0 ) return OSE_STREAM_NOT_OPENED;
@@ -143,7 +155,7 @@ int32 fwmem_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* arg )
       (*carg) = ( cdata->position >= _mem4( &cdata->record.length ) ) ? 1 : 0;
     }
     break;
-
+    //
     case IOC_SEEK:
     {
       if( ( d->access & DRV_OPENED ) == 0 ) return OSE_STREAM_NOT_OPENED;
@@ -153,7 +165,7 @@ int32 fwmem_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* arg )
       if( cdata->position > _mem4( &cdata->record.length ) ) cdata->position = _mem4( &cdata->record.length );
     }
     break;
-
+    //
     case IOC_SIZE:
     {
       if( arg == NULL ) return OSE_NULL_PARAM;
@@ -161,7 +173,7 @@ int32 fwmem_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* arg )
       (*carg) = (int64)_mem4( &cdata->record.length );
     }
     break;
-
+    //
     case IOC_POSITION:
     {
       if( ( d->access & DRV_OPENED ) == 0 ) return OSE_STREAM_NOT_OPENED;
@@ -170,7 +182,7 @@ int32 fwmem_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* arg )
       (*carg) = (int64)cdata->position;
     }
     break;
-
+    //
     case IOC_INODE_LIST:
     {
       s_fwmem_record crec;
@@ -204,7 +216,7 @@ int32 fwmem_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* arg )
       }
     }
     break;
-
+    //
     case IOC_INODE_SELECT:
     {
       if( arg == NULL ) return OSE_NULL_PARAM;
@@ -254,7 +266,7 @@ int32 fwmem_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* arg )
       }
     }
     break;
-
+    //
     case IOC_INIT_DESCRIPTOR:
     {
       d->data = heap_alloc( NULL, sizeof(s_fwmem_data), HEAP_ALIGN_4 );
@@ -263,26 +275,28 @@ int32 fwmem_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* arg )
       memset( cdata, 0, sizeof(s_fwmem_data) );
     }
     break;
-
+    //
     case IOC_DEINIT_DESCRIPTOR:
     {
       if( d->data ) heap_free( NULL, d->data );
       d->data = NULL;
     }
     break;
-
+    
+    //////////////////////////START FWMEM/////////////////////////
+    //COUNT
     case FWMEM_SECTOR_COUNT:
     {
       if( arg == NULL ) return OSE_NULL_PARAM;
       return dctxdata->wctx->sector_count( dctxdata, (uint32*)const_cast<void*>( arg ) );
     }
-
+    //SIZE
     case FWMEM_SECTOR_SIZE:
     {
       if( arg == NULL ) return OSE_NULL_PARAM;
       return dctxdata->wctx->sector_size( dctxdata, (s_fwmem_sector_size*)const_cast<void*>( arg ) );
     }
-
+    //Clear
     case FWMEM_SECTOR_CLEAR:
     {
       if( arg == NULL ) return OSE_NULL_PARAM;
@@ -291,14 +305,14 @@ int32 fwmem_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* arg )
       sem_unlock( dctxdata->sem );
       return r;
     }
-
+    //Offset
     case FWMEM_SET_OFFSET:
     {
       if( arg == NULL ) return OSE_NULL_PARAM;
       cdata->offset = (*(uint32*)const_cast<void*>( arg ));
     }
     break;
-
+    //Write
     case FWMEM_WRITE:
     {
       if( arg == NULL ) return OSE_NULL_PARAM;
@@ -309,7 +323,7 @@ int32 fwmem_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* arg )
       if( r == OSE_OK ) cdata->offset += carg->length;
       return r;
     }
-
+    //Read
     case FWMEM_READ:
     {
       if( arg == NULL ) return OSE_NULL_PARAM;
@@ -320,22 +334,23 @@ int32 fwmem_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* arg )
       if( r == OSE_OK ) cdata->offset += carg->length;
       return r;
     }
-
+    //Size
     case FWMEM_SIZE:
     {
       if( arg == NULL ) return OSE_NULL_PARAM;
       return dctxdata->wctx->size( dctxdata, (uint32*)const_cast<void*>( arg ) );
     }
-
+    //
     default:
       return OSE_BAD_CMD;
   }
 
   return OSE_OK;
 }
+
 /*****************************************************************************
 Syntax:  int32 drv_fwmem_plug( const char* path, uint32 address, s_fwmem_selector* wctx )    	    
-Remarks:			    
+Remarks: PLUG драйвер			    
 *******************************************************************************/
 int32 drv_fwmem_plug( const char* path, uint32 address, s_fwmem_selector* wctx )
 {
@@ -346,9 +361,14 @@ int32 drv_fwmem_plug( const char* path, uint32 address, s_fwmem_selector* wctx )
   ctx.arg0 = 0;
   ctx.arg1 = 0;
   ctx.sem = RES_VOID;
+  //--os_driver.cpp
   return drv_plug( path, INOT_FOLDER, &fwmem_open, &fwmem_close, &fwmem_read, &fwmem_write, &fwmem_ioctl, &ctx, sizeof(s_fwmem_context) );
 }
-// ---------------------------------------------------------------------------
+
+/*****************************************************************************
+Syntax:  int32 drv_fwmem_unplug( const char* name )   	    
+Remarks: UNPLUG драйвер			    
+*******************************************************************************/
 int32 drv_fwmem_unplug( const char* name )
 {
   return drv_unplug( name );

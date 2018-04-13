@@ -19,6 +19,10 @@
 #define LOG_START_ADDR          0x00370000
 #define LOG_END_ADDR            0x003effff
 
+
+
+
+
 const uint32 log_sect_msg_qty = LOG_SECTOR_SIZE / LOG_MSG_LENGTH;
 const uint32 log_sector_qty = LOG_SECTOR_END - LOG_SECTOR_START + 1;
 

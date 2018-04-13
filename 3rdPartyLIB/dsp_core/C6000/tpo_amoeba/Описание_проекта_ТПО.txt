@@ -41,4 +41,8 @@ TPO10       М-711Б   (на базе 6-ки) (входит в комплекс Шрапнель-К и изделие М-71
 ///
 
 
-
+//РАбота с 56 платой    [test_m.cpp] PP-056
+int F_celostnost_056()
+int TestSDRAM_056()
+int F_test_SSD()
+int F_test_CDROM()

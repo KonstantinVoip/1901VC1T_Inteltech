@@ -14,20 +14,20 @@
 
 
 #ifdef TPO5
-#include <drv_dnsd.h>
-#include "crypter_15.h"
+	#include <drv_dnsd.h>
+	#include "crypter_15.h"
 #endif
 
 #ifdef TPO6
-#include "crypter_15.h"
+	#include "crypter_15.h"
 #endif
 
 #ifdef TPO7
-#include "crypter_17.h"
+	#include "crypter_17.h"
 #endif
 
 #ifdef TPO_M711B
-#include <drv_netfs.h>
+	#include <drv_netfs.h>
 #endif
 
 //int F_test_ram();
@@ -68,9 +68,9 @@ extern void* sh_mem_write[NUMBER_COMM_DSP];
 
 void nvram_l(uint16 N)
 {
-uint16* Lo = (uint16*)0x68000010;
+	uint16* Lo = (uint16*)0x68000010;
 
-*Lo = N;
+	*Lo = N;
 }
 
 
@@ -81,63 +81,62 @@ void ReadDARAM(uint16 n_comm,uint16 addr,void* buf,uint16 len)
 }
 
 #ifdef TPO5
-//----------------------------------------------------------------------------
-void WriteDARAM(uint16 n_comm,uint16 addr,void* buf,uint16 len)
-{
-//memcpy((char*)sh_mem_write[n_comm]+addr,buf,len);
+	//----------------------------------------------------------------------------
+	void WriteDARAM(uint16 n_comm,uint16 addr,void* buf,uint16 len)
+	{
+		//memcpy((char*)sh_mem_write[n_comm]+addr,buf,len);
 
-uint16 l=(len+3)>>2;
-uint32* s=(uint32*)buf;
-uint32* d=(uint32*)((char*)sh_mem_write[n_comm]+addr);
-while(l--)
-	_amem4(d++)=_mem4(s++);
+		uint16 l=(len+3)>>2;
+		uint32* s=(uint32*)buf;
+		uint32* d=(uint32*)((char*)sh_mem_write[n_comm]+addr);
+		while(l--)
+			_amem4(d++)=_mem4(s++);
 
-}
+	}
 #endif
+
 #ifdef TPO6
-void WriteDARAM(uint16 n_comm,uint16 addr,void* buf,uint16 len)
-{
-//memcpy((char*)sh_mem_write[n_comm]+addr,buf,len);
+	void WriteDARAM(uint16 n_comm,uint16 addr,void* buf,uint16 len)
+	{
+		//memcpy((char*)sh_mem_write[n_comm]+addr,buf,len);
 
-uint16 l=(len+7)>>3;
-uint64* s=(uint64*)buf;
-uint64* d=(uint64*)((char*)sh_mem_write[n_comm]+addr);
-while(l--)
-	_amem8(d++)=_mem8(s++);
+		uint16 l=(len+7)>>3;
+		uint64* s=(uint64*)buf;
+		uint64* d=(uint64*)((char*)sh_mem_write[n_comm]+addr);
+		while(l--)
+			_amem8(d++)=_mem8(s++);
 
-}
+	}
 #endif
 
 #ifdef TPO7
+	const uint16 route_cmds[3+1]=
+	{
+		CMD_PUT_IN_NULL,
+		CMD_PUT_IN_SP0,
+		CMD_PUT_IN_SP1,
+		CMD_PUT_IN_SP2
+	};
+
+	uint16 RouteToCmd(int route)
+	{
+		route++;
+		return route_cmds[route];
+	}
 
 
-const uint16 route_cmds[3+1]=
-{
-CMD_PUT_IN_NULL,
-CMD_PUT_IN_SP0,
-CMD_PUT_IN_SP1,
-CMD_PUT_IN_SP2
-};
+	void WriteDARAM(uint16 n_comm,uint16 addr,void* buf,uint16 len)
+	{
+		uint16 shift_ip = 0;
+		uint64 hdr[3];
+		memset(hdr, 0, sizeof(hdr));
 
-uint16 RouteToCmd(int route)
-{
-route++;
-return route_cmds[route];
-}
+		if(n_comm > 1)
+		while(1);//????
 
-
-void WriteDARAM(uint16 n_comm,uint16 addr,void* buf,uint16 len)
-{
-uint16 shift_ip = 0;
-uint64 hdr[3];
-memset(hdr, 0, sizeof(hdr));
-
-if(n_comm > 1)
-while(1);//????
-
-ChMoveCP(hdr, buf, shift_ip, len, RouteToCmd(n_comm));
-//ChMoveCP(hdr, buf, len, 1);
-}
+		ChMoveCP(hdr, buf, shift_ip, len, RouteToCmd(n_comm));
+		//ChMoveCP(hdr, buf, len, 1);
+	}
 #endif
 
 /*
@@ -277,209 +276,226 @@ int F_test_usb_flash1()
 
 
 #ifdef TPO_M711B
+	//----------------------------------------------------------------------------
+	//#define FileBuffSizeFl 1024
+	int F_test_usb_flash3()
+	{
+	//	uint32 sHandler = 0;
+		uint32 sFileHandler = 0, dFileHandler = 0;
+		FRESULT res = FR_NOT_ENOUGH_MEMORY;
+		uint16 Writed = 0;
+		uint32 Num = 0;
+
+		char	buf_wr[512];
+		char	buf_rd[512];
+
+		for(int i=0;i<sizeof(buf_wr);i++ )
+		buf_wr[i]= i&0xFF;
+
+		memset(buf_rd, 0, sizeof(buf_rd));
+
+		TNetFSAPI *netfs = NULL;
+		getNetFSAPI(&netfs);
+		if(!netfs)
+			return 1;
+
+		res =  netfs->fopen(&sFileHandler, "FLASHDRIVE:/test03.bin", FA_CREATE_ALWAYS | FA_WRITE);
+		if(res != FR_OK)
+			return 1;
+
+		Writed = 0;
+		res = netfs->fwrite(sFileHandler, buf_wr, sizeof(buf_wr), &Writed);
+		if(res != FR_OK)
+			return 1;
+
+		res =  netfs->fclose(sFileHandler);
+		if(res != FR_OK)
+			return 1;
 
 
-//----------------------------------------------------------------------------
-//#define FileBuffSizeFl 1024
-int F_test_usb_flash3()
-{
-//	uint32 sHandler = 0;
-	uint32 sFileHandler = 0, dFileHandler = 0;
-	FRESULT res = FR_NOT_ENOUGH_MEMORY;
-	uint16 Writed = 0;
-	uint32 Num = 0;
+		res =  netfs->fopen(&sFileHandler, "FLASHDRIVE:/test03.bin", FA_READ);
+		if(res != FR_OK)
+			return 1;
 
-    char	buf_wr[512];
-    char	buf_rd[512];
+		Writed = 0;
+		res = netfs->fread(sFileHandler, buf_rd, sizeof(buf_rd), &Writed);
+		if(res != FR_OK)
+			return 1;
 
-	for(int i=0;i<sizeof(buf_wr);i++ )
-	buf_wr[i]= i&0xFF;
+		res =  netfs->fclose(sFileHandler);
+		if(res != FR_OK)
+			return 1;
 
-	memset(buf_rd, 0, sizeof(buf_rd));
+		if(memcmp(buf_wr, buf_rd, sizeof(buf_rd)))
+			return 1;
 
-	TNetFSAPI *netfs = NULL;
-	getNetFSAPI(&netfs);
-	if(!netfs)
-		return 1;
+	return 0;
+	}
 
-	res =  netfs->fopen(&sFileHandler, "FLASHDRIVE:/test03.bin", FA_CREATE_ALWAYS | FA_WRITE);
-	if(res != FR_OK)
-		return 1;
+	//----------------------------------------------------------------------------
+	//#define FileBuffSizeFl 1024
 
-	Writed = 0;
-	res = netfs->fwrite(sFileHandler, buf_wr, sizeof(buf_wr), &Writed);
-	if(res != FR_OK)
-		return 1;
+	/*****************************************************************************
+	Syntax:  int F_test_SSD()	    
+	Remarks: PP-056			    
+	*******************************************************************************/
+	int F_test_SSD()
+	{
+	//	uint32 sHandler = 0;
+		uint32 sFileHandler = 0, dFileHandler = 0;
+		FRESULT res = FR_NOT_ENOUGH_MEMORY;
+		uint16 Writed = 0;
+		uint32 Num = 0;
 
-	res =  netfs->fclose(sFileHandler);
-	if(res != FR_OK)
-		return 1;
+		char	buf_wr[512];
+		char	buf_rd[512];
+
+			TDiskStatus stt;
+
+		for(int i=0;i<sizeof(buf_wr);i++ )
+		buf_wr[i]= i&0xFF;
+
+		memset(buf_rd, 0, sizeof(buf_rd));
 
 
-	res =  netfs->fopen(&sFileHandler, "FLASHDRIVE:/test03.bin", FA_READ);
-	if(res != FR_OK)
-		return 1;
+		TNetFSAPI *netfs = NULL;
+		getNetFSAPI(&netfs);
+		if(!netfs)
+			return 1;
 
-	Writed = 0;
-	res = netfs->fread(sFileHandler, buf_rd, sizeof(buf_rd), &Writed);
-	if(res != FR_OK)
-		return 1;
+	//			res = netfs->getDiskStatus("STORAGE:/", &stt);
 
-	res =  netfs->fclose(sFileHandler);
-	if(res != FR_OK)
-		return 1;
+		res =  netfs->fopen(&sFileHandler, "STORAGE:/testssd.bin", FA_CREATE_ALWAYS | FA_WRITE);
+		if(res != FR_OK)
+			return 1;
 
-	if(memcmp(buf_wr, buf_rd, sizeof(buf_rd)))
-		return 1;
+		Writed = 0;
+		res = netfs->fwrite(sFileHandler, buf_wr, sizeof(buf_wr), &Writed);
+		if(res != FR_OK)
+			return 1;
 
-return 0;
-}
+		res =  netfs->fclose(sFileHandler);
+		if(res != FR_OK)
+			return 1;
 
-//----------------------------------------------------------------------------
-//#define FileBuffSizeFl 1024
-int F_test_SSD()
-{
-//	uint32 sHandler = 0;
-	uint32 sFileHandler = 0, dFileHandler = 0;
-	FRESULT res = FR_NOT_ENOUGH_MEMORY;
-	uint16 Writed = 0;
-	uint32 Num = 0;
+		res =  netfs->fopen(&sFileHandler, "STORAGE:/testssd.bin", FA_READ);
+		if(res != FR_OK)
+			return 1;
 
-    char	buf_wr[512];
-    char	buf_rd[512];
+		Writed = 0;
+		res = netfs->fread(sFileHandler, buf_rd, sizeof(buf_rd), &Writed);
+		if(res != FR_OK)
+			return 1;
+
+		res =  netfs->fclose(sFileHandler);
+		if(res != FR_OK)
+			return 1;
+
+		if(memcmp(buf_wr, buf_rd, sizeof(buf_rd)))
+			return 1;
+
+	return 0;
+	}
+
+
+	//#define FileBuffSizeFl 1024
+	/*****************************************************************************
+	Syntax:  int F_test_CDROM()	    
+	Remarks: PP-056 			    
+	*******************************************************************************/
+	int F_test_CDROM()
+	{
+	//	uint32 sHandler = 0;
+		uint32 sFileHandler = 0, dFileHandler = 0;
+		FRESULT res = FR_NOT_ENOUGH_MEMORY;
+		uint16 Writed = 0;
+		uint32 Num = 0;
 
 		TDiskStatus stt;
 
-	for(int i=0;i<sizeof(buf_wr);i++ )
-	buf_wr[i]= i&0xFF;
+		char	buf_wr[512];
+		char	buf_rd[512];
 
-	memset(buf_rd, 0, sizeof(buf_rd));
+		for(int i=0;i<sizeof(buf_wr);i++ )
+		buf_wr[i]= i&0xFF;
 
-
-	TNetFSAPI *netfs = NULL;
-	getNetFSAPI(&netfs);
-	if(!netfs)
-		return 1;
-
-//			res = netfs->getDiskStatus("STORAGE:/", &stt);
-
-	res =  netfs->fopen(&sFileHandler, "STORAGE:/testssd.bin", FA_CREATE_ALWAYS | FA_WRITE);
-	if(res != FR_OK)
-		return 1;
-
-	Writed = 0;
-	res = netfs->fwrite(sFileHandler, buf_wr, sizeof(buf_wr), &Writed);
-	if(res != FR_OK)
-		return 1;
-
-	res =  netfs->fclose(sFileHandler);
-	if(res != FR_OK)
-		return 1;
-
-	res =  netfs->fopen(&sFileHandler, "STORAGE:/testssd.bin", FA_READ);
-	if(res != FR_OK)
-		return 1;
-
-	Writed = 0;
-	res = netfs->fread(sFileHandler, buf_rd, sizeof(buf_rd), &Writed);
-	if(res != FR_OK)
-		return 1;
-
-	res =  netfs->fclose(sFileHandler);
-	if(res != FR_OK)
-		return 1;
-
-	if(memcmp(buf_wr, buf_rd, sizeof(buf_rd)))
-		return 1;
-
-return 0;
-}
-
-//----------------------------------------------------------------------------
-//#define FileBuffSizeFl 1024
-int F_test_CDROM()
-{
-//	uint32 sHandler = 0;
-	uint32 sFileHandler = 0, dFileHandler = 0;
-	FRESULT res = FR_NOT_ENOUGH_MEMORY;
-	uint16 Writed = 0;
-	uint32 Num = 0;
-
-	TDiskStatus stt;
-
-    char	buf_wr[512];
-    char	buf_rd[512];
-
-	for(int i=0;i<sizeof(buf_wr);i++ )
-	buf_wr[i]= i&0xFF;
-
-	memset(buf_rd, 0, sizeof(buf_rd));
+		memset(buf_rd, 0, sizeof(buf_rd));
 
 
-	TNetFSAPI *netfs = NULL;
-	getNetFSAPI(&netfs);
-	if(!netfs)
-		return 1;
-//	res = netfs->getDiskStatus("CDDVD:/", &stt);
-	res =  netfs->fopen(&sFileHandler, "CDDVD:/tstcdrom.bin", FA_READ);
-//	res =  netfs->fopen(&sFileHandler, "CDDVD:/14000004.lst", FA_READ);
-	if(res != FR_OK)
-		return 1;
+		TNetFSAPI *netfs = NULL;
+		getNetFSAPI(&netfs);
+		if(!netfs)
+			return 1;
+	//	res = netfs->getDiskStatus("CDDVD:/", &stt);
+		res =  netfs->fopen(&sFileHandler, "CDDVD:/tstcdrom.bin", FA_READ);
+	//	res =  netfs->fopen(&sFileHandler, "CDDVD:/14000004.lst", FA_READ);
+		if(res != FR_OK)
+			return 1;
 
-	Writed = 0;
-	res = netfs->fread(sFileHandler, buf_rd, sizeof(buf_rd), &Writed);
-	if(res != FR_OK)
-		return 1;
+		Writed = 0;
+		res = netfs->fread(sFileHandler, buf_rd, sizeof(buf_rd), &Writed);
+		if(res != FR_OK)
+			return 1;
 
-	res =  netfs->fclose(sFileHandler);
-	if(res != FR_OK)
-		return 1;
+		res =  netfs->fclose(sFileHandler);
+		if(res != FR_OK)
+			return 1;
 
-	if(memcmp(buf_wr, buf_rd, sizeof(buf_rd)))
-		return 1;
+		if(memcmp(buf_wr, buf_rd, sizeof(buf_rd)))
+			return 1;
 
-return 0;
-}
-
-//----------------------------------------------------------------------------
-int F_celostnost_056()
-{
-
-	FRESULT res = FR_NOT_ENOUGH_MEMORY;
-	TCalcHashResult hash;
-	uint32 vector[8];
-    memset(vector, 0, sizeof(vector));        
-
-	TNetFSAPI *netfs = NULL;
-	getNetFSAPI(&netfs);
-	if(!netfs)
-		return 1;
-
-
-    res = netfs->getHash(board056, &hash, vector);
-	if(res != FR_OK)
-		return 1;
-	else
-    {
-	    if(hash.Valid0 == 0)	return 1;
-    	if(hash.Valid1 == 0) 	return 1;       
+	return 0;
 	}
 
-return 0;
-}
+	/*****************************************************************************
+	Syntax:  int F_celostnost_056()    
+	Remarks: PP-056			    
+	*******************************************************************************/
+	int F_celostnost_056()
+	{
 
-//----------------------------------------------------------------------------
+		FRESULT res = FR_NOT_ENOUGH_MEMORY;
+		TCalcHashResult hash;
+		uint32 vector[8];
+		memset(vector, 0, sizeof(vector));        
 
-int TestSDRAM_056()
-{
+		TNetFSAPI *netfs = NULL;
+		getNetFSAPI(&netfs);  
+		if(!netfs)  //Если драйвер не PLUG return 1
+		{		
+			return 1;        
+		}
 
+		res = netfs->getHash(board056, &hash, vector);  //Ощибка Сети проблема LINK SFP модуль
+		if(res != FR_OK)
+		{	
+			return 1;
+		}
+		else
+		{
+			if(hash.Valid0 == 0)	   //Защита от Аппаратного Сбоя
+			{
+				return 1;
+			}
+			if(hash.Valid1 == 0) 	  //Защита от Аппаратного Сбоя
+			{
+				return 1;       
+			}
+		}
 
-return 0;
-}
+		return 0;
+	}
 
+	/*****************************************************************************
+	Syntax:  int TestSDRAM_056()    
+	Remarks: PP-056			    
+	*******************************************************************************/
+	int TestSDRAM_056()
+	{
+		return 0;
+	}
 
-
-#endif
+#endif      //END TEST  М-711В
 
 //#define NVRAM_START_ADDR    0x68000000  // Начальный адрес NVRAM
 //#define NVRAM_SIZE          0x00100000  // Размер NVRAM в байтах. 0x00100000 = 1MB
@@ -871,116 +887,116 @@ return TPO_OK;
 
 
 #ifdef TPO5
-int sdram_test_base(void)
-{
-
-uint32 save_buf[SDRAM_BLOK_LEN/SDRAM_WIDTH];
-uint32 a = SDRAM_START_ADDR;				
-uint32* addr = (uint32*)a;
-uint32* save_addr;
-uint32 int_old = 0;
-
-int i = 0;
-
-int_old = int_disable();
-save_addr = addr;
-memcpy(save_buf, save_addr, sizeof(save_buf));
-
-*addr = 0x55555555;
-	if(*addr != 0x55555555)
-		goto sdram_error;
-*addr = 0xAAAAAAAA;
-	if(*addr != 0xAAAAAAAA)
-		goto sdram_error;
-
-memcpy(save_addr, save_buf,sizeof(save_buf));
-int_enable(int_old);	
-
-	for(i = 0; i < (SDRAM_LEN/SDRAM_BLOK_LEN); i++)
+	int sdram_test_base(void)
 	{
-		int_old = int_disable();
-		save_addr = addr + (i * sizeof(save_buf))/SDRAM_WIDTH;
-		memcpy(save_buf, save_addr, sizeof(save_buf));
 
-		for(int j = i*(SDRAM_BLOK_LEN/SDRAM_WIDTH); j < ((i+1)*(SDRAM_BLOK_LEN/SDRAM_WIDTH)); j++)
-		{
-		addr[j] = j & 0xFFFFFFFF;
-		}
+	uint32 save_buf[SDRAM_BLOK_LEN/SDRAM_WIDTH];
+	uint32 a = SDRAM_START_ADDR;				
+	uint32* addr = (uint32*)a;
+	uint32* save_addr;
+	uint32 int_old = 0;
 
-		for(int j = i*(SDRAM_BLOK_LEN/SDRAM_WIDTH); j < ((i+1)*(SDRAM_BLOK_LEN/SDRAM_WIDTH)); j++)
-		{
-			if(addr[j] != j & 0xFFFFFFFF)
+	int i = 0;
+
+	int_old = int_disable();
+	save_addr = addr;
+	memcpy(save_buf, save_addr, sizeof(save_buf));
+
+	*addr = 0x55555555;
+		if(*addr != 0x55555555)
 			goto sdram_error;
-		}
-
-		memcpy(save_addr, save_buf,sizeof(save_buf));
-		int_enable(int_old);	
-	}
-
-return TPO_OK;
-
-sdram_error:
+	*addr = 0xAAAAAAAA;
+		if(*addr != 0xAAAAAAAA)
+			goto sdram_error;
 
 	memcpy(save_addr, save_buf,sizeof(save_buf));
 	int_enable(int_old);	
-	return TPO_ERR;
-}    
+
+		for(i = 0; i < (SDRAM_LEN/SDRAM_BLOK_LEN); i++)
+		{
+			int_old = int_disable();
+			save_addr = addr + (i * sizeof(save_buf))/SDRAM_WIDTH;
+			memcpy(save_buf, save_addr, sizeof(save_buf));
+
+			for(int j = i*(SDRAM_BLOK_LEN/SDRAM_WIDTH); j < ((i+1)*(SDRAM_BLOK_LEN/SDRAM_WIDTH)); j++)
+			{
+			addr[j] = j & 0xFFFFFFFF;
+			}
+
+			for(int j = i*(SDRAM_BLOK_LEN/SDRAM_WIDTH); j < ((i+1)*(SDRAM_BLOK_LEN/SDRAM_WIDTH)); j++)
+			{
+				if(addr[j] != j & 0xFFFFFFFF)
+				goto sdram_error;
+			}
+
+			memcpy(save_addr, save_buf,sizeof(save_buf));
+			int_enable(int_old);	
+		}
+
+	return TPO_OK;
+
+	sdram_error:
+
+		memcpy(save_addr, save_buf,sizeof(save_buf));
+		int_enable(int_old);	
+		return TPO_ERR;
+	}    
 
 #else
 
 int sdram_test_base(void)
 {
 
-uint64 save_buf[SDRAM_BLOK_LEN/SDRAM_WIDTH];
-uint32 a = SDRAM_START_ADDR;				
-uint64* addr = (uint64*)a;
-uint64* save_addr;
-uint32 int_old = 0;
+	uint64 save_buf[SDRAM_BLOK_LEN/SDRAM_WIDTH];
+	uint32 a = SDRAM_START_ADDR;				
+	uint64* addr = (uint64*)a;
+	uint64* save_addr;
+	uint32 int_old = 0;
 
-int i = 0;
+	int i = 0;
 
-int_old = int_disable();
-save_addr = addr;
-memcpy(save_buf, save_addr, sizeof(save_buf));
+	int_old = int_disable();
+	save_addr = addr;
+	memcpy(save_buf, save_addr, sizeof(save_buf));
 
-*addr = 0x5555555555555555;
-	if(*addr != 0x5555555555555555)
-		goto sdram_error;
-*addr = 0xAAAAAAAAAAAAAAAA;
-	if(*addr != 0xAAAAAAAAAAAAAAAA)
-		goto sdram_error;
-
-memcpy(save_addr, save_buf,sizeof(save_buf));
-int_enable(int_old);	
-
-	for(i = 0; i < (SDRAM_LEN/SDRAM_BLOK_LEN); i++)
-	{
-		int_old = int_disable();
-		save_addr = addr + (i * sizeof(save_buf))/SDRAM_WIDTH;
-		memcpy(save_buf, save_addr, sizeof(save_buf));
-
-		for(int j = i*(SDRAM_BLOK_LEN/SDRAM_WIDTH); j < ((i+1)*(SDRAM_BLOK_LEN/SDRAM_WIDTH)); j++)
-		{
-		addr[j] = j & 0xFFFFFFFFFFFFFFFF;
-		}
-
-		for(int j = i*(SDRAM_BLOK_LEN/SDRAM_WIDTH); j < ((i+1)*(SDRAM_BLOK_LEN/SDRAM_WIDTH)); j++)
-		{
-			if(addr[j] != j & 0xFFFFFFFFFFFFFFFF)
+	*addr = 0x5555555555555555;
+		if(*addr != 0x5555555555555555)
 			goto sdram_error;
-		}
-
-		memcpy(save_addr, save_buf,sizeof(save_buf));
-		int_enable(int_old);	
-	}
-
-return TPO_OK;
-
-sdram_error:
+	*addr = 0xAAAAAAAAAAAAAAAA;
+		if(*addr != 0xAAAAAAAAAAAAAAAA)
+			goto sdram_error;
 
 	memcpy(save_addr, save_buf,sizeof(save_buf));
 	int_enable(int_old);	
-	return TPO_ERR;
+
+		for(i = 0; i < (SDRAM_LEN/SDRAM_BLOK_LEN); i++)
+		{
+			int_old = int_disable();
+			save_addr = addr + (i * sizeof(save_buf))/SDRAM_WIDTH;
+			memcpy(save_buf, save_addr, sizeof(save_buf));
+
+			for(int j = i*(SDRAM_BLOK_LEN/SDRAM_WIDTH); j < ((i+1)*(SDRAM_BLOK_LEN/SDRAM_WIDTH)); j++)
+			{
+			addr[j] = j & 0xFFFFFFFFFFFFFFFF;
+			}
+
+			for(int j = i*(SDRAM_BLOK_LEN/SDRAM_WIDTH); j < ((i+1)*(SDRAM_BLOK_LEN/SDRAM_WIDTH)); j++)
+			{
+				if(addr[j] != j & 0xFFFFFFFFFFFFFFFF)
+				goto sdram_error;
+			}
+
+			memcpy(save_addr, save_buf,sizeof(save_buf));
+			int_enable(int_old);	
+		}
+
+	return TPO_OK;
+
+	sdram_error:
+
+		memcpy(save_addr, save_buf,sizeof(save_buf));
+		int_enable(int_old);	
+		return TPO_ERR;
 }    
 #endif
 
@@ -1201,24 +1217,24 @@ int error = 0;
 uint32 sh_d = SH_DOZU/8;
 
 #ifdef TPO_M711B
-uint32 start_adr = 0x100;
+	uint32 start_adr = 0x100;
 #else
-uint32 start_adr = 0;
+	uint32 start_adr = 0;
 #endif
 uint32 n_c;
 
 #ifdef TPO5
-uint32 buf_wr[LEN_BUF_FOR_TEST_DOZU];
-uint32 buf_rd[LEN_BUF_FOR_TEST_DOZU];
-#define	DAT555	0x55555555
-#define	DATAAA	0xAAAAAAAA
-uint32 one = 1;
+	uint32 buf_wr[LEN_BUF_FOR_TEST_DOZU];
+	uint32 buf_rd[LEN_BUF_FOR_TEST_DOZU];
+	#define	DAT555	0x55555555
+	#define	DATAAA	0xAAAAAAAA
+	uint32 one = 1;
 #else
-uint64 buf_wr[LEN_BUF_FOR_TEST_DOZU];
-uint64 buf_rd[LEN_BUF_FOR_TEST_DOZU];
-#define	DAT555	0x5555555555555555
-#define	DATAAA	0xAAAAAAAAAAAAAAAA
-uint64 one = 1;
+	uint64 buf_wr[LEN_BUF_FOR_TEST_DOZU];
+	uint64 buf_rd[LEN_BUF_FOR_TEST_DOZU];
+	#define	DAT555	0x5555555555555555
+	#define	DATAAA	0xAAAAAAAAAAAAAAAA
+	uint64 one = 1;
 #endif
 	for(int i = 0; i < SH_DOZU; i++)
 		buf_wr[i] = one << i;
@@ -1340,9 +1356,9 @@ uint32 TestMoveDOZU_N_SP(uint32 n_comm, kdg_rez_test* result)
 int error = 0;
 //kdg_rez_test result;
 #ifdef TPO_M711B
-uint32 start_adr = 0x100;
+	uint32 start_adr = 0x100;
 #else
-uint32 start_adr = 0;
+	uint32 start_adr = 0;
 #endif
 uint32 n_c = 0;
 /*
@@ -2316,47 +2332,47 @@ void Test_MOVE()
 {
 uint32 res = 0;
 
-while(Start_move)
-{
+	while(Start_move)
+	{
 
-//	for(int i = MIN_NUMBER_COMM; i<NUMBER_COMM_DSP ; i++)
-//	{
-	ChStartMove(1, 0, 0, 0, LEN_MOVE);
-ChWaitEndMove();
-	ChStartMove(0, 0, 1, 0, LEN_MOVE);
-	res = Send_cmd_comm(1, GOTOV_TEST_MOVE_15);
-	res = Send_cmd_comm(0, GOTOV_TEST_MOVE_15);
-ChWaitEndMove();
+	//	for(int i = MIN_NUMBER_COMM; i<NUMBER_COMM_DSP ; i++)
+	//	{
+		ChStartMove(1, 0, 0, 0, LEN_MOVE);
+	ChWaitEndMove();
+		ChStartMove(0, 0, 1, 0, LEN_MOVE);
+		res = Send_cmd_comm(1, GOTOV_TEST_MOVE_15);
+		res = Send_cmd_comm(0, GOTOV_TEST_MOVE_15);
+	ChWaitEndMove();
 
-	ChStartMove(1, LEN_MOVE, 0, LEN_MOVE, LEN_MOVE);
-ChWaitEndMove();
-	ChStartMove(0, LEN_MOVE, 1, LEN_MOVE, LEN_MOVE);
-	res = Send_cmd_comm(1, GOTOV_TEST_MOVE_25);
-	res = Send_cmd_comm(0, GOTOV_TEST_MOVE_25);
-ChWaitEndMove();
-//	}
+		ChStartMove(1, LEN_MOVE, 0, LEN_MOVE, LEN_MOVE);
+	ChWaitEndMove();
+		ChStartMove(0, LEN_MOVE, 1, LEN_MOVE, LEN_MOVE);
+		res = Send_cmd_comm(1, GOTOV_TEST_MOVE_25);
+		res = Send_cmd_comm(0, GOTOV_TEST_MOVE_25);
+	ChWaitEndMove();
+	//	}
 
-//	for(int i = MIN_NUMBER_COMM; i<NUMBER_COMM_DSP ; i++)
-//	{
-	ChStartMove(1, 0, 0, 0, LEN_MOVE);
-ChWaitEndMove();
-	ChStartMove(0, 0, 1, 0, LEN_MOVE);
-	res = Send_cmd_comm(1, GOTOV_TEST_MOVE_1A);
-	res = Send_cmd_comm(0, GOTOV_TEST_MOVE_1A);
-ChWaitEndMove();
+	//	for(int i = MIN_NUMBER_COMM; i<NUMBER_COMM_DSP ; i++)
+	//	{
+		ChStartMove(1, 0, 0, 0, LEN_MOVE);
+	ChWaitEndMove();
+		ChStartMove(0, 0, 1, 0, LEN_MOVE);
+		res = Send_cmd_comm(1, GOTOV_TEST_MOVE_1A);
+		res = Send_cmd_comm(0, GOTOV_TEST_MOVE_1A);
+	ChWaitEndMove();
 
-	ChStartMove(1, LEN_MOVE, 0, LEN_MOVE, LEN_MOVE);
-ChWaitEndMove();
-	ChStartMove(0, LEN_MOVE, 1, LEN_MOVE, LEN_MOVE);
-	res = Send_cmd_comm(1, GOTOV_TEST_MOVE_2A);
-	res = Send_cmd_comm(0, GOTOV_TEST_MOVE_2A);
-ChWaitEndMove();
+		ChStartMove(1, LEN_MOVE, 0, LEN_MOVE, LEN_MOVE);
+	ChWaitEndMove();
+		ChStartMove(0, LEN_MOVE, 1, LEN_MOVE, LEN_MOVE);
+		res = Send_cmd_comm(1, GOTOV_TEST_MOVE_2A);
+		res = Send_cmd_comm(0, GOTOV_TEST_MOVE_2A);
+	ChWaitEndMove();
 
-//	}
-//	for(int i = MIN_NUMBER_COMM; i<NUMBER_COMM_DSP ; i++)
-//	{
-//prc_yield();
-//	}
-}
+	//	}
+	//	for(int i = MIN_NUMBER_COMM; i<NUMBER_COMM_DSP ; i++)
+	//	{
+	//prc_yield();
+	//	}
+	} //end while
 }
 #endif

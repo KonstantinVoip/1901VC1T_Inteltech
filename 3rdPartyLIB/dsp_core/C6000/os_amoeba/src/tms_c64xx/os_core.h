@@ -200,6 +200,10 @@ extern CREGISTER volatile unsigned int NRP;
 #define OSSF_BAD_DESCRIPTOR             3
 #define OSSF_UNIMPLEMENTED_SYSCALL      4
 #define OSSF_PROTECTION_FAULT           5
+//skd add memory fault  12.04.2018
+#define OSSF_SDRAMTEST_FAULT            6
+#define OSSF_INTERNALRAMTEST_FAULT      7
+
 
 // -- Structures -------------------------------------------------------------
 

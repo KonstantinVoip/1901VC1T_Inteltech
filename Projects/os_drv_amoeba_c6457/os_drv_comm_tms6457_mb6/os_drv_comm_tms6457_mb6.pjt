@@ -42,8 +42,8 @@ Source="..\..\..\3rdPartyLIB\dsp_core\C6000\os_amoeba\src\tms_c64xx\os_system.cp
 Source="..\..\..\3rdPartyLIB\dsp_core\C6000\os_amoeba\src\tms_c64xx\os_time.cpp"
 Source="..\..\..\3rdPartyLIB\dsp_core\C6000\rts_amoeba\lib\rts.tms320c6457.lib"
 Source="main_comm.cpp"
-Source="memory.cmd"
-Source="sections.cmd"
+Source="cmd\debug\os_memory_debug_comm.cmd"
+Source="cmd\debug\os_sections_debug_comm.cmd"
 
 ["Compiler" Settings: "Debug"]
 Options=-g -pdsw225 -fr"$(Proj_dir)\Debug" -i"%AMOEBA_OS_PATH%\tms_c64xx" -i"%AMOEBA_RTS_PATH%\src" -i"%AMOEBA_DRV_PATH%\emif" -i"%AMOEBA_DRV_PATH%\dbgout\tms_c64xx" -i"%AMOEBA_DRV_PATH%\fwmem\tms_c64xx" -i"%AMOEBA_DRV_PATH%\net" -i"%AMOEBA_DRV_PATH%\net\tms_c64xx\tms6457" -i"%AMOEBA_DRV_PATH%\ipmp\tms_c64xx" -i"%AMOEBA_DRV_PATH%\crypto" -i"%AMOEBA_DRV_PATH%\gpio\tms_c64xx" -d"_DEBUG" -d"CHIP_6457" -mv6400 --mem_model:data=far
@@ -57,15 +57,15 @@ Options=-c -m".\Debug\os_drv_comm_tms6457.map" -o".\Debug\os_drv_comm_tms6457.ou
 ["Linker" Settings: "Release"]
 Options=-c -m".\Release\os_drv_comm_tms6457.map" -o".\Release\os_drv_comm_tms6457.out" -w -x
 
-["memory.cmd" Settings: "Debug"]
+["cmd\debug\os_memory_debug_comm.cmd" Settings: "Debug"]
 LinkOrder=1
 
-["memory.cmd" Settings: "Release"]
+["cmd\debug\os_memory_debug_comm.cmd" Settings: "Release"]
 LinkOrder=1
 
-["sections.cmd" Settings: "Debug"]
+["cmd\debug\os_sections_debug_comm.cmd" Settings: "Debug"]
 LinkOrder=1
 
-["sections.cmd" Settings: "Release"]
+["cmd\debug\os_sections_debug_comm.cmd" Settings: "Release"]
 LinkOrder=1
 

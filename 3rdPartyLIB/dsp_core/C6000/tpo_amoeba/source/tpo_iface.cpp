@@ -35,11 +35,11 @@
 
 //Настройки для Сборки ТПО
 
-//        #define	D	1		//работаем с СВ платой типа здесь будет Обмен ставим еденичку.
-//        #define	D	0		//работаем только с Перефирйной платой ПВ-40 (ПП)
+          #define	D	1		//работаем с СВ платой типа здесь будет Обмен ставим еденичку.
+//         #define	D	0		//работаем только с Перефирйной платой ПВ-40 (ПП)
 
-//   #define INTERFACE_PV_PLATA_ONLY   1    //Работа с Системной Платой
-     #define INTERFACE_PV_PLATA_ONLY   0    //Работа только с Интерфейсной Платой без Системного Обмена.
+    #define INTERFACE_PV_PLATA_ONLY   1    //Работа с Системной Платой
+//     #define INTERFACE_PV_PLATA_ONLY   0    //Работа только с Интерфейсной Платой без Системного Обмена.
   //#define TPO711MD //Для возможности считывать файлы (команды) с usb флэш.
 
 
@@ -241,7 +241,7 @@ int tpo_iface(void* arg)
   
     fprintf(dout,"iface(ПП)_pv40:Con_init\n");
 
-    //Установка обмена с СВ-039: 
+    //Установка обмена с СВ-039 или СВ-043: 
 	if(INTERFACE_PV_PLATA_ONLY)
 	{   //->>>>  test_i.cpp   [function tpo_msg_discover.]  
 	  error = tpo_msg_discover();

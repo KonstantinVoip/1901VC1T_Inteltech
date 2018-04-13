@@ -12,7 +12,7 @@
 * Module's revision history:
 * ==========================
 * --------- $Log:  $
-* --------- Initial revision
+* --------- [os_message.cpp]
 ******************************************************************************/
 #define SYSCALL_DIRECT
 #include <os.h>

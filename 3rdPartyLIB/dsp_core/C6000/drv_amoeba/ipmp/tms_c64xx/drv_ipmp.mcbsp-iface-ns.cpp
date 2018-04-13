@@ -1,3 +1,19 @@
+/**********************************************************************************************************************
+*                                        (c) COPYRIGHT by ZAO RCZI FORT.                                             *
+*        ..                                       All rights reserved.                                               *
+***********************************************************************************************************************
+* Module      : [drv_ipmp.mcbsp-iface-ns.cpp]
+* Description : 
+* Author      : 
+******************************************************************************
+******************************************************************************
+* Module's Description Record:
+* ============================
+* Module's revision history:
+* ==========================
+* --------- $Log:  $
+* --------- Initial revision
+******************************************************************************/
 #include <rts.h>
 #include <drv_ipmp.mcbsp.h>
 // ---------------------------------------------------------------------------
@@ -37,8 +53,9 @@ static volatile int32 state;
 static s_message_queue outq;
 static s_message_context mctx;
 static void (*synfail_callback)(int32) = NULL;
+
 #ifdef NEED_STAT
-s_ipmp_stat rs_ipmp_stat;
+	s_ipmp_stat rs_ipmp_stat;
 #endif
 
 static uint32 mcbsp_rd0;
@@ -77,7 +94,12 @@ void DebugPin2(int32 value)
         REG_GPVAL &= ~(1<<14);
     int_enable(is);
 }*/
-// ---------------------------------------------------------------------------
+
+
+/*****************************************************************************
+Syntax:  static void syn_fail( int32 critical )	    
+Remarks:			    
+*******************************************************************************/
 static void syn_fail( int32 critical )
 {
   if( synfail_callback )
@@ -97,6 +119,12 @@ static void syn_fail( int32 critical )
 //---------------------------------------------------------------------------
 typedef uint64 cmp_unit;
 //---------------------------------------------------------------------------
+
+
+/*****************************************************************************
+Syntax:  static int memcmp_xor(void* src1,void* src2,uint32 len)    
+Remarks:			    
+*******************************************************************************/
 static int memcmp_xor(void* src1,void* src2,uint32 len)
 {
 register cmp_unit* s1=(cmp_unit*)src1;
@@ -115,7 +143,11 @@ if(ost)
 
 return 0;
 }
-//---------------------------------------------------------------------------
+
+/*****************************************************************************
+Syntax:  static bool recv_frame( char *frame, uint16 length, uint16 c16, uint32 *c32)   
+Remarks:			    
+*******************************************************************************/
 static bool recv_frame( char *frame, uint16 length, uint16 c16, uint32 *c32)
 {
   drv_read(mcbsp_rd0,frame,length);  
@@ -129,7 +161,12 @@ static bool recv_frame( char *frame, uint16 length, uint16 c16, uint32 *c32)
   }
   return true;
 }
-// ---------------------------------------------------------------------------
+
+
+/*****************************************************************************
+Syntax:  static bool recv_4b( uint32* v )  
+Remarks: Чтение Слова 4 байт из портов CPU			    
+*******************************************************************************/
 static bool recv_4b( uint32* v )
 {
   uint32 c0, c1;
@@ -166,7 +203,13 @@ static void send_4b( uint32 c )
 {
   drv_write( mcbsp_wr, &c, 4 );
 }
-// ---------------------------------------------------------------------------
+
+
+
+/*****************************************************************************
+Syntax:  static int ipmp_mcbsp_tx_process( void* arg ) 
+Remarks:			    
+*******************************************************************************/
 static int ipmp_mcbsp_tx_process( void* arg )
 {
   uint32 frame;
@@ -269,7 +312,12 @@ static int ipmp_mcbsp_tx_process( void* arg )
 
   return 0;
 }
-// ---------------------------------------------------------------------------
+
+
+/*****************************************************************************
+Syntax:  static int ipmp_mcbsp_rx_process( void* arg )
+Remarks:			    
+*******************************************************************************/
 static int ipmp_mcbsp_rx_process( void* arg )
 {
   int32 r;
@@ -291,7 +339,10 @@ static int ipmp_mcbsp_rx_process( void* arg )
       {
         if( !have_remote_side )
         {
-          if( !recv_4b( &frame ) ) { syn_fail( 1 ); break; }
+          if( !recv_4b( &frame ) ) 
+          { 
+           syn_fail( 1 );break;    //SPARKA_FAIL
+          }
           if( frame == FRAME_SIDE_RESPONSE ) have_remote_side = true;
         }
         else
@@ -303,7 +354,10 @@ static int ipmp_mcbsp_rx_process( void* arg )
 
       case S_CONNECT:
       {
-        if( !recv_4b( &frame ) ) { syn_fail( 1 ); break; }
+        if( !recv_4b( &frame ) )
+        { 
+           syn_fail( 1 ); break;    //SPARKA_FAIL
+        }
         if( frame == FRAME_CONNECT )
         {
           while( !connect_sended ) sleep_m( 1 );
@@ -314,7 +368,10 @@ static int ipmp_mcbsp_rx_process( void* arg )
 
       case S_ESTABLISHED:
       {
-        if( !recv_4b( &frame ) ) { syn_fail( 1 ); break; }
+        if( !recv_4b( &frame ) ) 
+        { 
+          syn_fail( 1 );break; //SPARKA_FAIL
+        }
 
         switch( frame )
         {
@@ -348,7 +405,7 @@ static int ipmp_mcbsp_rx_process( void* arg )
             if( rc32 != c32 )
             {
               #ifdef NEED_STAT
-              _mem8( &rs_ipmp_stat.rx_drop_hash ) = _mem8( &rs_ipmp_stat.rx_drop_hash ) + 1;
+             	 _mem8( &rs_ipmp_stat.rx_drop_hash ) = _mem8( &rs_ipmp_stat.rx_drop_hash ) + 1;
               #endif
               break;
             }
@@ -359,7 +416,7 @@ static int ipmp_mcbsp_rx_process( void* arg )
             if( avg_message == NULL )
             {
               #ifdef NEED_STAT
-              _mem8( &rs_ipmp_stat.rx_drop_mem ) = _mem8( &rs_ipmp_stat.rx_drop_mem ) + 1;
+             	 _mem8( &rs_ipmp_stat.rx_drop_mem ) = _mem8( &rs_ipmp_stat.rx_drop_mem ) + 1;
               #endif
               break;
             }
@@ -425,8 +482,8 @@ static int ipmp_mcbsp_rx_process( void* arg )
                 else
                 {
                   #ifdef NEED_STAT
-                  _mem8( &rs_ipmp_stat.rx_count ) = _mem8( &rs_ipmp_stat.rx_count ) + 1;
-                  _mem8( &rs_ipmp_stat.rx_bytes ) = _mem8( &rs_ipmp_stat.rx_bytes ) + (uint64)avg_message->length;
+	                  _mem8( &rs_ipmp_stat.rx_count ) = _mem8( &rs_ipmp_stat.rx_count ) + 1;
+	                  _mem8( &rs_ipmp_stat.rx_bytes ) = _mem8( &rs_ipmp_stat.rx_bytes ) + (uint64)avg_message->length;
                   #endif
                   msg_queue_push( mctx.inq, avg_message );
                   avg_message = NULL;
@@ -498,7 +555,14 @@ int32 ipmp_mcbsp_write( s_os_driver_descriptor* d, const void* buf, int32 length
 {
   return -1;
 }
-//---------------------------------------------------------------------------
+
+
+
+
+/*****************************************************************************
+Syntax:  int32 ipmp_mcbsp_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* arg )	    
+Remarks: Видимо это самая Главная Функция.			    
+*******************************************************************************/
 int32 ipmp_mcbsp_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* arg )
 {
 
@@ -523,7 +587,7 @@ int32 ipmp_mcbsp_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* arg )
       memset(ipmp_out_buf,0,sizeof(ipmp_out_buf));
 
       #ifdef NEED_STAT
-      memset( &rs_ipmp_stat, 0, sizeof(rs_ipmp_stat) );
+     	 memset( &rs_ipmp_stat, 0, sizeof(rs_ipmp_stat) );
       #endif
       memset( &outq, 0, sizeof(outq) );
       memset( &mctx, 0, sizeof(mctx) );
@@ -543,7 +607,12 @@ int32 ipmp_mcbsp_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* arg )
       mcbsp_rd0 = drv_mkd( "/dev/mcbsp/mcbsp_in1" );
       mcbsp_rd1 = drv_mkd( "/dev/mcbsp/mcbsp_in2" );
       mcbsp_wr = drv_mkd( "/dev/mcbsp/mcbsp_out" );
-      if( ( mcbsp_rd0 == RES_VOID ) || ( mcbsp_rd1 == RES_VOID ) || ( mcbsp_wr == RES_VOID ) ) { r = OSE_NO_DEVICE; goto l_fail; }
+      
+      if( ( mcbsp_rd0 == RES_VOID ) || ( mcbsp_rd1 == RES_VOID ) || ( mcbsp_wr == RES_VOID ) )
+      { 
+      	r = OSE_NO_DEVICE; 
+      	goto l_fail;
+      }
       drv_open( mcbsp_rd0, DRV_RD );
       drv_open( mcbsp_rd1, DRV_RD );
       drv_open( mcbsp_wr, DRV_WR );
@@ -553,12 +622,18 @@ int32 ipmp_mcbsp_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* arg )
 
       send_sem = sem_alloc( 6, NULL );
       tx_sem = sem_alloc( 1, NULL );
-      if( ( send_sem == RES_VOID ) || ( tx_sem == RES_VOID ) ) { r = OSE_CANT_CREATE_SEM; goto l_fail; }
+     
+      if( ( send_sem == RES_VOID ) || ( tx_sem == RES_VOID ) ) 
+      { 
+        r = OSE_CANT_CREATE_SEM; 
+        goto l_fail;
+      }
 
       memset( &pattr, 0, sizeof(pattr) );
       pattr.stack = 1024;
-      rx_process = prc_create( &ipmp_mcbsp_rx_process, NULL, 0, &pattr );
+      rx_process = prc_create( &ipmp_mcbsp_rx_process, NULL, 0, &pattr );  //Создание Процесса RX приёма данных от Спарки.
       tx_process = prc_create( &ipmp_mcbsp_tx_process, NULL, 0, &pattr );
+     
       if( ( rx_process <= 0 ) || ( tx_process <= 0 ) )
       {
         r = OSE_CANT_CREATE_PROCESS;
@@ -572,6 +647,7 @@ int32 ipmp_mcbsp_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* arg )
       
       break;
 
+    //l_fail
     l_fail:
 
       terminate = true;
@@ -617,13 +693,13 @@ int32 ipmp_mcbsp_ioctl( s_os_driver_descriptor* d, int32 cmd, const void* arg )
     break;
 
     #ifdef NEED_STAT
-    case IPMP_STAT:
-    {
-      if( arg == NULL ) return OSE_NULL_PARAM;
-      s_ipmp_stat* s = (s_ipmp_stat*)const_cast<void*>( arg );
-      memcpy( s, &rs_ipmp_stat, sizeof(s_ipmp_stat) );
-    }
-    break;
+	    case IPMP_STAT:
+	    {
+	      if( arg == NULL ) return OSE_NULL_PARAM;
+	      s_ipmp_stat* s = (s_ipmp_stat*)const_cast<void*>( arg );
+	      memcpy( s, &rs_ipmp_stat, sizeof(s_ipmp_stat) );
+	    }
+	    break;
     #endif
 
     case IPMP_SET_SYNFAIL_CALLBACK:
@@ -659,7 +735,12 @@ int32 drv_ipmp_mcbsp_unplug( const char* name )
 {
   return drv_unplug( name );
 }
-//---------------------------------------------------------------------------
+
+
+/*****************************************************************************
+Syntax:  void QDMA_ipmpRead(void* dst,void* src,uint16 len)	    
+Remarks:			    
+*******************************************************************************/
 void QDMA_ipmpRead(void* dst,void* src,uint16 len)
 {
   uint16 l = len/4;
